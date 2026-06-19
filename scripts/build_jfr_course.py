@@ -2,8 +2,18 @@
 """Generate courses/jfr/index.html from content/sre-jfr-training-course.md"""
 
 import html
+import json
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from jfr_enrichments import (
+    FLOWCHARTS,
+    INTERVIEW_QUESTIONS,
+    MODULE_ENRICHMENTS,
+    WAR_STORY_DETAILS,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 MD_PATH = ROOT / "content" / "sre-jfr-training-course.md"
@@ -83,6 +93,8 @@ def md_to_html_block(text: str) -> str:
         html_rows = []
         for i, row in enumerate(table_rows):
             cells = [c.strip() for c in row.strip("|").split("|")]
+            if all(re.match(r"^[-:]+$", c) or c == "" for c in cells):
+                continue
             tag = "th" if i == 0 else "td"
             cls = "text-left py-3 px-4 font-semibold" if tag == "th" else "py-3 px-4"
             html_rows.append("<tr>" + "".join(f"<{tag} class=\"{cls}\">{inline(c)}</{tag}>" for c in cells) + "</tr>")
@@ -180,21 +192,61 @@ def build_curriculum_cards() -> str:
     return "\n".join(cards)
 
 
+def build_war_stories_html() -> str:
+    cards = []
+    for title, sev, impact, metrics, jfr, root, fix, lesson in WAR_STORY_DETAILS:
+        sev_color = "text-red-400" if sev == "SEV1" else "text-amber-400"
+        cards.append(f'''
+            <div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">{html.escape(title)}</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 {sev_color} rounded">{html.escape(sev)}</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-3"><strong>Impact:</strong> {html.escape(impact)}</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-amber-400 font-medium">Metrics/Logs:</span> {html.escape(metrics)}</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-amber-400 font-medium">JFR evidence:</span> {html.escape(jfr)}</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> {html.escape(root)}</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> {html.escape(fix)}</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: {html.escape(lesson)}</p>
+            </div>''')
+    return "\n".join(cards)
+
+
 def build_detailed_modules(md: str) -> str:
     sections = []
     for i, (_, title, _) in enumerate(MODULE_TITLES, 1):
         content = extract_module(i, md)
+        content = re.sub(r'<hr class="border-slate-700 my-8">', "", content)
+        if i == 18:
+            content = re.sub(
+                r"<p class=\"text-slate-300 mb-4\">\(20 detailed.*?</ul>",
+                "",
+                content,
+                flags=re.DOTALL,
+            )
+            content += build_war_stories_html()
+        enrich = MODULE_ENRICHMENTS.get(i, "")
         sections.append(f'''
             <div id="module-{i}" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
                 <div class="flex items-center gap-x-4 mb-6">
                     <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE {i}</span>
                     <h3 class="text-3xl font-bold tracking-tight">{html.escape(title)}</h3>
                 </div>
-                <div class="lesson-content">{content}</div>
+                <div class="lesson-content">{content}{enrich}</div>
             </div>''')
     bonus_html = ""
-    for title, desc in BONUS:
-        bonus_html += f'<div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl mb-4"><h4 class="font-semibold text-amber-400">{html.escape(title)}</h4><p class="text-sm text-slate-400 mt-2">{html.escape(desc)}</p></div>'
+    bonus_details = [
+        ("Tune -Xmx from allocation rate trends in JFR", "Size thread pools from actual Runnable vs Waiting ratio", "Set HikariCP maxPoolSize from connection wait events"),
+        ("Run settings=default continuously with maxage=1h", "Dump on alert via webhook + jcmd sidecar", "Store .jfr in object storage for trend analysis"),
+        ("Export event summary to JSON for LLM input", "Prompt: summarize hot methods, GC, and lock contention", "Generate draft RCA for human review — never auto-close incidents"),
+    ]
+    for (title, desc), details in zip(BONUS, bonus_details):
+        items = "".join(f"<li class=\"mb-1\">{html.escape(d)}</li>" for d in details)
+        bonus_html += f'''<div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl mb-4">
+            <h4 class="font-semibold text-amber-400">{html.escape(title)}</h4>
+            <p class="text-sm text-slate-400 mt-2 mb-3">{html.escape(desc)}</p>
+            <ul class="list-disc pl-5 text-sm text-slate-300">{items}</ul>
+        </div>'''
     sections.append(f'''
         <div id="bonus-modules" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
             <div class="flex items-center gap-x-4 mb-6">
@@ -209,11 +261,44 @@ def build_detailed_modules(md: str) -> str:
 def build_labs() -> str:
     items = []
     for i, (title, desc) in enumerate(LABS, 1):
+        sim = ""
+        if i <= 3:
+            sim = f'''<button onclick="simulateLab({i})" class="self-start px-5 py-2 text-sm font-medium bg-amber-600 hover:bg-amber-500 rounded-2xl flex items-center gap-x-2">
+                <i class="fa-solid fa-play"></i><span>Simulate</span></button>'''
         items.append(f'''
             <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
-                <span class="font-mono text-xs bg-amber-900 text-amber-300 px-2.5 py-px rounded">LAB {i}</span>
-                <h4 class="font-semibold text-xl mt-2">{html.escape(title)}</h4>
-                <p class="text-sm text-slate-400 mt-1">{html.escape(desc)}</p>
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-amber-900 text-amber-300 px-2.5 py-px rounded">LAB {i}</span>
+                        <h4 class="font-semibold text-xl mt-2">{html.escape(title)}</h4>
+                        <p class="text-sm text-slate-400 mt-1">{html.escape(desc)}</p>
+                    </div>
+                    {sim}
+                </div>
+            </div>''')
+    return "\n".join(items)
+
+
+def build_interview_section() -> str:
+    items = []
+    for i, (q, a) in enumerate(INTERVIEW_QUESTIONS, 1):
+        items.append(f'''
+            <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="text-amber-400 text-xs font-mono mb-2">Q{i}</div>
+                <p class="font-medium mb-2">{html.escape(q)}</p>
+                <p class="text-sm text-slate-400">{html.escape(a)}</p>
+            </div>''')
+    return "\n".join(items)
+
+
+def build_flowcharts_section() -> str:
+    items = []
+    for title, steps in FLOWCHARTS:
+        flow = " → ".join(html.escape(s) for s in steps)
+        items.append(f'''
+            <div class="p-5 bg-slate-900 border border-slate-700 rounded-2xl">
+                <h4 class="font-semibold text-amber-400 mb-3">{html.escape(title)}</h4>
+                <p class="text-sm text-slate-300 leading-relaxed">{flow}</p>
             </div>''')
     return "\n".join(items)
 
@@ -223,7 +308,6 @@ def build_war_stories() -> str:
 
 
 def build_quiz_js() -> str:
-    import json
     return json.dumps([{"q": q, "options": o, "answer": a, "explanation": e} for q, o, a, e in QUIZ])
 
 
@@ -269,6 +353,7 @@ def main():
                 <a href="#labs" class="nav-link text-slate-300">Labs</a>
                 <a href="#quiz" class="nav-link text-slate-300">Quiz</a>
                 <a href="#cheatsheet" class="nav-link text-slate-300">Cheat Sheet</a>
+                <a href="#interview" class="nav-link text-slate-300">Interview</a>
                 <a href="../../index.html" class="text-slate-500 hover:text-white text-xs">← Academy</a>
             </div>
             <button class="md:hidden text-slate-400" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars text-xl"></i></button>
@@ -276,20 +361,34 @@ def main():
     </nav>
 
     <div class="max-w-screen-2xl mx-auto pt-16 pb-20 px-8">
-        <div class="max-w-3xl">
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 text-amber-400 rounded-full text-xs font-medium mb-6">
-                <i class="fa-solid fa-shield-halved"></i> COURSE 2 · JVM OBSERVABILITY
+        <div class="grid md:grid-cols-12 gap-12 items-center">
+            <div class="md:col-span-7">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 text-amber-400 rounded-full text-xs font-medium mb-6">
+                    <i class="fa-solid fa-shield-halved"></i> FOR SREs &amp; PLATFORM ENGINEERS
+                </div>
+                <h1 class="text-5xl md:text-6xl font-display font-bold tracking-tight mb-4">Master <span class="text-amber-500">Java Flight Recorder</span></h1>
+                <p class="text-xl text-slate-400 mb-8 max-w-lg">Production-grade JVM diagnostics — CPU, memory, GC, locks, JDBC, Kafka, and Kubernetes. The definitive low-overhead profiler built into the JDK.</p>
+                <div class="flex flex-wrap gap-4 mb-8">
+                    <button onclick="startCourse()" class="px-8 py-3.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold rounded-3xl flex items-center gap-2">
+                        <i class="fa-solid fa-play"></i> Start Learning
+                    </button>
+                    <button onclick="document.getElementById('curriculum').scrollIntoView({{behavior:'smooth'}})" class="px-6 py-3.5 border border-slate-700 rounded-3xl">Browse Curriculum</button>
+                </div>
             </div>
-            <h1 class="text-5xl md:text-6xl font-display font-bold tracking-tight mb-4">Master <span class="text-amber-500">Java Flight Recorder</span></h1>
-            <p class="text-xl text-slate-400 mb-8">Low-overhead production profiling for CPU, memory, GC, locks, databases, Kafka, and Kubernetes — the SRE playbook for JVM incidents.</p>
-            <div class="flex flex-wrap gap-4 mb-12">
-                <button onclick="document.getElementById('module-1').scrollIntoView({{behavior:'smooth'}})" class="px-8 py-3.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold rounded-3xl">Start Module 1</button>
-                <button onclick="document.getElementById('curriculum').scrollIntoView({{behavior:'smooth'}})" class="px-6 py-3.5 border border-slate-700 rounded-3xl">Browse Curriculum</button>
-            </div>
-            <div class="grid grid-cols-3 gap-4 max-w-md">
-                <div class="text-center p-4 bg-slate-900 rounded-2xl border border-slate-800"><div class="text-3xl font-bold text-amber-400">20</div><div class="text-xs text-slate-500 mt-1">Modules</div></div>
-                <div class="text-center p-4 bg-slate-900 rounded-2xl border border-slate-800"><div class="text-3xl font-bold text-amber-400">7</div><div class="text-xs text-slate-500 mt-1">Labs</div></div>
-                <div class="text-center p-4 bg-slate-900 rounded-2xl border border-slate-800"><div class="text-3xl font-bold text-amber-400">&lt;1%</div><div class="text-xs text-slate-500 mt-1">Overhead</div></div>
+            <div class="md:col-span-5">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8">
+                    <div class="grid grid-cols-3 gap-4 text-center mb-6">
+                        <div><div class="text-3xl font-bold text-amber-400">20</div><div class="text-xs text-slate-500 mt-1">Modules</div></div>
+                        <div><div class="text-3xl font-bold text-amber-400">8</div><div class="text-xs text-slate-500 mt-1">War Stories</div></div>
+                        <div><div class="text-3xl font-bold text-amber-400">7</div><div class="text-xs text-slate-500 mt-1">Labs</div></div>
+                    </div>
+                    <div class="border-t border-slate-800 pt-4 space-y-3 text-sm">
+                        <div class="flex gap-2"><i class="fa-solid fa-check text-amber-400"></i><span>jcmd + JMC production playbooks</span></div>
+                        <div class="flex gap-2"><i class="fa-solid fa-check text-amber-400"></i><span>Spring Boot, Kafka, K8s workflows</span></div>
+                        <div class="flex gap-2"><i class="fa-solid fa-check text-amber-400"></i><span>8 detailed incident war stories</span></div>
+                        <div class="flex gap-2"><i class="fa-solid fa-check text-amber-400"></i><span>Interview prep + troubleshooting flows</span></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -323,24 +422,45 @@ def main():
     </div>
 
     <div id="labs" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
-        <h2 class="section-header mb-8">Hands-on Labs</h2>
-        <div class="max-w-3xl mx-auto space-y-4">{build_labs()}</div>
+        <span class="text-amber-400 font-semibold text-sm">PRACTICAL EXPERIENCE</span>
+        <h2 class="section-header mt-2 mb-8">Hands-on Labs</h2>
+        <div class="max-w-4xl mx-auto space-y-4">{build_labs()}</div>
+        <p class="text-center text-xs text-slate-500 mt-6 max-w-2xl mx-auto">Labs 1–3 include interactive simulations. Labs 4–7 are designed for hands-on practice in your own JVM or Kubernetes environment.</p>
     </div>
 
     <div id="quiz" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800 bg-slate-900">
-        <div class="max-w-2xl mx-auto text-center">
-            <h2 class="section-header mb-2">JFR Knowledge Quiz</h2>
+        <div class="max-w-3xl mx-auto text-center">
+            <span class="text-amber-400 font-semibold">TEST YOUR KNOWLEDGE</span>
+            <h2 class="section-header mt-2 mb-2">Interactive JFR Quiz</h2>
             <p class="text-slate-400 mb-8">10 questions · Instant feedback</p>
-            <div id="quiz-start" class="bg-slate-950 border border-slate-700 rounded-3xl p-8">
-                <button onclick="startQuiz()" class="px-10 py-3 bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold rounded-3xl">Start Quiz</button>
-            </div>
-            <div id="quiz-questions" class="hidden bg-slate-950 border border-slate-700 rounded-3xl p-8 text-left"></div>
-            <div id="quiz-results" class="hidden bg-slate-950 border border-slate-700 rounded-3xl p-8">
-                <div id="quiz-score" class="text-5xl font-bold text-amber-400 mb-4"></div>
-                <p id="quiz-feedback" class="text-slate-300 mb-6"></p>
-                <button onclick="restartQuiz()" class="px-6 py-2 border border-slate-600 rounded-2xl">Try Again</button>
+            <div id="quiz-container" class="bg-slate-950 border border-slate-700 rounded-3xl p-8">
+                <div id="quiz-start">
+                    <i class="fa-solid fa-question-circle text-6xl text-amber-600 mb-6"></i>
+                    <h3 class="text-2xl font-semibold mb-2">Ready to test your JFR expertise?</h3>
+                    <p class="text-slate-400 mb-8 max-w-md mx-auto">Covers jcmd, JMC, GC, locks, Kubernetes capture, and tool selection.</p>
+                    <button onclick="startQuiz()" class="px-10 py-3.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold rounded-3xl text-lg">Start Quiz</button>
+                </div>
+                <div id="quiz-questions" class="hidden text-left"></div>
+                <div id="quiz-results" class="hidden py-6">
+                    <div id="quiz-score" class="text-6xl font-bold text-amber-400 mb-2"></div>
+                    <div class="text-xl font-semibold mb-6">Your Score</div>
+                    <p id="quiz-feedback" class="max-w-md mx-auto text-slate-300 mb-8"></p>
+                    <button onclick="restartQuiz()" class="px-8 py-2.5 border border-slate-600 hover:bg-slate-800 rounded-2xl text-sm">Try Again</button>
+                </div>
             </div>
         </div>
+    </div>
+
+    <div id="interview" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <span class="text-amber-400 font-semibold text-sm">INTERVIEW PREP</span>
+        <h2 class="section-header mt-2 mb-8">Common Interview Questions</h2>
+        <div class="max-w-3xl mx-auto grid gap-4">{build_interview_section()}</div>
+    </div>
+
+    <div id="flowcharts" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800 bg-slate-900/30">
+        <span class="text-amber-400 font-semibold text-sm">TROUBLESHOOTING</span>
+        <h2 class="section-header mt-2 mb-8">Investigation Flowcharts</h2>
+        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-4">{build_flowcharts_section()}</div>
     </div>
 
     <div id="cheatsheet" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
@@ -394,11 +514,46 @@ def main():
     <script>
         const quizData = {quiz_data};
 
+        function startCourse() {{
+            document.getElementById('curriculum').scrollIntoView({{ behavior: 'smooth' }});
+            showToast('Welcome! Explore 20 modules, 8 war stories, labs, and the production cheat sheet.');
+        }}
+
+        function showToast(message) {{
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 border border-slate-700 px-6 py-3.5 rounded-3xl flex items-center gap-3 shadow-2xl z-[70]';
+            toast.innerHTML = '<i class="fa-solid fa-check-circle text-amber-400"></i><span class="text-sm">' + message + '</span>';
+            document.body.appendChild(toast);
+            setTimeout(() => {{ toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }}, 4000);
+        }}
+
         function toggleMobileMenu() {{
             const m = document.createElement('div');
             m.className = 'md:hidden fixed inset-0 bg-slate-950/95 z-[60] p-8';
-            m.innerHTML = '<button onclick="this.parentElement.remove()" class="text-3xl mb-8">×</button><div class="flex flex-col gap-4 text-xl"><a href="#curriculum">Curriculum</a><a href="#labs">Labs</a><a href="#quiz">Quiz</a><a href="#cheatsheet">Cheat Sheet</a><a href="../../index.html">Academy Home</a></div>';
+            m.innerHTML = '<button onclick="this.parentElement.remove()" class="text-3xl mb-8">×</button><div class="flex flex-col gap-4 text-xl"><a href="#curriculum">Curriculum</a><a href="#labs">Labs</a><a href="#quiz">Quiz</a><a href="#cheatsheet">Cheat Sheet</a><a href="#interview">Interview</a><a href="../../index.html">Academy Home</a></div>';
             document.body.appendChild(m);
+        }}
+
+        function simulateLab(n) {{
+            const labs = {{
+                1: {{ title: 'Lab 1: Capture JFR from Spring Boot', output: 'jcmd 18472 JFR.start name=SpringBoot duration=300s filename=/tmp/checkout.jfr settings=profile\\nStarted recording 1. No events currently enabled.', insight: 'Recording started on PID 18472. After 5 minutes, open /tmp/checkout.jfr in JMC.' }},
+                2: {{ title: 'Lab 2: CPU Flame Graph', output: 'JMC Automated Analysis:\\n  Problem: Method com.acme.JsonUtil.serialize consumes 38.2% of CPU\\n  Recommendation: Review hot path allocation and caching', insight: 'Flame graph shows serialization dominating CPU — typical during traffic spikes.' }},
+                3: {{ title: 'Lab 3: Memory Leak Before OOM', output: 'Top allocations (60s window):\\n  java.util.concurrent.ConcurrentHashMap$Node  1.8 GB\\n  com.acme.cache.SessionEntry                   1.2 GB', insight: 'Growing SessionEntry count in ConcurrentHashMap — leak before heap exhaustion.' }}
+            }};
+            const lab = labs[n];
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-[80] p-6';
+            modal.innerHTML = `<div class="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-3xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-700 flex justify-between bg-slate-950">
+                    <span class="font-semibold">${{lab.title}}</span>
+                    <button onclick="this.closest('.fixed').remove()" class="text-xl">×</button>
+                </div>
+                <div class="p-6 text-sm">
+                    <pre class="jfr-output rounded-2xl mb-4 text-xs">${{lab.output}}</pre>
+                    <div class="bg-amber-950/30 border border-amber-900 p-4 rounded-2xl text-xs"><strong class="text-amber-400">SRE insight:</strong> ${{lab.insight}}</div>
+                    <button onclick="this.closest('.fixed').remove()" class="mt-5 w-full py-2.5 bg-amber-600 rounded-2xl font-medium">Close</button>
+                </div></div>`;
+            document.body.appendChild(modal);
         }}
 
         document.getElementById('search-input')?.addEventListener('input', function() {{
@@ -418,22 +573,33 @@ def main():
         }}
         function showQ() {{
             const q = quizData[cq];
+            const pct = Math.round((cq / quizData.length) * 100);
             document.getElementById('quiz-questions').innerHTML = `
-                <div class="mb-4 text-amber-400 text-sm font-medium">Question ${{cq+1}} / ${{quizData.length}}</div>
+                <div class="mb-6">
+                    <div class="flex justify-between text-xs mb-1.5"><span class="text-amber-400 font-medium">QUESTION ${{cq+1}} / ${{quizData.length}}</span><span class="text-slate-400">${{pct}}% complete</span></div>
+                    <div class="h-1.5 bg-slate-800 rounded-full"><div class="h-1.5 bg-amber-500 rounded-full" style="width:${{pct}}%"></div></div>
+                </div>
                 <div class="text-xl font-semibold mb-6">${{q.q}}</div>
-                <div class="space-y-3">${{q.options.map((o,i) => `<button onclick="answer(${{i}})" class="w-full text-left px-5 py-3 border border-slate-700 hover:border-amber-600 rounded-2xl">${{String.fromCharCode(65+i)}}. ${{o}}</button>`).join('')}}</div>`;
+                <div class="space-y-3" id="quiz-options">${{q.options.map((o,i) => `<button onclick="answer(${{i}})" class="quiz-option w-full text-left px-5 py-3.5 border border-slate-700 hover:border-amber-600 rounded-2xl flex gap-3"><span class="w-6 h-6 rounded-full border border-slate-600 flex items-center justify-center text-xs">${{String.fromCharCode(65+i)}}</span>${{o}}</button>`).join('')}}</div>`;
         }}
         function answer(i) {{
-            if (i === quizData[cq].answer) score++;
-            cq++;
-            if (cq < quizData.length) showQ();
-            else {{
-                document.getElementById('quiz-questions').classList.add('hidden');
-                document.getElementById('quiz-results').classList.remove('hidden');
-                const pct = Math.round(score/quizData.length*100);
-                document.getElementById('quiz-score').textContent = pct + '%';
-                document.getElementById('quiz-feedback').textContent = pct >= 80 ? 'Excellent JFR knowledge!' : pct >= 60 ? 'Good foundation — review GC and lock modules.' : 'Review Modules 1–6 and the cheat sheet.';
-            }}
+            const q = quizData[cq];
+            const correct = i === q.answer;
+            if (correct) score++;
+            document.querySelectorAll('.quiz-option').forEach((btn, idx) => {{
+                btn.disabled = true;
+                if (idx === q.answer) btn.classList.add('!border-amber-500', 'bg-amber-900/30');
+                else if (idx === i && !correct) btn.classList.add('!border-red-500', 'bg-red-900/20');
+            }});
+            setTimeout(() => {{ cq++; if (cq < quizData.length) showQ(); else showResults(); }}, 1200);
+        }}
+        function showResults() {{
+            document.getElementById('quiz-questions').classList.add('hidden');
+            document.getElementById('quiz-results').classList.remove('hidden');
+            const pct = Math.round(score / quizData.length * 100);
+            document.getElementById('quiz-score').innerHTML = pct + '<span class="text-3xl">%</span>';
+            let fb = pct >= 90 ? 'Excellent! You are ready for production JFR incidents.' : pct >= 70 ? 'Strong foundation. Review war stories and Kubernetes module.' : pct >= 50 ? 'Review Modules 4–11 and practice jcmd commands.' : 'Start with Modules 1–6 and the cheat sheet.';
+            document.getElementById('quiz-feedback').textContent = fb;
         }}
         function restartQuiz() {{
             document.getElementById('quiz-results').classList.add('hidden');
@@ -445,7 +611,8 @@ def main():
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUT_PATH.write_text(page, encoding="utf-8")
-    print(f"Wrote {{OUT_PATH}} ({{len(page.splitlines())}} lines)")
+    line_count = len(page.splitlines())
+    print(f"Wrote {OUT_PATH} ({line_count} lines)")
 
 
 if __name__ == "__main__":
