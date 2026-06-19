@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 01: Introduction to SRE</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="../index.html">
+        <span class="brand-icon">SRE</span>
+        <span>SRE Fundamentals</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu">Menu</button>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../index.html#modules">Modules</a></li>
+        <li><a href="https://github.com/ManjuReddyT/sre-pages" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="lesson container">
+    <header class="lesson-header">
+      <span class="module-num">Module 01</span>
+      <h1>Introduction to Site Reliability Engineering</h1>
+      <p>Understand what SRE is, why it exists, and the mindset shift from reactive ops to engineering reliability.</p>
+    </header>
+
+    <article class="lesson-content">
+      <h2>What is SRE?</h2>
+      <p>
+        Site Reliability Engineering (SRE) is what happens when you treat operations as a software problem.
+        Instead of manually keeping systems running, SRE teams use software engineering practices — automation,
+        monitoring, and rigorous design — to build and maintain large-scale, reliable services.
+      </p>
+      <p>
+        The discipline was pioneered at Google and codified in the <em>Site Reliability Engineering</em> book.
+        Today, SRE practices are used across cloud-native companies of every size.
+      </p>
+
+      <h2>SRE vs. Traditional Operations</h2>
+      <ul>
+        <li><strong>Proactive vs. reactive</strong> — SREs design for failure before it happens.</li>
+        <li><strong>Engineering vs. ticket-driven</strong> — At least 50% of SRE time should go to engineering work, not manual toil.</li>
+        <li><strong>Data-driven</strong> — Reliability decisions are backed by SLIs and SLOs, not gut feel.</li>
+        <li><strong>Shared ownership</strong> — Development and operations collaborate on reliability, not throw problems over a wall.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Key principle</strong>
+        SRE is not a job title — it's a set of principles and practices that any engineering team can adopt.
+      </div>
+
+      <h2>The SRE Mindset</h2>
+      <ol>
+        <li><strong>Embrace risk</strong> — 100% uptime is impossible and expensive. Define how much unreliability is acceptable.</li>
+        <li><strong>Automate everything repetitive</strong> — If you do it more than twice, script it.</li>
+        <li><strong>Measure what users feel</strong> — Internal metrics matter less than user-facing reliability.</li>
+        <li><strong>Learn from failure</strong> — Every incident is a chance to make the system more resilient.</li>
+      </ol>
+
+      <h2>Core SRE Practices</h2>
+      <ul>
+        <li>Service Level Objectives (SLOs) and error budgets</li>
+        <li>On-call rotations with clear escalation paths</li>
+        <li>Blameless postmortems after incidents</li>
+        <li>Capacity planning and load testing</li>
+        <li>Progressive rollouts and feature flags</li>
+        <li>Runbooks and automated remediation</li>
+      </ul>
+
+      <h2>Who Should Learn SRE?</h2>
+      <p>
+        This course is designed for software engineers, DevOps practitioners, platform engineers,
+        and anyone responsible for keeping production systems healthy. Basic familiarity with
+        Linux, networking, and at least one programming language is helpful but not required.
+      </p>
+
+      <div class="callout success">
+        <strong>Up next</strong>
+        Module 2 dives into SLIs, SLOs, and error budgets — the foundation of every SRE program.
+      </div>
+    </article>
+
+    <nav class="lesson-nav">
+      <a href="../index.html">← Back to course</a>
+      <a href="02-slos.html">Module 2: SLIs &amp; SLOs →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© 2026 SRE Fundamentals</span>
+      <a href="https://github.com/ManjuReddyT/sre-pages">View source</a>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

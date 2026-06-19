@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 04: Incident Response</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="../index.html">
+        <span class="brand-icon">SRE</span>
+        <span>SRE Fundamentals</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu">Menu</button>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../index.html#modules">Modules</a></li>
+        <li><a href="https://github.com/ManjuReddyT/sre-pages" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="lesson container">
+    <header class="lesson-header">
+      <span class="module-num">Module 04</span>
+      <h1>Incident Response</h1>
+      <p>Respond to outages with clear roles, fast communication, and structured learning afterward.</p>
+    </header>
+
+    <article class="lesson-content">
+      <h2>Incident Severity Levels</h2>
+      <ul>
+        <li><strong>SEV1</strong> — Complete outage or data loss affecting all users. All-hands response.</li>
+        <li><strong>SEV2</strong> — Major degradation affecting a significant user segment.</li>
+        <li><strong>SEV3</strong> — Minor impact, workaround available. Business-hours response.</li>
+        <li><strong>SEV4</strong> — Low impact, tracked but not urgent.</li>
+      </ul>
+
+      <h2>Incident Roles</h2>
+      <ul>
+        <li><strong>Incident Commander (IC)</strong> — Coordinates response, makes decisions, shields responders from distractions.</li>
+        <li><strong>Operations Lead</strong> — Drives technical investigation and remediation.</li>
+        <li><strong>Communications Lead</strong> — Updates stakeholders, status page, and support teams.</li>
+        <li><strong>Scribe</strong> — Documents timeline, actions, and decisions in real time.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>One person, one role</strong>
+        Don't let the IC also debug the system. Separation keeps coordination clear under pressure.
+      </div>
+
+      <h2>Response Workflow</h2>
+      <ol>
+        <li><strong>Detect</strong> — Alert fires or user report arrives.</li>
+        <li><strong>Triage</strong> — Assess severity, assign IC, open incident channel.</li>
+        <li><strong>Mitigate</strong> — Restore service first (rollback, failover, scale up). Root cause can wait.</li>
+        <li><strong>Resolve</strong> — Confirm recovery, monitor for recurrence.</li>
+        <li><strong>Postmortem</strong> — Blameless review within 48 hours.</li>
+      </ol>
+
+      <h2>Communication Template</h2>
+      <pre><code>INCIDENT UPDATE — SEV2 — [Service Name]
+Status:   Investigating | Mitigating | Resolved
+Impact:   [Who is affected and how]
+Started:  [Time UTC]
+Actions:  [What we're doing now]
+Next update: [Time]</code></pre>
+
+      <h2>Blameless Postmortems</h2>
+      <p>The goal is to learn, not to punish. A good postmortem includes:</p>
+      <ul>
+        <li><strong>Timeline</strong> — What happened, minute by minute</li>
+        <li><strong>Root cause</strong> — The systemic reason, not "human error"</li>
+        <li><strong>Impact</strong> — Users affected, duration, SLO budget consumed</li>
+        <li><strong>What went well</strong> — Celebrate effective responses</li>
+        <li><strong>Action items</strong> — Specific, assigned, with due dates</li>
+      </ul>
+
+      <div class="callout success">
+        <strong>Remember</strong>
+        Humans make mistakes because systems allowed them to. Fix the system, not the person.
+      </div>
+    </article>
+
+    <nav class="lesson-nav">
+      <a href="03-observability.html">← Module 3</a>
+      <a href="05-capacity.html">Module 5: Capacity &amp; Performance →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© 2026 SRE Fundamentals</span>
+      <a href="https://github.com/ManjuReddyT/sre-pages">View source</a>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
