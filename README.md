@@ -1,28 +1,31 @@
-# SRE Fundamentals
+# SRE Pages Academy
 
-A free, self-paced Site Reliability Engineering course hosted on GitHub Pages.
+Hands-on SRE training courses hosted on GitHub Pages.
 
 **Live site:** [manjureddyt.github.io/sre-pages](https://manjureddyt.github.io/sre-pages/)
 
-## Course modules
+## Courses
 
-1. Introduction to SRE
-2. SLIs, SLOs & Error Budgets
-3. Observability
-4. Incident Response
-5. Capacity & Performance
-6. Automation & Toil
+### Course 1 — Master Linux System Call Tracing (strace)
 
-## Local development
+A production-focused strace course for SREs and platform engineers:
 
-Open `index.html` in a browser, or serve locally:
+- 14 detailed modules (ptrace, syscalls, Kubernetes, Java, futex, war stories)
+- Hands-on lab simulations
+- Interactive 10-question quiz
+- Production cheat sheet
+
+Source: `index.html`
+
+## Local preview
 
 ```bash
+cd sre-pages
 python -m http.server 8000
 ```
 
-Then visit `http://localhost:8000`.
+Open [http://localhost:8000](http://localhost:8000).
 
 ## Deploy
 
-Push to `main` — GitHub Pages serves the site automatically from the repo root.
+Push to `main` — GitHub Pages serves `index.html` from the repo root.
