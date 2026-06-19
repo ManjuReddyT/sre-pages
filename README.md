@@ -6,16 +6,15 @@ Hands-on SRE training courses hosted on GitHub Pages.
 
 ## Courses
 
-### Course 1 — Master Linux System Call Tracing (strace)
+| # | Course | Path | Topics |
+|---|--------|------|--------|
+| 1 | **strace Academy** | [courses/strace/](courses/strace/index.html) | Linux syscall tracing, Kubernetes, futex, war stories |
+| 2 | **Java Flight Recorder (JFR)** | [courses/jfr/](courses/jfr/index.html) | JVM profiling, GC, memory leaks, Spring Boot, Kafka |
 
-A production-focused strace course for SREs and platform engineers:
+## Source content
 
-- 14 detailed modules (ptrace, syscalls, Kubernetes, Java, futex, war stories)
-- Hands-on lab simulations
-- Interactive 10-question quiz
-- Production cheat sheet
-
-Source: `index.html`
+- JFR course markdown: [content/sre-jfr-training-course.md](content/sre-jfr-training-course.md)
+- JFR HTML generator: `python scripts/build_jfr_course.py`
 
 ## Local preview
 
@@ -24,8 +23,8 @@ cd sre-pages
 python -m http.server 8000
 ```
 
-Open [http://localhost:8000](http://localhost:8000).
+Open [http://localhost:8000](http://localhost:8000) for the academy hub.
 
 ## Deploy
 
-Push to `main` — GitHub Pages serves `index.html` from the repo root.
+Push to `main` — GitHub Pages serves from the repo root.

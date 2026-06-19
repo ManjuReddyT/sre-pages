@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JFR SRE Academy • Master Java Flight Recorder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
+        :root { --primary: #f59e0b; }
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .font-display { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 600; }
+        .section-header { font-size: 2.25rem; line-height: 2.5rem; font-weight: 700; letter-spacing: -0.025em; }
+        .module-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .module-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .jfr-code, .jfr-output code { font-family: ui-monospace, Consolas, monospace; }
+        .jfr-code { background: #0f172a; padding: 2px 6px; border-radius: 4px; font-size: 0.875rem; }
+        .jfr-output { background: #020617; color: #e0e7ff; padding: 1rem; border-radius: 0 0 0.5rem 0.5rem; overflow-x: auto; font-size: 0.875rem; border: 1px solid #334155; white-space: pre-wrap; }
+        .code-header { background: #1e2937; padding: 0.5rem 1rem; border-radius: 0.5rem 0.5rem 0 0; font-size: 0.75rem; color: #64748b; }
+        .jfr-badge { background: #78350f; color: #fcd34d; font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px; font-weight: 500; }
+        .module-section { scroll-margin-top: 80px; }
+        .lesson-content h3 { font-size: 1.25rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .nav-link:hover { color: #f59e0b; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-screen-2xl mx-auto px-8 py-4 flex items-center justify-between">
+            <a href="../../index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center"><i class="fa-brands fa-java text-white text-2xl"></i></div>
+                <div><span class="font-display text-2xl font-semibold">JFR</span><span class="font-display text-2xl text-amber-500">SRE</span></div>
+            </a>
+            <div class="hidden md:flex items-center gap-8 text-sm">
+                <a href="#curriculum" class="nav-link text-slate-300">Curriculum</a>
+                <a href="#labs" class="nav-link text-slate-300">Labs</a>
+                <a href="#quiz" class="nav-link text-slate-300">Quiz</a>
+                <a href="#cheatsheet" class="nav-link text-slate-300">Cheat Sheet</a>
+                <a href="../../index.html" class="text-slate-500 hover:text-white text-xs">← Academy</a>
+            </div>
+            <button class="md:hidden text-slate-400" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars text-xl"></i></button>
+        </div>
+    </nav>
+
+    <div class="max-w-screen-2xl mx-auto pt-16 pb-20 px-8">
+        <div class="max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 text-amber-400 rounded-full text-xs font-medium mb-6">
+                <i class="fa-solid fa-shield-halved"></i> COURSE 2 · JVM OBSERVABILITY
+            </div>
+            <h1 class="text-5xl md:text-6xl font-display font-bold tracking-tight mb-4">Master <span class="text-amber-500">Java Flight Recorder</span></h1>
+            <p class="text-xl text-slate-400 mb-8">Low-overhead production profiling for CPU, memory, GC, locks, databases, Kafka, and Kubernetes — the SRE playbook for JVM incidents.</p>
+            <div class="flex flex-wrap gap-4 mb-12">
+                <button onclick="document.getElementById('module-1').scrollIntoView({behavior:'smooth'})" class="px-8 py-3.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold rounded-3xl">Start Module 1</button>
+                <button onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})" class="px-6 py-3.5 border border-slate-700 rounded-3xl">Browse Curriculum</button>
+            </div>
+            <div class="grid grid-cols-3 gap-4 max-w-md">
+                <div class="text-center p-4 bg-slate-900 rounded-2xl border border-slate-800"><div class="text-3xl font-bold text-amber-400">20</div><div class="text-xs text-slate-500 mt-1">Modules</div></div>
+                <div class="text-center p-4 bg-slate-900 rounded-2xl border border-slate-800"><div class="text-3xl font-bold text-amber-400">7</div><div class="text-xs text-slate-500 mt-1">Labs</div></div>
+                <div class="text-center p-4 bg-slate-900 rounded-2xl border border-slate-800"><div class="text-3xl font-bold text-amber-400">&lt;1%</div><div class="text-xs text-slate-500 mt-1">Overhead</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-screen-2xl mx-auto px-8 py-12 border-t border-slate-800">
+        <h2 class="section-header mb-4">When metrics and logs aren't enough</h2>
+        <p class="text-slate-400 max-w-2xl mb-8">Metrics tell you <strong class="text-white">what</strong>. Logs tell you <strong class="text-white">when</strong>. JFR tells you <strong class="text-amber-400">why</strong> — inside the JVM at the moment of the incident.</p>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6"><i class="fa-solid fa-microchip text-amber-400 text-2xl mb-3"></i><h3 class="font-semibold text-lg mb-2">CPU Spikes</h3><p class="text-sm text-slate-400">Hot methods, JIT storms, infinite loops — flame graphs from production.</p></div>
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6"><i class="fa-solid fa-memory text-amber-400 text-2xl mb-3"></i><h3 class="font-semibold text-lg mb-2">Memory Leaks</h3><p class="text-sm text-slate-400">Allocation hotspots before OOMKill — find leaking classes early.</p></div>
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6"><i class="fa-brands fa-docker text-amber-400 text-2xl mb-3"></i><h3 class="font-semibold text-lg mb-2">Kubernetes</h3><p class="text-sm text-slate-400">Capture JFR from pods with ephemeral containers and kubectl workflows.</p></div>
+        </div>
+    </div>
+
+    <div id="curriculum" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <span class="text-amber-400 text-sm font-semibold">20 MODULES + 3 BONUS</span>
+        <h2 class="section-header mt-2 mb-8">Complete Curriculum</h2>
+        <div class="relative hidden md:block mb-6 w-64">
+            <input type="text" id="search-input" placeholder="Search modules..." class="w-full bg-slate-900 border border-slate-700 rounded-2xl py-2.5 pl-10 pr-4 text-sm focus:border-amber-600 focus:outline-none">
+            <i class="fa-solid fa-search absolute left-4 top-3 text-slate-500"></i>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div onclick="document.getElementById('module-1').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 1</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Introduction to JFR</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">What JFR is, architecture, and how it differs from other JVM tools.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-2').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 2</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Why Every SRE Should Learn JFR</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Metrics show what; logs show when; JFR shows why inside the JVM.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-3').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 3</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">JVM Internals Required for JFR</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Heap, metaspace, GC, safepoints, JIT, and TLAB fundamentals.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-4').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 4</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Capturing JFR Recordings</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">jcmd, startup flags, emergency capture during incidents.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-5').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 5</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Understanding JFR Events</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">CPU, memory, GC, threads, I/O, and exception event categories.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-6').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 6</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Using Java Mission Control (JMC)</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Automated analysis, flame graphs, locks, and memory views.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-7').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 7</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">CPU Troubleshooting with JFR</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Hot methods, JIT storms, and CPU spike investigation.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-8').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 8</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Memory Leak Analysis</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Allocation hotspots, TLAB events, and leak patterns.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-9').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 9</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Garbage Collection Analysis</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Pause times, promotion failures, and GC tuning signals.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-10').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 10</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Thread Analysis</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Runnable, blocked, waiting states and pool starvation.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-11').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 11</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Lock Contention Analysis</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">JavaMonitorEnter, ThreadPark, and contended locks.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-12').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 12</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Database Troubleshooting</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">JDBC latency, connection pool exhaustion, HikariCP.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-13').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 13</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">API Latency Investigation</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">End-to-end JVM time breakdown for slow requests.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-14').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 14</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Exception Analysis</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">ExceptionThrow storms and hidden retry loops.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-15').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 15</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Kubernetes and JFR</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">kubectl exec, ephemeral containers, OOMKilled pods.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-16').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 16</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">JFR and Spring Boot</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Controllers, Jackson, @Async, and startup bottlenecks.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-17').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 17</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">Kafka Troubleshooting with JFR</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Deserialization, rebalance storms, producer latency.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-18').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 18</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">SRE Incident War Stories</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Real production incidents solved with JFR evidence.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-19').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 19</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">JFR vs Other Tools</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Decision tree: JFR vs async-profiler, jstack, perf, heap dumps.</p>
+            </div>
+
+            <div onclick="document.getElementById('module-20').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="jfr-badge">Module 20</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-amber-400 transition">SRE Production Playbook</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Incident response flow and emergency JFR commands.</p>
+            </div></div>
+    </div>
+
+    <div id="modules-detail" class="max-w-screen-2xl mx-auto px-8 py-12 border-t border-slate-800 bg-slate-900/30">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold mb-2">Detailed Module Content</h2>
+            <p class="text-slate-400 mb-10">Full explanations from the SRE JFR training course</p>
+            
+            <div id="module-1" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 1</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Introduction to JFR</h3>
+                </div>
+                <div class="lesson-content"><h3 class="text-xl font-semibold mt-6 mb-3 text-slate-100">What is JFR?</h3>
+
+<p class="text-slate-300 mb-4"><strong>Java Flight Recorder (JFR)</strong> is a low-overhead, production-grade profiling and diagnostics tool built into the JVM. It continuously records detailed events about the JVM&#x27;s internal behavior — CPU usage, memory allocations, garbage collection, thread activity, locks, I/O, exceptions, and more — with <strong>minimal performance impact</strong> (typically &lt; 1% overhead).</p>
+
+<p class="text-slate-300 mb-4">JFR was originally developed by Oracle for JRockit and later integrated into HotSpot/OpenJDK. It is now a standard part of the JDK.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-slate-100">Why Oracle Created It</h3>
+
+<p class="text-slate-300 mb-4">Traditional profiling tools (VisualVM, JProfiler, YourKit) often introduce high overhead, making them unsuitable for production. JFR was designed from the ground up for <strong>always-on, low-overhead observability</strong> in mission-critical systems.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-slate-100">History &amp; Evolution</h3>
+
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><strong>JRockit Mission Control</strong> (original commercial tool)</li>
+<li class="mb-1">2018: Open-sourced and integrated into OpenJDK 11+</li>
+<li class="mb-1">Today: Available in all modern JDKs (OpenJDK, Oracle JDK, Amazon Corretto, Azul Zulu, etc.)</li>
+
+</ul><h3 class="text-xl font-semibold mt-6 mb-3 text-slate-100">JFR vs Related Tools</h3>
+
+<div class="my-6 overflow-x-auto"><table class="w-full text-sm"><tbody class="divide-y divide-slate-700 text-slate-300"><tr><th class="text-left py-3 px-4 font-semibold">Tool</th><th class="text-left py-3 px-4 font-semibold">Layer</th><th class="text-left py-3 px-4 font-semibold">Overhead</th><th class="text-left py-3 px-4 font-semibold">Production Safe</th><th class="text-left py-3 px-4 font-semibold">Best For</th></tr><tr><td class="py-3 px-4">---------------</td><td class="py-3 px-4">----------------</td><td class="py-3 px-4">--------------</td><td class="py-3 px-4">-----------------</td><td class="py-3 px-4">------------------------------</td></tr><tr><td class="py-3 px-4"><strong>JFR</strong></td><td class="py-3 px-4">JVM</td><td class="py-3 px-4">Very Low</td><td class="py-3 px-4">Yes</td><td class="py-3 px-4">Production profiling &amp; diagnostics</td></tr><tr><td class="py-3 px-4"><strong>JMC</strong></td><td class="py-3 px-4">Analysis UI</td><td class="py-3 px-4">N/A</td><td class="py-3 px-4">N/A</td><td class="py-3 px-4">Analyzing JFR recordings</td></tr><tr><td class="py-3 px-4"><strong>jstack</strong></td><td class="py-3 px-4">Thread dumps</td><td class="py-3 px-4">Low</td><td class="py-3 px-4">Yes (short)</td><td class="py-3 px-4">Quick thread state snapshots</td></tr><tr><td class="py-3 px-4"><strong>jcmd</strong></td><td class="py-3 px-4">JVM commands</td><td class="py-3 px-4">Low</td><td class="py-3 px-4">Yes</td><td class="py-3 px-4">Starting/stopping JFR</td></tr><tr><td class="py-3 px-4"><strong>async-profiler</strong></td><td class="py-3 px-4">Native + JVM</td><td class="py-3 px-4">Low-Medium</td><td class="py-3 px-4">Yes</td><td class="py-3 px-4">Flame graphs &amp; CPU profiling</td></tr><tr><td class="py-3 px-4"><strong>VisualVM</strong></td><td class="py-3 px-4">GUI</td><td class="py-3 px-4">Medium</td><td class="py-3 px-4">Limited</td><td class="py-3 px-4">Development &amp; light profiling</td></tr><tr><td class="py-3 px-4"><strong>JConsole</strong></td><td class="py-3 px-4">JMX</td><td class="py-3 px-4">Low</td><td class="py-3 px-4">Yes</td><td class="py-3 px-4">Basic monitoring</td></tr></tbody></table></div>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-slate-100">JFR Architecture</h3>
+
+<div class="my-4"><div class="code-header">terminal</div><pre class="jfr-output">
+Application Code
+
+      ↓
+
+JVM (HotSpot)
+
+      ↓
+
+JFR Event Producers
+
+   (GC, JIT, Threads, Memory, Locks, I/O, etc.)
+
+      ↓
+
+JFR Recording Engine (Ring Buffer)
+
+      ↓
+
+.jfr File (Binary Recording)
+
+      ↓
+
+JMC / JDK Mission Control / Custom Tools
+
+      ↓
+
+Analysis &amp; Visualization
+
+</pre></div>
+
+<p class="text-slate-300 mb-4">JFR works by instrumenting the JVM internally at key points and emitting structured <strong>events</strong> that are written to a highly efficient ring buffer.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-2" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 2</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Why Every SRE Should Learn JFR</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">Metrics tell you <strong>WHAT</strong> is happening.  </p>
+<p class="text-slate-300 mb-4">Logs tell you <strong>WHEN</strong> something happened.  </p>
+<p class="text-slate-300 mb-4"><strong>JFR tells you WHY</strong> — at the exact moment the problem occurred inside the JVM.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-slate-100">Common Production Incidents Where JFR Shines</h3>
+
+<div class="my-6 overflow-x-auto"><table class="w-full text-sm"><tbody class="divide-y divide-slate-700 text-slate-300"><tr><th class="text-left py-3 px-4 font-semibold">Incident</th><th class="text-left py-3 px-4 font-semibold">What Metrics/Logs Show</th><th class="text-left py-3 px-4 font-semibold">What JFR Reveals</th></tr><tr><td class="py-3 px-4">----------------------------</td><td class="py-3 px-4">---------------------------------</td><td class="py-3 px-4">-----------------------------------------------</td></tr><tr><td class="py-3 px-4">Slow API / High Latency</td><td class="py-3 px-4">P95/P99 high</td><td class="py-3 px-4">Which methods, locks, DB calls, or GC pauses are causing it</td></tr><tr><td class="py-3 px-4">CPU Spike</td><td class="py-3 px-4">CPU at 90-100%</td><td class="py-3 px-4">Hot methods, JIT compilation storms, infinite loops</td></tr><tr><td class="py-3 px-4">GC Pauses / Latency Spikes</td><td class="py-3 px-4">GC time increasing</td><td class="py-3 px-4">Allocation rate, promotion failures, humongous objects</td></tr><tr><td class="py-3 px-4">Memory Leak / OOMKill</td><td class="py-3 px-4">Heap usage growing</td><td class="py-3 px-4">Allocation hotspots, leaking objects, ThreadLocal leaks</td></tr><tr><td class="py-3 px-4">Thread Pool Starvation</td><td class="py-3 px-4">Threads blocked / queue growing</td><td class="py-3 px-4">Which threads are blocked on what locks</td></tr><tr><td class="py-3 px-4">Database Latency</td><td class="py-3 px-4">DB response time high</td><td class="py-3 px-4">JDBC calls, connection acquisition time, query execution</td></tr><tr><td class="py-3 px-4">Kafka Consumer Lag</td><td class="py-3 px-4">Lag increasing</td><td class="py-3 px-4">Deserialization time, processing time per record</td></tr><tr><td class="py-3 px-4">Connection Pool Exhaustion</td><td class="py-3 px-4">Timeouts on DB calls</td><td class="py-3 px-4">Connection acquisition latency &amp; contention</td></tr></tbody></table></div>
+
+<p class="text-slate-300 mb-4"><strong>Key Insight</strong>: JFR gives you <strong>ground truth</strong> from inside the JVM during the exact time window of the incident.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-3" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 3</span>
+                    <h3 class="text-3xl font-bold tracking-tight">JVM Internals Required for JFR</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">To effectively use JFR, SREs must understand these core JVM components:</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-slate-100">Key Areas</h3>
+
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><strong>Heap Memory</strong>: Young (Eden, Survivor) + Old Generation</li>
+<li class="mb-1"><strong>Metaspace</strong>: Class metadata (replaced PermGen)</li>
+<li class="mb-1"><strong>Thread Stacks</strong>: Per-thread call stacks</li>
+<li class="mb-1"><strong>Garbage Collectors</strong>: G1GC, ZGC, Shenandoah, Parallel, Serial</li>
+<li class="mb-1"><strong>Safepoints</strong>: Global JVM pauses for certain operations</li>
+<li class="mb-1"><strong>JIT Compiler</strong>: C1/C2 compilation of hot methods</li>
+<li class="mb-1"><strong>Class Loading</strong>: ClassLoader hierarchy and loading time</li>
+<li class="mb-1"><strong>TLAB / PLAB</strong>: Thread-Local Allocation Buffers (critical for allocation performance)</li>
+
+</ul><p class="text-slate-300 mb-4">JFR can observe and record events from <strong>all</strong> of these components with very low overhead because the instrumentation is built directly into the JVM.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-4" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 4</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Capturing JFR Recordings</h3>
+                </div>
+                <div class="lesson-content"><h3 class="text-xl font-semibold mt-6 mb-3 text-slate-100">Using jcmd (Recommended for Running Processes)</h3>
+
+<div class="my-4"><div class="code-header">terminal</div><pre class="jfr-output">
+# Start a recording
+
+jcmd &lt;PID&gt; JFR.start name=MyAppRecording duration=300s filename=/tmp/app.jfr
+
+
+
+# Dump current buffer (without stopping)
+
+jcmd &lt;PID&gt; JFR.dump filename=/tmp/emergency.jfr
+
+
+
+# Stop recording
+
+jcmd &lt;PID&gt; JFR.stop name=MyAppRecording
+
+</pre></div>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-slate-100">Startup Recording (via JVM Flags)</h3>
+
+<div class="my-4"><div class="code-header">terminal</div><pre class="jfr-output">
+java -XX:StartFlightRecording=filename=/tmp/app.jfr,dumponexit=true,settings=profile \
+
+     -jar myapp.jar
+
+</pre></div>
+
+<p class="text-slate-300 mb-4"><strong>Production-safe settings</strong>:</p>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Use <code class="jfr-code">settings=default</code> or <code class="jfr-code">settings=profile</code> (profile has slightly higher detail)</li>
+<li class="mb-1">Limit duration or use ring buffer (<code class="jfr-code">maxage</code>, <code class="jfr-code">maxsize</code>)</li>
+<li class="mb-1">Avoid <code class="jfr-code">dumponexit=true</code> in very long-running services unless needed</li>
+
+</ul><h3 class="text-xl font-semibold mt-6 mb-3 text-slate-100">Emergency Capture During Incidents</h3>
+
+<p class="text-slate-300 mb-4">When an application is slow or about to OOM:</p>
+
+<div class="my-4"><div class="code-header">terminal</div><pre class="jfr-output">
+jcmd &lt;PID&gt; JFR.start name=Emergency duration=60s filename=/tmp/emergency.jfr
+
+# Wait 30-60 seconds then
+
+jcmd &lt;PID&gt; JFR.dump filename=/tmp/emergency.jfr
+
+</pre></div>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-5" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 5</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Understanding JFR Events</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">JFR records <strong>hundreds of event types</strong>. Key categories:</p>
+
+<h4 class="font-semibold text-amber-400 mt-6 mb-3">CPU &amp; Compilation</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><code class="jfr-code">jdk.CPULoad</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.ExecutionSample</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.Compilation</code></li>
+
+</ul><h4 class="font-semibold text-amber-400 mt-6 mb-3">Memory &amp; Allocation</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><code class="jfr-code">jdk.ObjectAllocationInNewTLAB</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.ObjectAllocationOutsideTLAB</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.JavaMonitorEnter</code></li>
+
+</ul><h4 class="font-semibold text-amber-400 mt-6 mb-3">GC Events</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><code class="jfr-code">jdk.GarbageCollection</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.GCPhasePause</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.PromotionFailed</code></li>
+
+</ul><h4 class="font-semibold text-amber-400 mt-6 mb-3">Threads &amp; Locking</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><code class="jfr-code">jdk.ThreadStart</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.ThreadPark</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.JavaMonitorEnter</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.ThreadSleep</code></li>
+
+</ul><h4 class="font-semibold text-amber-400 mt-6 mb-3">I/O &amp; Network</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><code class="jfr-code">jdk.SocketRead</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.SocketWrite</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.FileRead</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.FileWrite</code></li>
+
+</ul><h4 class="font-semibold text-amber-400 mt-6 mb-3">Exceptions</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><code class="jfr-code">jdk.ExceptionThrow</code></li>
+
+</ul><p class="text-slate-300 mb-4">For each event, JFR captures timestamp, thread, stack trace (when enabled), and event-specific fields.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-6" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 6</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Using Java Mission Control (JMC)</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4"><strong>Java Mission Control (JMC)</strong> is the official (and best) tool for analyzing JFR recordings.</p>
+
+<h4 class="font-semibold text-amber-400 mt-6 mb-3">Key Views in JMC</h4>
+
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><strong>Automated Analysis</strong> — Rules engine highlights problems automatically</li>
+<li class="mb-1"><strong>Event Browser</strong> — Filter and search all events</li>
+<li class="mb-1"><strong>Threads</strong> — Thread states over time + stack traces</li>
+<li class="mb-1"><strong>Memory</strong> — Heap usage, allocations, GC pauses</li>
+<li class="mb-1"><strong>Method Profiling</strong> / Flame Graphs — Hot methods</li>
+<li class="mb-1"><strong>Lock Instances</strong> — Contended monitors</li>
+
+</ul><p class="text-slate-300 mb-4"><strong>Pro Tip</strong>: Always start with the <strong>Automated Analysis</strong> page — it often points directly to the root cause.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-7" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 7</span>
+                    <h3 class="text-3xl font-bold tracking-tight">CPU Troubleshooting with JFR</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4"><strong>Scenario</strong>: CPU at 90%+, response time increasing.</p>
+
+<h4 class="font-semibold text-amber-400 mt-6 mb-3">Investigation Workflow</h4>
+
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Capture JFR during the spike</li>
+<li class="mb-1">Open in JMC → <strong>Method Profiling</strong> or <strong>Flame Graph</strong></li>
+<li class="mb-1">Look for:</li>
+</ul><p class="text-slate-300 mb-4">   - Methods consuming &gt; 5-10% of CPU</p>
+<p class="text-slate-300 mb-4">   - Excessive JIT compilation (<code class="jfr-code">jdk.Compilation</code>)</p>
+<p class="text-slate-300 mb-4">   - Hot loops or expensive operations (JSON, regex, serialization)</p>
+
+<p class="text-slate-300 mb-4"><strong>Common Culprits</strong>:</p>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Infinite loops / busy waiting</li>
+<li class="mb-1">Excessive object creation + serialization</li>
+<li class="mb-1">Heavy regex or XML/JSON parsing</li>
+<li class="mb-1">Inefficient algorithms in hot paths</li>
+
+</ul><hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-8" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 8</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Memory Leak Analysis</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">JFR excels at finding leaks <strong>before</strong> OOMKill.</p>
+
+<h4 class="font-semibold text-amber-400 mt-6 mb-3">Key Events</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><code class="jfr-code">jdk.ObjectAllocationInNewTLAB</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.ObjectAllocationOutsideTLAB</code></li>
+
+</ul><h4 class="font-semibold text-amber-400 mt-6 mb-3">Investigation Steps in JMC</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Go to <strong>Memory</strong> view</li>
+<li class="mb-1">Look at <strong>Allocation</strong> tab</li>
+<li class="mb-1">Identify classes with highest allocation rate</li>
+<li class="mb-1">Check for growing collections, caches, or ThreadLocals</li>
+
+</ul><p class="text-slate-300 mb-4"><strong>Common Leaks</strong>:</p>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Unbounded caches</li>
+<li class="mb-1">Growing <code class="jfr-code">ConcurrentHashMap</code> or <code class="jfr-code">ArrayList</code></li>
+<li class="mb-1">Session objects not cleaned up</li>
+<li class="mb-1"><code class="jfr-code">ThreadLocal</code> not removed after use</li>
+
+</ul><hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-9" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 9</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Garbage Collection Analysis</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">JFR provides deep visibility into GC behavior.</p>
+
+<h4 class="font-semibold text-amber-400 mt-6 mb-3">What to Analyze</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">GC pause times (<code class="jfr-code">jdk.GCPhasePause</code>)</li>
+<li class="mb-1">Allocation rate vs promotion rate</li>
+<li class="mb-1">Humongous object allocations (G1)</li>
+<li class="mb-1">Full GC frequency</li>
+<li class="mb-1">Concurrent mark failures</li>
+
+</ul><h4 class="font-semibold text-amber-400 mt-6 mb-3">Modern GCs</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><strong>G1GC</strong> (default in JDK 9+)</li>
+<li class="mb-1"><strong>ZGC</strong> &amp; <strong>Shenandoah</strong> (low-pause)</li>
+<li class="mb-1"><strong>Parallel GC</strong></li>
+
+</ul><p class="text-slate-300 mb-4">JFR helps you decide if you need to tune heap size, change GC, or fix allocation patterns.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-10" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 10</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Thread Analysis</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">JFR shows thread states over time:</p>
+
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><strong>Runnable</strong></li>
+<li class="mb-1"><strong>Blocked</strong> (waiting for monitor)</li>
+<li class="mb-1"><strong>Waiting</strong> (Object.wait / park)</li>
+<li class="mb-1"><strong>Timed Waiting</strong></li>
+
+</ul><h4 class="font-semibold text-amber-400 mt-6 mb-3">Common Issues Found</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Deadlocks (multiple threads blocked on each other)</li>
+<li class="mb-1">Lock contention (many threads blocked on same monitor)</li>
+<li class="mb-1">Thread pool saturation (all threads blocked or waiting)</li>
+<li class="mb-1">Executor starvation</li>
+
+</ul><hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-11" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 11</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Lock Contention Analysis</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">Lock contention is one of the most common hidden causes of latency.</p>
+
+<h4 class="font-semibold text-amber-400 mt-6 mb-3">Key JFR Events</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><code class="jfr-code">jdk.JavaMonitorEnter</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.ThreadPark</code></li>
+<li class="mb-1"><code class="jfr-code">jdk.LockInstances</code></li>
+
+</ul><h4 class="font-semibold text-amber-400 mt-6 mb-3">Analysis in JMC</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><strong>Lock Instances</strong> view shows which locks are most contended</li>
+<li class="mb-1">Correlate with thread stacks to find the exact synchronized block or <code class="jfr-code">ReentrantLock</code></li>
+
+</ul><p class="text-slate-300 mb-4"><strong>Impact</strong>: Even small contention on hot locks can destroy throughput under load.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-12" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 12</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Database Troubleshooting</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">JFR can show JDBC-level activity (with some configuration).</p>
+
+<h4 class="font-semibold text-amber-400 mt-6 mb-3">What You Can See</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Time spent acquiring connections from pool</li>
+<li class="mb-1">Time spent in actual query execution (if using JDBC instrumentation)</li>
+<li class="mb-1">Connection pool exhaustion patterns</li>
+
+</ul><h4 class="font-semibold text-amber-400 mt-6 mb-3">Popular Pools</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">HikariCP (recommended)</li>
+<li class="mb-1">C3P0, DBCP, Tomcat JDBC Pool</li>
+
+</ul><p class="text-slate-300 mb-4">JFR helps distinguish between <strong>pool acquisition latency</strong> vs <strong>actual database query slowness</strong>.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-13" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 13</span>
+                    <h3 class="text-3xl font-bold tracking-tight">API Latency Investigation</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4"><strong>Scenario</strong>: P95 latency increased suddenly.</p>
+
+<h4 class="font-semibold text-amber-400 mt-6 mb-3">End-to-End Workflow</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Capture JFR during the degradation window</li>
+<li class="mb-1">Analyze:</li>
+</ul><p class="text-slate-300 mb-4">   - Thread pool utilization</p>
+<p class="text-slate-300 mb-4">   - Lock contention</p>
+<p class="text-slate-300 mb-4">   - Database / external call latency</p>
+<p class="text-slate-300 mb-4">   - Serialization / deserialization time</p>
+<p class="text-slate-300 mb-4">   - GC impact on request threads</p>
+
+<p class="text-slate-300 mb-4">JFR lets you build a complete picture of where time is being spent inside the JVM for slow requests.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-14" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 14</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Exception Analysis</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">Frequent exceptions can silently destroy performance.</p>
+
+<h4 class="font-semibold text-amber-400 mt-6 mb-3">What JFR Shows</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><code class="jfr-code">jdk.ExceptionThrow</code> events with full stack traces</li>
+<li class="mb-1">Frequency of specific exception types</li>
+<li class="mb-1">Hidden retry loops causing exception storms</li>
+
+</ul><p class="text-slate-300 mb-4"><strong>Examples</strong>:</p>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><code class="jfr-code">NullPointerException</code> in hot paths</li>
+<li class="mb-1"><code class="jfr-code">SocketTimeoutException</code> / connection resets</li>
+<li class="mb-1"><code class="jfr-code">SQLException</code> from connection issues</li>
+
+</ul><p class="text-slate-300 mb-4">Business impact: Increased CPU, latency, and noisy logs.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-15" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 15</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Kubernetes and JFR</h3>
+                </div>
+                <div class="lesson-content"><h4 class="font-semibold text-amber-400 mt-6 mb-3">Capturing JFR from Pods</h4>
+
+<div class="my-4"><div class="code-header">terminal</div><pre class="jfr-output">
+# Exec into pod
+
+kubectl exec -it &lt;pod&gt; -- /bin/sh
+
+
+
+# Start JFR
+
+jcmd 1 JFR.start name=prod duration=120s filename=/tmp/app.jfr
+
+
+
+# Copy recording out
+
+kubectl cp &lt;pod&gt;:/tmp/app.jfr ./app.jfr
+
+</pre></div>
+
+<h4 class="font-semibold text-amber-400 mt-6 mb-3">Advanced Techniques</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><strong>Ephemeral containers</strong> (recommended for distroless)</li>
+<li class="mb-1">Sidecar containers with JFR tools</li>
+<li class="mb-1">Init containers or debug containers</li>
+
+</ul><h4 class="font-semibold text-amber-400 mt-6 mb-3">Kubernetes-Specific Issues JFR Helps Solve</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">OOMKilled pods (memory leak vs heap sizing)</li>
+<li class="mb-1">CPU throttling vs actual JVM CPU usage</li>
+<li class="mb-1">Startup delays (class loading, JIT warm-up)</li>
+<li class="mb-1">HPA scaling problems caused by GC pauses</li>
+<li class="mb-1">Kafka consumer lag in containerized workloads</li>
+
+</ul><hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-16" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 16</span>
+                    <h3 class="text-3xl font-bold tracking-tight">JFR and Spring Boot</h3>
+                </div>
+                <div class="lesson-content"><h4 class="font-semibold text-amber-400 mt-6 mb-3">Common Areas to Analyze</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Controller method execution time</li>
+<li class="mb-1">Serialization (Jackson) performance</li>
+<li class="mb-1">Bean initialization &amp; startup time</li>
+<li class="mb-1">@Async / thread pool usage</li>
+<li class="mb-1">Reactive (WebFlux) vs Servlet performance</li>
+
+</ul><p class="text-slate-300 mb-4">JFR is excellent for finding slow endpoints or initialization bottlenecks in Spring Boot applications.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-17" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 17</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Kafka Troubleshooting with JFR</h3>
+                </div>
+                <div class="lesson-content"><h4 class="font-semibold text-amber-400 mt-6 mb-3">Key Things to Investigate</h4>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Record deserialization time</li>
+<li class="mb-1">Processing time per record</li>
+<li class="mb-1">Consumer rebalance storms</li>
+<li class="mb-1">Producer send latency</li>
+<li class="mb-1">Serialization bottlenecks on producer side</li>
+
+</ul><p class="text-slate-300 mb-4">JFR helps you see whether lag is caused by <strong>slow processing</strong>, <strong>deserialization</strong>, or <strong>network</strong>.</p>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-18" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 18</span>
+                    <h3 class="text-3xl font-bold tracking-tight">SRE Incident War Stories</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">(20 detailed real-world incidents will be expanded in full version — examples include eCommerce checkout slowness, payment processing timeouts, inventory service OOM, Kafka rebalance storms, MongoDB driver issues, PostgreSQL connection pool exhaustion, Redis latency, Kubernetes OOMKills, etc.)</p>
+
+<p class="text-slate-300 mb-4">Each story includes:</p>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Symptoms + observed metrics</li>
+<li class="mb-1">JFR evidence</li>
+<li class="mb-1">Root cause</li>
+<li class="mb-1">Resolution steps</li>
+<li class="mb-1">Lessons learned</li>
+
+</ul><hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-19" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 19</span>
+                    <h3 class="text-3xl font-bold tracking-tight">JFR vs Other Tools</h3>
+                </div>
+                <div class="lesson-content"><h4 class="font-semibold text-amber-400 mt-6 mb-3">Decision Tree</h4>
+
+<p class="text-slate-300 mb-4"><strong>CPU Issue?</strong></p>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Use JFR (Method Profiling + Flame Graphs) first</li>
+<li class="mb-1">Fall back to async-profiler for native code or when JFR overhead is concern</li>
+<li class="mb-1">Use <code class="jfr-code">perf</code> for kernel-level CPU</li>
+
+</ul><p class="text-slate-300 mb-4"><strong>Memory / Leak?</strong></p>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">JFR (Allocation events) → Best for production</li>
+<li class="mb-1">Heap dump (jcmd GC.heap_dump) for post-mortem</li>
+
+</ul><p class="text-slate-300 mb-4"><strong>GC Issue?</strong></p>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">JFR (GC events + pause times)</li>
+<li class="mb-1">GC logs (<code class="jfr-code">-Xlog:gc*</code>)</li>
+
+</ul><p class="text-slate-300 mb-4"><strong>Lock / Thread Issue?</strong></p>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">JFR (Thread states + Monitor events)</li>
+<li class="mb-1">jstack for quick snapshot</li>
+
+</ul><p class="text-slate-300 mb-4"><strong>Container / Kubernetes?</strong></p>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">JFR + kubectl + ephemeral containers</li>
+<li class="mb-1">Combine with Prometheus + node metrics</li>
+
+</ul><hr class="border-slate-700 my-8"></div>
+            </div>
+
+            <div id="module-20" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">MODULE 20</span>
+                    <h3 class="text-3xl font-bold tracking-tight">SRE Production Playbook</h3>
+                </div>
+                <div class="lesson-content"><h4 class="font-semibold text-amber-400 mt-6 mb-3">Recommended Incident Response Flow</h4>
+
+<div class="my-4"><div class="code-header">terminal</div><pre class="jfr-output">
+Alert triggered
+
+   ↓
+
+Check Metrics (Prometheus/Grafana)
+
+   ↓
+
+Check Logs (ELK / Loki)
+
+   ↓
+
+Capture JFR (emergency or continuous)
+
+   ↓
+
+Analyze in JMC (start with Automated Analysis)
+
+   ↓
+
+Correlate with system tools (strace, top, iostat if needed)
+
+   ↓
+
+Identify Root Cause
+
+   ↓
+
+Apply Fix / Mitigation
+
+   ↓
+
+Document + Improve Runbook
+
+</pre></div>
+
+<h4 class="font-semibold text-amber-400 mt-6 mb-3">Emergency JFR Commands</h4>
+
+<div class="my-4"><div class="code-header">terminal</div><pre class="jfr-output">
+# Quick 60-second capture
+
+jcmd &lt;PID&gt; JFR.start name=Incident duration=60s filename=/tmp/incident.jfr
+
+
+
+# Dump immediately
+
+jcmd &lt;PID&gt; JFR.dump filename=/tmp/incident.jfr
+
+</pre></div>
+
+<hr class="border-slate-700 my-8"></div>
+            </div>
+
+        <div id="bonus-modules" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+            <div class="flex items-center gap-x-4 mb-6">
+                <span class="px-4 py-1.5 text-sm font-bold bg-amber-900 text-amber-300 rounded-2xl">BONUS</span>
+                <h3 class="text-3xl font-bold tracking-tight">Bonus Modules</h3>
+            </div>
+            <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl mb-4"><h4 class="font-semibold text-amber-400">JVM Tuning Using JFR</h4><p class="text-sm text-slate-400 mt-2">Right-size heap, thread pools, and connection pools from real data.</p></div><div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl mb-4"><h4 class="font-semibold text-amber-400">Continuous Profiling with JFR</h4><p class="text-sm text-slate-400 mt-2">Low-overhead always-on recordings in production.</p></div><div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl mb-4"><h4 class="font-semibold text-amber-400">AI-Assisted JFR Analysis</h4><p class="text-sm text-slate-400 mt-2">Export recordings and use LLMs for RCA drafts.</p></div>
+        </div>
+        </div>
+    </div>
+
+    <div id="labs" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <h2 class="section-header mb-8">Hands-on Labs</h2>
+        <div class="max-w-3xl mx-auto space-y-4">
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <span class="font-mono text-xs bg-amber-900 text-amber-300 px-2.5 py-px rounded">LAB 1</span>
+                <h4 class="font-semibold text-xl mt-2">Capture JFR from a running Spring Boot app</h4>
+                <p class="text-sm text-slate-400 mt-1">Use jcmd to start a 5-minute profile recording.</p>
+            </div>
+
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <span class="font-mono text-xs bg-amber-900 text-amber-300 px-2.5 py-px rounded">LAB 2</span>
+                <h4 class="font-semibold text-xl mt-2">Analyze CPU hotspot using JMC Flame Graphs</h4>
+                <p class="text-sm text-slate-400 mt-1">Find methods consuming &gt;10% CPU during a spike.</p>
+            </div>
+
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <span class="font-mono text-xs bg-amber-900 text-amber-300 px-2.5 py-px rounded">LAB 3</span>
+                <h4 class="font-semibold text-xl mt-2">Find a memory leak before OOM</h4>
+                <p class="text-sm text-slate-400 mt-1">Use allocation events to identify growing object types.</p>
+            </div>
+
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <span class="font-mono text-xs bg-amber-900 text-amber-300 px-2.5 py-px rounded">LAB 4</span>
+                <h4 class="font-semibold text-xl mt-2">Diagnose lock contention</h4>
+                <p class="text-sm text-slate-400 mt-1">Correlate JavaMonitorEnter with Lock Instances view.</p>
+            </div>
+
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <span class="font-mono text-xs bg-amber-900 text-amber-300 px-2.5 py-px rounded">LAB 5</span>
+                <h4 class="font-semibold text-xl mt-2">Investigate GC pauses in G1 vs ZGC</h4>
+                <p class="text-sm text-slate-400 mt-1">Compare jdk.GCPhasePause across collectors.</p>
+            </div>
+
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <span class="font-mono text-xs bg-amber-900 text-amber-300 px-2.5 py-px rounded">LAB 6</span>
+                <h4 class="font-semibold text-xl mt-2">Capture JFR from a Kubernetes pod</h4>
+                <p class="text-sm text-slate-400 mt-1">kubectl exec + jcmd + kubectl cp workflow.</p>
+            </div>
+
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <span class="font-mono text-xs bg-amber-900 text-amber-300 px-2.5 py-px rounded">LAB 7</span>
+                <h4 class="font-semibold text-xl mt-2">Correlate JFR with Prometheus metrics</h4>
+                <p class="text-sm text-slate-400 mt-1">Overlay JVM events with latency spike window.</p>
+            </div></div>
+    </div>
+
+    <div id="quiz" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800 bg-slate-900">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="section-header mb-2">JFR Knowledge Quiz</h2>
+            <p class="text-slate-400 mb-8">10 questions · Instant feedback</p>
+            <div id="quiz-start" class="bg-slate-950 border border-slate-700 rounded-3xl p-8">
+                <button onclick="startQuiz()" class="px-10 py-3 bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold rounded-3xl">Start Quiz</button>
+            </div>
+            <div id="quiz-questions" class="hidden bg-slate-950 border border-slate-700 rounded-3xl p-8 text-left"></div>
+            <div id="quiz-results" class="hidden bg-slate-950 border border-slate-700 rounded-3xl p-8">
+                <div id="quiz-score" class="text-5xl font-bold text-amber-400 mb-4"></div>
+                <p id="quiz-feedback" class="text-slate-300 mb-6"></p>
+                <button onclick="restartQuiz()" class="px-6 py-2 border border-slate-600 rounded-2xl">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cheatsheet" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <h2 class="section-header mb-8">JFR Production Cheat Sheet</h2>
+        <div class="grid lg:grid-cols-2 gap-6 max-w-5xl">
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+                <h4 class="font-semibold text-amber-400 mb-4">Start Recording</h4>
+                <pre class="jfr-output rounded-2xl">jcmd &lt;PID&gt; JFR.start name=Prod duration=300s filename=/tmp/recording.jfr settings=profile</pre>
+            </div>
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+                <h4 class="font-semibold text-amber-400 mb-4">Emergency Dump</h4>
+                <pre class="jfr-output rounded-2xl">jcmd &lt;PID&gt; JFR.dump filename=/tmp/emergency.jfr</pre>
+            </div>
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+                <h4 class="font-semibold text-amber-400 mb-4">Key JMC Views</h4>
+                <ul class="text-sm text-slate-300 space-y-2">
+                    <li>Automated Analysis (start here)</li>
+                    <li>Method Profiling / Flame Graph</li>
+                    <li>Memory → Allocations</li>
+                    <li>Threads · Lock Instances</li>
+                </ul>
+            </div>
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+                <h4 class="font-semibold text-amber-400 mb-4">Events to Watch</h4>
+                <ul class="text-sm font-mono text-slate-300 space-y-1">
+                    <li>jdk.ObjectAllocation*</li>
+                    <li>jdk.GCPhasePause</li>
+                    <li>jdk.JavaMonitorEnter</li>
+                    <li>jdk.ThreadPark</li>
+                    <li>jdk.ExceptionThrow</li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-5xl mt-8 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+            <h4 class="font-semibold text-lg mb-4">SRE Production Playbook</h4>
+            <pre class="jfr-output rounded-2xl text-sm">Alert triggered → Metrics (Prometheus) → Logs (ELK/Loki) → Capture JFR → Analyze in JMC → Correlate (strace/top) → Root cause → Fix → Postmortem</pre>
+        </div>
+    </div>
+
+    <footer class="border-t border-slate-800 bg-slate-900 py-12">
+        <div class="max-w-screen-2xl mx-auto px-8 text-sm text-slate-500 flex flex-col md:flex-row justify-between gap-4">
+            <span>© 2026 JFR SRE Academy</span>
+            <div class="flex gap-5">
+                <a href="../../index.html" class="hover:text-slate-300">SRE Academy</a>
+                <a href="../strace/index.html" class="hover:text-slate-300">Course 1: strace</a>
+                <a href="https://github.com/ManjuReddyT/sre-pages" target="_blank" rel="noopener" class="hover:text-slate-300">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const quizData = [{"q": "What does JFR stand for?", "options": ["Java Fast Recorder", "Java Flight Recorder", "JVM Fault Reporter", "Java Frame Recorder"], "answer": 1, "explanation": "JFR is Java Flight Recorder \u2014 built into the JVM."}, {"q": "Typical production overhead of JFR?", "options": ["10-20%", "Less than 1%", "5-8%", "25%+"], "answer": 1, "explanation": "JFR is designed for <1% overhead in production."}, {"q": "Best command to start a JFR recording on a running JVM?", "options": ["jstack", "jcmd <PID> JFR.start", "jmap -heap", "jconsole"], "answer": 1, "explanation": "jcmd is the recommended way to control JFR on live processes."}, {"q": "Which tool is best for analyzing .jfr files?", "options": ["VisualVM", "Java Mission Control (JMC)", "JConsole", "jhat"], "answer": 1, "explanation": "JMC is the official analyzer with automated rules."}, {"q": "Which JFR event indicates lock contention?", "options": ["jdk.SocketRead", "jdk.JavaMonitorEnter", "jdk.GarbageCollection", "jdk.ClassLoad"], "answer": 1, "explanation": "JavaMonitorEnter shows threads waiting for monitors."}, {"q": "First view to check in JMC during incident analysis?", "options": ["Event Browser", "Automated Analysis", "Threads only", "I/O view"], "answer": 1, "explanation": "Automated Analysis often highlights problems immediately."}, {"q": "What does jdk.GCPhasePause help diagnose?", "options": ["Network latency", "GC pause times and causes", "Thread deadlocks", "Class loading"], "answer": 1, "explanation": "GCPhasePause shows individual GC pause durations."}, {"q": "Safest way to capture JFR in a Kubernetes distroless pod?", "options": ["Install JDK in app image", "Ephemeral debug container", "Restart pod with debug flags", "SSH to node only"], "answer": 1, "explanation": "Ephemeral containers avoid modifying production images."}, {"q": "JFR allocation events useful for finding?", "options": ["DNS issues", "Memory leaks and hotspots", "Port conflicts", "Disk full errors"], "answer": 1, "explanation": "ObjectAllocation events reveal what's being allocated most."}, {"q": "When should you use heap dump instead of JFR first?", "options": ["CPU spike", "Post-mortem after OOM with object graph needed", "Lock contention", "Kafka lag"], "answer": 1, "explanation": "Heap dumps give full object graphs for post-mortem leak analysis."}];
+
+        function toggleMobileMenu() {
+            const m = document.createElement('div');
+            m.className = 'md:hidden fixed inset-0 bg-slate-950/95 z-[60] p-8';
+            m.innerHTML = '<button onclick="this.parentElement.remove()" class="text-3xl mb-8">×</button><div class="flex flex-col gap-4 text-xl"><a href="#curriculum">Curriculum</a><a href="#labs">Labs</a><a href="#quiz">Quiz</a><a href="#cheatsheet">Cheat Sheet</a><a href="../../index.html">Academy Home</a></div>';
+            document.body.appendChild(m);
+        }
+
+        document.getElementById('search-input')?.addEventListener('input', function() {
+            const t = this.value.toLowerCase();
+            document.querySelectorAll('.module-card, .module-section').forEach(el => {
+                el.style.display = !t || el.textContent.toLowerCase().includes(t) ? '' : 'none';
+            });
+        });
+
+        let cq = 0, score = 0;
+        function startQuiz() {
+            cq = 0; score = 0;
+            document.getElementById('quiz-start').classList.add('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-questions').classList.remove('hidden');
+            showQ();
+        }
+        function showQ() {
+            const q = quizData[cq];
+            document.getElementById('quiz-questions').innerHTML = `
+                <div class="mb-4 text-amber-400 text-sm font-medium">Question ${cq+1} / ${quizData.length}</div>
+                <div class="text-xl font-semibold mb-6">${q.q}</div>
+                <div class="space-y-3">${q.options.map((o,i) => `<button onclick="answer(${i})" class="w-full text-left px-5 py-3 border border-slate-700 hover:border-amber-600 rounded-2xl">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>`;
+        }
+        function answer(i) {
+            if (i === quizData[cq].answer) score++;
+            cq++;
+            if (cq < quizData.length) showQ();
+            else {
+                document.getElementById('quiz-questions').classList.add('hidden');
+                document.getElementById('quiz-results').classList.remove('hidden');
+                const pct = Math.round(score/quizData.length*100);
+                document.getElementById('quiz-score').textContent = pct + '%';
+                document.getElementById('quiz-feedback').textContent = pct >= 80 ? 'Excellent JFR knowledge!' : pct >= 60 ? 'Good foundation — review GC and lock modules.' : 'Review Modules 1–6 and the cheat sheet.';
+            }
+        }
+        function restartQuiz() {
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-start').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
