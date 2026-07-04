@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heap Dump SRE Academy • Master Java Memory Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
+        :root { --accent: #8b5cf6; }
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .font-display { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 600; }
+        .section-header { font-size: 2.25rem; line-height: 2.5rem; font-weight: 700; letter-spacing: -0.025em; }
+        .module-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .module-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .text-accent { color: #8b5cf6; }
+        .text-accent-muted, .bg-accent-muted { }
+        .course-badge { background: #4c1d95; color: #c4b5fd; font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px; font-weight: 500; }
+        .dump-code-block { background: #020617; color: #e0e7ff; padding: 1rem; border-radius: 0 0 0.5rem 0.5rem; overflow-x: auto; font-size: 0.875rem; border: 1px solid #334155; white-space: pre-wrap; font-family: ui-monospace, Consolas, monospace; }
+        .code-header { background: #1e2937; padding: 0.5rem 1rem; border-radius: 0.5rem 0.5rem 0 0; font-size: 0.75rem; color: #64748b; }
+        .dump-code, .thread-code { background: #0f172a; padding: 2px 6px; border-radius: 4px; font-size: 0.875rem; font-family: ui-monospace, Consolas, monospace; }
+        .module-section { scroll-margin-top: 80px; }
+        .nav-link:hover { color: #8b5cf6; }
+        .bg-accent-muted { background: rgba(139,92,246,0.15); }
+        .border-accent-border { border-color: #5b21b6; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-screen-2xl mx-auto px-8 py-4 flex items-center justify-between">
+            <a href="../../index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-database text-white text-2xl"></i></div>
+                <span class="font-display text-2xl font-semibold">HeapDump SRE</span>
+            </a>
+            <div class="hidden md:flex items-center gap-8 text-sm">
+                <a href="#curriculum" class="nav-link text-slate-300">Curriculum</a>
+                <a href="#labs" class="nav-link text-slate-300">Labs</a>
+                <a href="#quiz" class="nav-link text-slate-300">Quiz</a>
+                <a href="#cheatsheet" class="nav-link text-slate-300">Cheat Sheet</a>
+                <a href="#interview" class="nav-link text-slate-300">Interview</a>
+                <a href="../../index.html" class="text-slate-500 hover:text-white text-xs">← Academy</a>
+            </div>
+            <button class="md:hidden text-slate-400" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars text-xl"></i></button>
+        </div>
+    </nav>
+
+    <div class="max-w-screen-2xl mx-auto pt-16 pb-20 px-8">
+        <div class="grid md:grid-cols-12 gap-12 items-center">
+            <div class="md:col-span-7">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 text-accent rounded-full text-xs font-medium mb-6">
+                    <i class="fa-solid fa-shield-halved"></i> COURSE 3 · JAVA HEAP DUMP ANALYSIS
+                </div>
+                <h1 class="text-5xl md:text-6xl font-display font-bold tracking-tight mb-4">Master <span class="text-violet-400">Heap Dump</span> Analysis</h1>
+                <p class="text-xl text-slate-400 mb-8 max-w-lg">Capture and analyze Java heap dumps with Eclipse MAT — find memory leaks, OOM root causes, and dominator retainers in production incidents.</p>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="startCourse()" class="px-8 py-3.5 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-3xl flex items-center gap-2"><i class="fa-solid fa-play"></i> Start Learning</button>
+                    <button onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})" class="px-6 py-3.5 border border-slate-700 rounded-3xl">Browse Curriculum</button>
+                </div>
+            </div>
+            <div class="md:col-span-5">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8">
+                    <div class="grid grid-cols-3 gap-4 text-center mb-6"><div><div class="text-3xl font-bold text-accent">16</div><div class="text-xs text-slate-500 mt-1">Modules</div></div><div><div class="text-3xl font-bold text-accent">6</div><div class="text-xs text-slate-500 mt-1">War Stories</div></div><div><div class="text-3xl font-bold text-accent">6</div><div class="text-xs text-slate-500 mt-1">Labs</div></div></div>
+                    <div class="border-t border-slate-800 pt-4 space-y-3 text-sm"><div class="flex gap-2"><i class="fa-solid fa-check text-accent"></i><span>jcmd, jmap & OOM auto-dump workflows</span></div><div class="flex gap-2"><i class="fa-solid fa-check text-accent"></i><span>Eclipse MAT dominator tree mastery</span></div><div class="flex gap-2"><i class="fa-solid fa-check text-accent"></i><span>Kubernetes heap capture playbooks</span></div><div class="flex gap-2"><i class="fa-solid fa-check text-accent"></i><span>Leak patterns: caches, ThreadLocal, sessions</span></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-screen-2xl mx-auto px-8 py-12 border-t border-slate-800">
+        <h2 class="section-header mb-8">When you need a snapshot of JVM state</h2>
+        <div class="grid md:grid-cols-3 gap-6"><div class="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+        <i class="fa-solid fa-chart-pie text-accent text-2xl mb-3"></i>
+        <h3 class="font-semibold text-lg mb-2">Memory Leaks</h3><p class="text-sm text-slate-400">See exactly which objects retain heap — JFR shows allocation rate, heap dumps show retainers.</p></div><div class="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+        <i class="fa-solid fa-skull-crossbones text-accent text-2xl mb-3"></i>
+        <h3 class="font-semibold text-lg mb-2">OOM Incidents</h3><p class="text-sm text-slate-400">Post-mortem analysis when pods OOMKill — no reproduction needed.</p></div><div class="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+        <i class="fa-solid fa-layer-group text-accent text-2xl mb-3"></i>
+        <h3 class="font-semibold text-lg mb-2">MAT Analysis</h3><p class="text-sm text-slate-400">Dominator tree, GC roots, leak suspects, and histogram in Eclipse MAT.</p></div></div>
+    </div>
+
+    <div id="curriculum" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <span class="text-accent text-sm font-semibold">17 MODULES</span>
+        <h2 class="section-header mt-2 mb-8">Complete Curriculum</h2>
+        <div class="relative hidden md:block mb-6 w-64">
+            <input type="text" id="search-input" placeholder="Search modules..." class="w-full bg-slate-900 border border-slate-700 rounded-2xl py-2.5 pl-10 pr-4 text-sm focus:outline-none">
+            <i class="fa-solid fa-search absolute left-4 top-3 text-slate-500"></i>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div onclick="document.getElementById('module-1').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 1</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Introduction to Heap Dumps</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">What hprof files are, when to use them, and how they differ from JFR.</p>
+            </div>
+            <div onclick="document.getElementById('module-2').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 2</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Why Every SRE Needs Heap Dump Skills</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">OOM incidents, memory leaks, and K8s OOMKilled pods require heap analysis.</p>
+            </div>
+            <div onclick="document.getElementById('module-3').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 3</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">JVM Heap Memory Refresher</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Young/old gen, metaspace, and what appears in hprof vs native memory.</p>
+            </div>
+            <div onclick="document.getElementById('module-4').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 4</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Capturing Heap Dumps</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">jcmd, jmap, OOM flags, and safe production timing.</p>
+            </div>
+            <div onclick="document.getElementById('module-5').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 5</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Heap Dump Tools Overview</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Eclipse MAT, VisualVM, jhat, and when to use each.</p>
+            </div>
+            <div onclick="document.getElementById('module-6').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 6</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Eclipse MAT Fundamentals</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Opening hprof, histogram, dominator tree, and leak suspects report.</p>
+            </div>
+            <div onclick="document.getElementById('module-7').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 7</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Dominator Tree &amp; GC Roots</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Understanding retention paths and why objects weren&#x27;t collected.</p>
+            </div>
+            <div onclick="document.getElementById('module-8').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 8</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Memory Leak Investigation Workflow</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Step-by-step SRE playbook from alert to fix.</p>
+            </div>
+            <div onclick="document.getElementById('module-9').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 9</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Analyzing OOMKilled Pods</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Kubernetes OOM workflow and heap artifact recovery.</p>
+            </div>
+            <div onclick="document.getElementById('module-10').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 10</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Heap Dump vs JFR vs Native Memory</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">When to use each tool in the JVM observability stack.</p>
+            </div>
+            <div onclick="document.getElementById('module-11').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 11</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Kubernetes Heap Dump Capture</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">exec, ephemeral containers, volume mounts for hprof files.</p>
+            </div>
+            <div onclick="document.getElementById('module-12').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 12</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Spring Boot Leak Patterns</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Common leaks in Spring apps: caches, sessions, actuator, class loaders.</p>
+            </div>
+            <div onclick="document.getElementById('module-13').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 13</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Database &amp; Cache Leak Patterns</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Connection wrappers, result sets, and in-memory caches.</p>
+            </div>
+            <div onclick="document.getElementById('module-14').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 14</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Production Best Practices</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">When to capture, security, size, and storage.</p>
+            </div>
+            <div onclick="document.getElementById('module-15').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 15</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">SRE Incident War Stories</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Real heap dump investigations with MAT evidence.</p>
+            </div>
+            <div onclick="document.getElementById('module-16').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 16</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Heap Dump vs Other Tools</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Decision tree with JFR, jstack, strace, and NMT.</p>
+            </div>
+            <div onclick="document.getElementById('module-17').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 17</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">SRE Production Playbook</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">End-to-end heap incident response.</p>
+            </div></div>
+    </div>
+
+    <div id="modules-detail" class="max-w-screen-2xl mx-auto px-8 py-12 border-t border-slate-800 bg-slate-900/30">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold mb-2">Detailed Module Content</h2>
+            <p class="text-slate-400 mb-10">Production SRE playbooks, examples, and incident patterns</p>
+            
+            <div id="module-1" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 1</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Introduction to Heap Dumps</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">A <strong>heap dump</strong> is a snapshot of every object in the JVM heap at a point in time — classes, instances, references, and retained sizes. Saved as <code class="dump-code">.hprof</code> files.</p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-slate-100">What a Heap Dump Contains</h3>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">All live and some unreachable objects</li><li class="mb-1">Reference graph between objects</li><li class="mb-1">Shallow and retained heap sizes</li><li class="mb-1">Thread-local and static references</li></ul>
+<div class="bg-slate-950 border border-slate-700 p-5 rounded-2xl my-6 text-sm">
+                <div class="font-semibold mb-2 text-accent">Key Insight</div>
+                <p class="text-slate-300">Heap dumps answer <strong>who is holding memory</strong> — not just how fast allocations happen (that's JFR).</p></div></div>
+            </div>
+            <div id="module-2" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 2</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Why Every SRE Needs Heap Dump Skills</h3>
+                </div>
+                <div class="lesson-content"><div class="my-6 overflow-x-auto"><table class="w-full text-sm">
+                <thead><tr class="border-b border-slate-700"><th class="text-left py-3 px-4 font-semibold">Scenario</th><th class="text-left py-3 px-4 font-semibold">Metrics Show</th><th class="text-left py-3 px-4 font-semibold">Heap Dump Reveals</th></tr></thead>
+                <tbody class="divide-y divide-slate-700 text-slate-300"><tr><td class="py-3 px-4">OOMKilled pod</td><td class="py-3 px-4">Memory at limit, restart</td><td class="py-3 px-4">Exact objects retaining 2GB</td></tr><tr><td class="py-3 px-4">Slow memory growth</td><td class="py-3 px-4">Heap % climbing over days</td><td class="py-3 px-4">Cache class dominating dominator tree</td></tr><tr><td class="py-3 px-4">Post-incident RCA</td><td class="py-3 px-4">GC logs show Full GC</td><td class="py-3 px-4">Leak suspect: SessionMap</td></tr></tbody></table></div>
+<div class="mt-6 p-4 bg-accent-muted border border-accent-border rounded-2xl text-sm">
+                <div class="text-xs uppercase tracking-widest text-accent mb-1">SRE TIP</div>
+                <p class="text-slate-300">Enable <code class="dump-code">-XX:+HeapDumpOnOutOfMemoryError</code> on every production Java service.</p></div></div>
+            </div>
+            <div id="module-3" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 3</span>
+                    <h3 class="text-3xl font-bold tracking-tight">JVM Heap Memory Refresher</h3>
+                </div>
+                <div class="lesson-content"><ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><strong>Young Gen</strong>: Eden + Survivor — short-lived objects</li><li class="mb-1"><strong>Old Gen</strong>: long-lived — where leaks accumulate</li><li class="mb-1"><strong>Metaspace</strong>: class metadata (separate from hprof heap in some views)</li><li class="mb-1"><strong>Native memory</strong>: not in hprof — check RSS vs heap</li></ul>
+<div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-violet-400">Shallow heap</span><br><span class="text-xs text-slate-400 mt-1 block">Memory of the object itself</span></div><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-violet-400">Retained heap</span><br><span class="text-xs text-slate-400 mt-1 block">Object + exclusively retained children</span></div></div></div>
+            </div>
+            <div id="module-4" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 4</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Capturing Heap Dumps</h3>
+                </div>
+                <div class="lesson-content"><div class="my-4"><div class="code-header">terminal</div><pre class="dump-code-block"># Recommended (JDK 11+)
+jcmd &lt;PID&gt; GC.heap_dump /tmp/heap.hprof
+
+# On OOM (set at startup)
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=/var/log/app/heap.hprof
+
+# Legacy
+jmap -dump:live,format=b,file=heap.hprof &lt;PID&gt;</pre></div>
+<div class="bg-slate-950 border border-slate-700 p-5 rounded-2xl my-6 text-sm">
+                <div class="font-semibold mb-2 text-accent">Production Warning</div>
+                <p class="text-slate-300">Live heap dumps trigger a <strong>stop-the-world pause</strong>. For a 8GB heap this can take 30–90 seconds. Capture during maintenance window or low traffic.</p></div></div>
+            </div>
+            <div id="module-5" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 5</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Heap Dump Tools Overview</h3>
+                </div>
+                <div class="lesson-content"><div class="my-6 overflow-x-auto"><table class="w-full text-sm">
+                <thead><tr class="border-b border-slate-700"><th class="text-left py-3 px-4 font-semibold">Tool</th><th class="text-left py-3 px-4 font-semibold">Best For</th><th class="text-left py-3 px-4 font-semibold">Production Use</th></tr></thead>
+                <tbody class="divide-y divide-slate-700 text-slate-300"><tr><td class="py-3 px-4"><strong>Eclipse MAT</strong></td><td class="py-3 px-4">Leak analysis, dominator tree</td><td class="py-3 px-4">Download hprof, analyze offline</td></tr><tr><td class="py-3 px-4"><strong>VisualVM</strong></td><td class="py-3 px-4">Quick histogram</td><td class="py-3 px-4">Smaller dumps, dev/staging</td></tr><tr><td class="py-3 px-4"><strong>jhat</strong></td><td class="py-3 px-4">Server-side quick view</td><td class="py-3 px-4">Large dumps on analysis server</td></tr><tr><td class="py-3 px-4"><strong>JFR</strong></td><td class="py-3 px-4">Live allocation rate</td><td class="py-3 px-4">Complement — not replacement</td></tr></tbody></table></div></div>
+            </div>
+            <div id="module-6" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 6</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Eclipse MAT Fundamentals</h3>
+                </div>
+                <div class="lesson-content"><ol class="list-decimal pl-5 mb-4 text-slate-300 space-y-1"><li class="mb-1">Download Eclipse MAT (Memory Analyzer)</li><li class="mb-1">File → Open Heap Dump (.hprof)</li><li class="mb-1">Run <strong>Leak Suspects Report</strong> first</li><li class="mb-1">Open <strong>Dominator Tree</strong> sorted by retained heap</li><li class="mb-1">Use <strong>Path to GC Roots</strong> on suspicious objects</li><li class="mb-1">Export report for postmortem</li></ol>
+<div class="mt-6 p-4 bg-accent-muted border border-accent-border rounded-2xl text-sm">
+                <div class="text-xs uppercase tracking-widest text-accent mb-1">SRE TIP</div>
+                <p class="text-slate-300">Increase MAT heap: <code class="dump-code">MemoryAnalyzer -vmargs -Xmx8g</code> for large production dumps.</p></div></div>
+            </div>
+            <div id="module-7" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 7</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Dominator Tree &amp; GC Roots</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">The <strong>dominator tree</strong> shows objects that dominate memory — if you remove a dominator, its retained subtree becomes unreachable.</p>
+<p class="text-slate-300 mb-4"><strong>GC roots</strong> are starting points: static fields, thread stacks, JNI, class loaders. Path from root to object explains why GC kept it alive.</p>
+<div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-violet-400">Immediate dominator</span><br><span class="text-xs text-slate-400 mt-1 block">Parent object in retention chain</span></div><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-red-400">Retained set</span><br><span class="text-xs text-slate-400 mt-1 block">All memory freed if object removed</span></div></div></div>
+            </div>
+            <div id="module-8" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 8</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Memory Leak Investigation Workflow</h3>
+                </div>
+                <div class="lesson-content"><ol class="list-decimal pl-5 mb-4 text-slate-300 space-y-1"><li class="mb-1">Confirm heap growth in metrics (not just RSS)</li><li class="mb-1">Capture JFR for allocation rate (optional)</li><li class="mb-1">Take hprof at peak or after OOM</li><li class="mb-1">MAT Leak Suspects → Dominator Tree</li><li class="mb-1">Identify top retainer class and reference chain</li><li class="mb-1">Map to code: cache, ThreadLocal, static map</li><li class="mb-1">Fix + deploy + verify heap flatlines</li></ol></div>
+            </div>
+            <div id="module-9" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 9</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Analyzing OOMKilled Pods</h3>
+                </div>
+                <div class="lesson-content"><div class="my-4"><div class="code-header">terminal</div><pre class="dump-code-block">kubectl describe pod &lt;pod&gt; | grep -A5 OOM
+kubectl logs &lt;pod&gt; --previous
+# If heap path mounted:
+kubectl cp &lt;pod&gt;:/var/log/app/heap.hprof ./oom.hprof</pre></div>
+<p class="text-slate-300 mb-4">Distinguish <strong>heap OOM</strong> (Java heap space) from <strong>container memory limit</strong> (RSS includes native + metaspace + heap).</p></div>
+            </div>
+            <div id="module-10" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 10</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Heap Dump vs JFR vs Native Memory</h3>
+                </div>
+                <div class="lesson-content"><div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm"><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-amber-400">JFR</span><br><span class="text-xs text-slate-400 mt-1 block">Live allocation rate, low overhead</span></div><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-violet-400">Heap dump</span><br><span class="text-xs text-slate-400 mt-1 block">Object graph, retainers, post-OOM</span></div><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-sky-400">Native track</span><br><span class="text-xs text-slate-400 mt-1 block">RSS > heap — NMT, pmap, container limit</span></div></div></div>
+            </div>
+            <div id="module-11" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 11</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Kubernetes Heap Dump Capture</h3>
+                </div>
+                <div class="lesson-content"><div class="my-4"><div class="code-header">terminal</div><pre class="dump-code-block">kubectl exec -it &lt;pod&gt; -- jcmd 1 GC.heap_dump /tmp/heap.hprof
+kubectl cp &lt;pod&gt;:/tmp/heap.hprof ./heap.hprof
+
+# Ephemeral debug container (distroless)
+kubectl debug -it &lt;pod&gt; --image=amazoncorretto:17 --target=app --share-processes</pre></div>
+<div class="mt-6 p-4 bg-accent-muted border border-accent-border rounded-2xl text-sm">
+                <div class="text-xs uppercase tracking-widest text-accent mb-1">SRE TIP</div>
+                <p class="text-slate-300">Mount emptyDir or PVC at HeapDumpPath so OOM dumps survive pod termination.</p></div></div>
+            </div>
+            <div id="module-12" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 12</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Spring Boot Leak Patterns</h3>
+                </div>
+                <div class="lesson-content"><ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><code class="dump-code">@Cacheable</code> without eviction</li><li class="mb-1">HTTP session maps in memory</li><li class="mb-1">Static singleton holding request context</li><li class="mb-1">DevTools classloader in prod (accidental)</li><li class="mb-1">Micrometer registries growing unbounded</li></ul></div>
+            </div>
+            <div id="module-13" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 13</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Database &amp; Cache Leak Patterns</h3>
+                </div>
+                <div class="lesson-content"><div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-red-400">HikariCP proxy leak</span><br><span class="text-xs text-slate-400 mt-1 block">Connection wrappers retained in static list</span></div><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-amber-400">Query result cache</span><br><span class="text-xs text-slate-400 mt-1 block">Unbounded ConcurrentHashMap of lists</span></div></div></div>
+            </div>
+            <div id="module-14" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 14</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Production Best Practices</h3>
+                </div>
+                <div class="lesson-content"><ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Always set HeapDumpOnOutOfMemoryError</li><li class="mb-1">Store dumps on persistent volume in K8s</li><li class="mb-1">Redact PII — heap contains live user data</li><li class="mb-1">Set retention policy — hprof files are large</li><li class="mb-1">Practice MAT workflow in staging quarterly</li><li class="mb-1">Never capture full heap on 32GB+ without approval</li></ul></div>
+            </div>
+            <div id="module-15" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 15</span>
+                    <h3 class="text-3xl font-bold tracking-tight">SRE Incident War Stories</h3>
+                </div>
+                <div class="lesson-content"><div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">Session Cache OOM</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-amber-400 rounded">SEV2</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> Checkout API down 22 min, pods OOMKilled</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> Heap 95%, Full GC every 2 min, P99 timeout</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> MAT: SessionCache retained 4.2GB — 890k session objects, no TTL</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> New feature cached full cart per session without eviction</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> Added Caffeine maxSize=10k + expireAfterAccess=30m</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: Leak Suspects report flagged SessionCache in 2 minutes</p></div>
+<div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">ThreadLocal User Context Leak</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-amber-400 rounded">SEV2</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> Memory climb over 5 days, eventual OOM</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> Gradual heap growth, normal traffic</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> Dominator: ThreadLocalMap → UserContext 2.8GB across 200 threads</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> UserContext set in filter, never removed in finally block</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> threadLocal.remove() in filter finally; pool threads reused</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: ThreadLocal + thread pools = classic leak — always remove()</p></div>
+<div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">Static Map Microservice Leak</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-amber-400 rounded">SEV3</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> Single service OOM every 48h</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> Predictable OOM cycle after deploy</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> Histogram: EventDTO 12M instances in static HashMap</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> Debug logging stored every event in static map 'for troubleshooting'</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> Removed static map; use bounded ring buffer</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: Search dominator for static fields holding collections</p></div>
+<div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">ClassLoader Leak on Redeploy</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-amber-400 rounded">SEV3</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> Metaspace + heap growth on hot redeploys</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> Only after multiple deploys without restart</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> GC roots: WebappClassLoader retained 1.1GB old app classes</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> Thread holding reference to old classloader via shutdown hook</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> Proper lifecycle on shutdown hooks; restart pod on deploy</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: ClassLoader leaks show as metaspace + old gen class objects</p></div>
+<div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">K8s OOM Wrong Limit</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-red-400 rounded">SEV2</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> Pods killed at 512Mi limit, heap only 256MB</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> OOMKilled but small hprof — native memory issue</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> Heap dump only 180MB; RSS was 510MB — direct buffers</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> Container limit too low for heap + metaspace + Netty direct memory</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> Increased limit to 1Gi, -XX:MaxDirectMemorySize=256m</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: OOMKilled ≠ Java heap full — check native and direct memory</p></div>
+<div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">Elasticsearch Client Buffer Leak</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-amber-400 rounded">SEV2</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> Ingestion service OOM during bulk indexing spike</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> byte[] dominates histogram after traffic spike</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> Retained byte[] 3.1GB from unreleased bulk response buffers</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> Exception path skipped buffer release in custom client wrapper</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> try-finally on buffer release; added leak test</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: byte[] top of histogram → buffer or serialization leak</p></div></div>
+            </div>
+            <div id="module-16" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 16</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Heap Dump vs Other Tools</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">Use <strong>heap dump</strong> when you need object-level retention. Use <strong>JFR</strong> for live allocation rate. Use <strong>jstack</strong> for thread state. Use <strong>strace</strong> for OS boundary.</p>
+<div class="flex flex-wrap gap-2 my-4"><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Leak / OOM → hprof + MAT</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Allocation rate → JFR</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Threads blocked → jstack</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Syscall wait → strace</span></div></div>
+            </div>
+            <div id="module-17" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-violet-900 text-violet-300 rounded-2xl">MODULE 17</span>
+                    <h3 class="text-3xl font-bold tracking-tight">SRE Production Playbook</h3>
+                </div>
+                <div class="lesson-content"><div class="flex flex-wrap gap-2 my-4"><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Alert: heap high</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">JFR quick check</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Capture hprof</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">MAT analysis</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Fix retainers</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Verify metrics</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Postmortem</span></div>
+<div class="my-4"><div class="code-header">terminal</div><pre class="dump-code-block"># Emergency checklist
+jcmd &lt;PID&gt; VM.flags | grep HeapDump
+jcmd &lt;PID&gt; GC.heap_dump /tmp/incident.hprof
+# Open in MAT → Leak Suspects → Dominator Tree</pre></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="labs" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <span class="text-accent font-semibold text-sm">PRACTICAL EXPERIENCE</span>
+        <h2 class="section-header mt-2 mb-8">Hands-on Labs</h2>
+        <div class="max-w-4xl mx-auto space-y-4">
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-violet-900 text-violet-300 px-2.5 py-px rounded">LAB 1</span>
+                        <h4 class="font-semibold text-xl mt-2">Capture live heap dump with jcmd</h4>
+                        <p class="text-sm text-slate-400 mt-1">GC.heap_dump on a running Spring Boot service safely.</p>
+                    </div><button onclick="simulateLab(1)" class="self-start px-5 py-2 text-sm font-medium bg-violet-600 hover:bg-violet-500 rounded-2xl flex items-center gap-x-2"><i class="fa-solid fa-play"></i><span>Simulate</span></button>
+                </div>
+            </div>
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-violet-900 text-violet-300 px-2.5 py-px rounded">LAB 2</span>
+                        <h4 class="font-semibold text-xl mt-2">Analyze dominator tree in Eclipse MAT</h4>
+                        <p class="text-sm text-slate-400 mt-1">Find top memory retainers and leak suspects.</p>
+                    </div><button onclick="simulateLab(2)" class="self-start px-5 py-2 text-sm font-medium bg-violet-600 hover:bg-violet-500 rounded-2xl flex items-center gap-x-2"><i class="fa-solid fa-play"></i><span>Simulate</span></button>
+                </div>
+            </div>
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-violet-900 text-violet-300 px-2.5 py-px rounded">LAB 3</span>
+                        <h4 class="font-semibold text-xl mt-2">Configure OOM automatic heap dump</h4>
+                        <p class="text-sm text-slate-400 mt-1">HeapDumpOnOutOfMemoryError for post-mortem.</p>
+                    </div><button onclick="simulateLab(3)" class="self-start px-5 py-2 text-sm font-medium bg-violet-600 hover:bg-violet-500 rounded-2xl flex items-center gap-x-2"><i class="fa-solid fa-play"></i><span>Simulate</span></button>
+                </div>
+            </div>
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-violet-900 text-violet-300 px-2.5 py-px rounded">LAB 4</span>
+                        <h4 class="font-semibold text-xl mt-2">Compare two heap dumps (diff)</h4>
+                        <p class="text-sm text-slate-400 mt-1">Baseline vs incident to find growing object types.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-violet-900 text-violet-300 px-2.5 py-px rounded">LAB 5</span>
+                        <h4 class="font-semibold text-xl mt-2">Capture heap from Kubernetes pod</h4>
+                        <p class="text-sm text-slate-400 mt-1">kubectl exec + jcmd + kubectl cp workflow.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-violet-900 text-violet-300 px-2.5 py-px rounded">LAB 6</span>
+                        <h4 class="font-semibold text-xl mt-2">Investigate ThreadLocal leak via MAT</h4>
+                        <p class="text-sm text-slate-400 mt-1">Find ThreadLocalMap entries retaining sessions.</p>
+                    </div>
+                </div>
+            </div></div>
+    </div>
+
+    <div id="quiz" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800 bg-slate-900">
+        <div class="max-w-3xl mx-auto text-center">
+            <span class="text-accent font-semibold">TEST YOUR KNOWLEDGE</span>
+            <h2 class="section-header mt-2 mb-8">Interactive Quiz</h2>
+            <div id="quiz-container" class="bg-slate-950 border border-slate-700 rounded-3xl p-8">
+                <div id="quiz-start">
+                    <i class="fa-solid fa-question-circle text-6xl text-accent mb-6"></i>
+                    <p class="text-slate-400 mb-8">10 questions · Instant feedback</p>
+                    <button onclick="startQuiz()" class="px-10 py-3.5 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-3xl text-lg">Start Quiz</button>
+                </div>
+                <div id="quiz-questions" class="hidden text-left"></div>
+                <div id="quiz-results" class="hidden py-6">
+                    <div id="quiz-score" class="text-6xl font-bold text-accent mb-2"></div>
+                    <p id="quiz-feedback" class="max-w-md mx-auto text-slate-300 mb-8"></p>
+                    <button onclick="restartQuiz()" class="px-8 py-2.5 border border-slate-600 rounded-2xl text-sm">Try Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="interview" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <span class="text-accent font-semibold text-sm">INTERVIEW PREP</span>
+        <h2 class="section-header mt-2 mb-8">Common Interview Questions</h2>
+        <div class="max-w-3xl mx-auto grid gap-4">
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q1</div>
+            <p class="font-medium mb-2">When do you take a heap dump vs JFR?</p>
+            <p class="text-sm text-slate-400">JFR during live incident for allocation rate; heap dump when you need object retainers or post-OOM analysis.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q2</div>
+            <p class="font-medium mb-2">How to capture heap dump without jmap?</p>
+            <p class="text-sm text-slate-400">jcmd &lt;PID&gt; GC.heap_dump /path/heap.hprof or -XX:+HeapDumpOnOutOfMemoryError.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q3</div>
+            <p class="font-medium mb-2">What is dominator tree?</p>
+            <p class="text-sm text-slate-400">Tree showing which objects retain the most heap — if removed, how much memory becomes unreachable.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q4</div>
+            <p class="font-medium mb-2">Common production leak patterns?</p>
+            <p class="text-sm text-slate-400">Unbounded caches, ThreadLocal, static collections, session maps, connection wrappers.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q5</div>
+            <p class="font-medium mb-2">How to analyze OOMKilled pod?</p>
+            <p class="text-sm text-slate-400">Check if heap dump was written, download hprof, open in MAT, check dominator tree and leak suspects.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q6</div>
+            <p class="font-medium mb-2">Heap dump too large to download?</p>
+            <p class="text-sm text-slate-400">Capture with live objects only, use MAT on server, or analyze subset with jhat remotely.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q7</div>
+            <p class="font-medium mb-2">Difference shallow vs retained heap?</p>
+            <p class="text-sm text-slate-400">Shallow = object itself; retained = object + everything only reachable through it.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q8</div>
+            <p class="font-medium mb-2">GC roots in MAT?</p>
+            <p class="text-sm text-slate-400">Objects reachable from JVM roots — dominator paths explain why objects weren&#x27;t collected.</p>
+        </div></div>
+    </div>
+
+    <div id="flowcharts" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800 bg-slate-900/30">
+        <span class="text-accent font-semibold text-sm">TROUBLESHOOTING</span>
+        <h2 class="section-header mt-2 mb-8">Investigation Flowcharts</h2>
+        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-4">
+        <div class="p-5 bg-slate-900 border border-slate-700 rounded-2xl">
+            <h4 class="font-semibold text-accent mb-3">Memory Leak</h4>
+            <p class="text-sm text-slate-300">Heap growing? → JFR allocation rate → Still leaking? → Capture hprof → MAT dominator tree → Fix retainers</p>
+        </div>
+        <div class="p-5 bg-slate-900 border border-slate-700 rounded-2xl">
+            <h4 class="font-semibold text-accent mb-3">OOMKilled</h4>
+            <p class="text-sm text-slate-300">Pod restart OOMKilled → Heap dump exists? → Open in MAT → Leak suspects → Fix + tune -Xmx</p>
+        </div>
+        <div class="p-5 bg-slate-900 border border-slate-700 rounded-2xl">
+            <h4 class="font-semibold text-accent mb-3">High Heap Usage</h4>
+            <p class="text-sm text-slate-300">Heap &gt; 80% → Live hprof or JFR → Old gen full? → Leak vs legit cache → Tune or fix</p>
+        </div>
+        <div class="p-5 bg-slate-900 border border-slate-700 rounded-2xl">
+            <h4 class="font-semibold text-accent mb-3">MAT Analysis</h4>
+            <p class="text-sm text-slate-300">Open hprof → Leak Suspects report → Dominator tree → Path to GC roots → Identify fix</p>
+        </div></div>
+    </div>
+
+    <div id="cheatsheet" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <h2 class="section-header mb-8">Production Cheat Sheet</h2>
+        <div class="grid lg:grid-cols-2 gap-6 max-w-5xl">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+            <h4 class="font-semibold text-accent mb-4">Capture Live</h4>
+            <pre class="dump-code-block rounded-2xl">jcmd &lt;PID&gt; GC.heap_dump /tmp/heap.hprof</pre>
+        </div>
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+            <h4 class="font-semibold text-accent mb-4">OOM Auto-Dump</h4>
+            <ul class="text-sm text-slate-300 space-y-2"><li>-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/heap.hprof</li></ul>
+        </div>
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+            <h4 class="font-semibold text-accent mb-4">MAT Key Views</h4>
+            <ul class="text-sm text-slate-300 space-y-2"><li>Leak Suspects</li><li>Dominator Tree</li><li>Histogram</li><li>Thread Overview</li><li>GC Roots</li></ul>
+        </div>
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+            <h4 class="font-semibold text-accent mb-4">Common Leaks</h4>
+            <ul class="text-sm text-slate-300 space-y-2"><li>Unbounded HashMap/cache</li><li>ThreadLocal</li><li>static List</li><li>HTTP session map</li><li>ClassLoader leak</li></ul>
+        </div></div>
+    </div>
+
+    <footer class="border-t border-slate-800 bg-slate-900 py-12">
+        <div class="max-w-screen-2xl mx-auto px-8 text-sm text-slate-500 flex flex-col md:flex-row justify-between gap-4">
+            <span>© 2026 Heap Dump SRE Academy</span>
+            <div class="flex flex-wrap gap-5">
+                <a href="../../index.html" class="hover:text-slate-300">SRE Academy</a>
+                <a href="../strace/index.html" class="hover:text-slate-300">strace</a>
+                <a href="../jfr/index.html" class="hover:text-slate-300">JFR</a>
+                <a href="../heapdump/index.html" class="hover:text-slate-300">Heap Dump</a>
+                <a href="../threaddump/index.html" class="hover:text-slate-300">Thread Dump</a>
+                <a href="https://github.com/ManjuReddyT/sre-pages" target="_blank" rel="noopener" class="hover:text-slate-300">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const quizData = [{"q": "Best command to capture heap dump on live JVM (JDK 11+)?", "options": ["jmap -dump:file=heap.hprof", "jcmd <PID> GC.heap_dump heap.hprof", "jstack", "jstat"], "answer": 1, "explanation": "jcmd GC.heap_dump is preferred on modern JDKs."}, {"q": "Which flag auto-creates heap dump on OOM?", "options": ["-XX:+PrintGCDetails", "-XX:+HeapDumpOnOutOfMemoryError", "-Xshare:off", "-XX:+UseG1GC"], "answer": 1, "explanation": "HeapDumpOnOutOfMemoryError captures dump at OOM time."}, {"q": "Primary MAT view for finding what retains memory?", "options": ["Thread Overview", "Dominator Tree", "GC Roots only", "JVM Internals"], "answer": 1, "explanation": "Dominator tree shows retention paths."}, {"q": "Heap dump file extension?", "options": [".jfr", ".hprof", ".tdump", ".gc"], "answer": 1, "explanation": "HPROF is the standard Java heap dump format."}, {"q": "Heap dump vs JFR for leak analysis?", "options": ["JFR shows retainers better", "Heap dump shows object graph; JFR shows allocation rate", "Same thing", "JFR replaces heap dumps"], "answer": 1, "explanation": "Use both: JFR live, heap dump for retainers."}, {"q": "ThreadLocal leak often visible as?", "options": ["High CPU", "ThreadLocalMap entries in dominator tree", "GC logs only", "Network timeouts"], "answer": 1, "explanation": "ThreadLocalMap retains objects per thread."}, {"q": "Capturing heap dump impact on JVM?", "options": ["Always safe, zero pause", "Stop-the-world pause \u2014 plan timing", "Kills the process", "Doubles heap size permanently"], "answer": 1, "explanation": "Heap dump causes STW pause proportional to heap size."}, {"q": "OOMKilled in K8s \u2014 first heap artifact to check?", "options": ["thread dump", "heap dump from previous pod if configured", "DNS logs", "ingress logs"], "answer": 1, "explanation": "HeapDumpOnOutOfMemoryError or pre-OOM manual dump."}, {"q": "MAT 'Leak Suspects' report identifies?", "options": ["Network issues", "Automatic heap leak hypothesis", "CPU hotspots", "GC algorithm"], "answer": 1, "explanation": "MAT runs automated leak analysis rules."}, {"q": "Histogram in MAT shows?", "options": ["Thread states", "Object counts and shallow heap per class", "Socket connections", "GC pause times"], "answer": 1, "explanation": "Histogram = class instance counts and sizes."}];
+        const labSims = {"1": {"title": "Lab 1: Capture heap dump with jcmd", "output": "jcmd 28491 GC.heap_dump /tmp/heap-live.hprof\nHeap dump file created [filesize: 1.2 GB]", "insight": "Live heap dumps pause the JVM briefly \u2014 capture during low traffic or use -dump:format=b for smaller files."}, "2": {"title": "Lab 2: MAT Dominator Tree", "output": "Dominator Tree top retainers:\n  1. com.acme.cache.SessionCache \u2014 42% (680 MB)\n  2. byte[] \u2014 18%\n  3. java.util.concurrent.ConcurrentHashMap$Node \u2014 12%", "insight": "SessionCache retaining 680MB \u2014 classic unbounded cache leak. Check cache eviction policy."}, "3": {"title": "Lab 3: OOM auto-dump", "output": "-XX:+HeapDumpOnOutOfMemoryError\n-XX:HeapDumpPath=/var/log/app/heap-oom.hprof\n\njava.lang.OutOfMemoryError: Java heap space\nDumping heap to /var/log/app/heap-oom.hprof ...", "insight": "Always enable HeapDumpOnOutOfMemoryError in production \u2014 post-mortem without reproduction."}};
+
+        function startCourse() {
+            document.getElementById('curriculum').scrollIntoView({ behavior: 'smooth' });
+        }
+        function toggleMobileMenu() {
+            const m = document.createElement('div');
+            m.className = 'md:hidden fixed inset-0 bg-slate-950/95 z-[60] p-8';
+            m.innerHTML = '<button onclick="this.parentElement.remove()" class="text-3xl mb-8">×</button><div class="flex flex-col gap-4 text-xl"><a href="#curriculum">Curriculum</a><a href="#labs">Labs</a><a href="#quiz">Quiz</a><a href="#cheatsheet">Cheat Sheet</a><a href="../../index.html">Academy</a></div>';
+            document.body.appendChild(m);
+        }
+        function simulateLab(n) {
+            const lab = labSims[n];
+            if (!lab) return;
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-[80] p-6';
+            modal.innerHTML = `<div class="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-3xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-700 flex justify-between bg-slate-950"><span class="font-semibold">${lab.title}</span>
+                <button onclick="this.closest('.fixed').remove()" class="text-xl">×</button></div>
+                <div class="p-6 text-sm"><pre class="dump-code-block rounded-2xl mb-4 text-xs">${lab.output}</pre>
+                <div class="bg-accent-muted border border-accent-border p-4 rounded-2xl text-xs"><strong class="text-accent">SRE insight:</strong> ${lab.insight}</div>
+                <button onclick="this.closest('.fixed').remove()" class="mt-5 w-full py-2.5 bg-violet-600 rounded-2xl font-medium">Close</button></div></div>`;
+            document.body.appendChild(modal);
+        }
+        document.getElementById('search-input')?.addEventListener('input', function() {
+            const t = this.value.toLowerCase();
+            document.querySelectorAll('.module-card, .module-section').forEach(el => {
+                el.style.display = !t || el.textContent.toLowerCase().includes(t) ? '' : 'none';
+            });
+        });
+        let cq = 0, score = 0;
+        function startQuiz() {
+            cq = 0; score = 0;
+            document.getElementById('quiz-start').classList.add('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-questions').classList.remove('hidden');
+            showQ();
+        }
+        function showQ() {
+            const q = quizData[cq];
+            const pct = Math.round((cq / quizData.length) * 100);
+            document.getElementById('quiz-questions').innerHTML = `
+                <div class="mb-6"><div class="flex justify-between text-xs mb-1.5"><span class="text-accent font-medium">Q ${cq+1} / ${quizData.length}</span><span>${pct}%</span></div>
+                <div class="h-1.5 bg-slate-800 rounded-full"><div class="h-1.5 bg-violet-500 rounded-full" style="width:${pct}%"></div></div></div>
+                <div class="text-xl font-semibold mb-6">${q.q}</div>
+                <div class="space-y-3">${q.options.map((o,i) => `<button onclick="answer(${i})" class="quiz-option w-full text-left px-5 py-3.5 border border-slate-700 hover:border-violet-600 rounded-2xl">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>`;
+        }
+        function answer(i) {
+            if (i === quizData[cq].answer) score++;
+            document.querySelectorAll('.quiz-option').forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === quizData[cq].answer) btn.classList.add('!border-violet-500', 'bg-violet-900/30');
+            });
+            setTimeout(() => { cq++; if (cq < quizData.length) showQ(); else {
+                document.getElementById('quiz-questions').classList.add('hidden');
+                document.getElementById('quiz-results').classList.remove('hidden');
+                const pct = Math.round(score/quizData.length*100);
+                document.getElementById('quiz-score').innerHTML = pct + '<span class="text-3xl">%</span>';
+                document.getElementById('quiz-feedback').textContent = pct >= 80 ? 'Excellent — production-ready!' : pct >= 60 ? 'Good foundation — review war stories.' : 'Review modules 1–6 and cheat sheet.';
+            }; }, 1100);
+        }
+        function restartQuiz() {
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-start').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

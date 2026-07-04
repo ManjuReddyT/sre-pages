@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thread Dump SRE Academy • Master Java Concurrency Diagnostics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
+        :root { --accent: #0ea5e9; }
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .font-display { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 600; }
+        .section-header { font-size: 2.25rem; line-height: 2.5rem; font-weight: 700; letter-spacing: -0.025em; }
+        .module-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .module-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .text-accent { color: #0ea5e9; }
+        .text-accent-muted, .bg-accent-muted { }
+        .course-badge { background: #0c4a6e; color: #7dd3fc; font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px; font-weight: 500; }
+        .thread-code-block { background: #020617; color: #e0e7ff; padding: 1rem; border-radius: 0 0 0.5rem 0.5rem; overflow-x: auto; font-size: 0.875rem; border: 1px solid #334155; white-space: pre-wrap; font-family: ui-monospace, Consolas, monospace; }
+        .code-header { background: #1e2937; padding: 0.5rem 1rem; border-radius: 0.5rem 0.5rem 0 0; font-size: 0.75rem; color: #64748b; }
+        .dump-code, .thread-code { background: #0f172a; padding: 2px 6px; border-radius: 4px; font-size: 0.875rem; font-family: ui-monospace, Consolas, monospace; }
+        .module-section { scroll-margin-top: 80px; }
+        .nav-link:hover { color: #0ea5e9; }
+        .bg-accent-muted { background: rgba(14,165,233,0.15); }
+        .border-accent-border { border-color: #0369a1; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-screen-2xl mx-auto px-8 py-4 flex items-center justify-between">
+            <a href="../../index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-sky-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-diagram-project text-white text-2xl"></i></div>
+                <span class="font-display text-2xl font-semibold">ThreadDump SRE</span>
+            </a>
+            <div class="hidden md:flex items-center gap-8 text-sm">
+                <a href="#curriculum" class="nav-link text-slate-300">Curriculum</a>
+                <a href="#labs" class="nav-link text-slate-300">Labs</a>
+                <a href="#quiz" class="nav-link text-slate-300">Quiz</a>
+                <a href="#cheatsheet" class="nav-link text-slate-300">Cheat Sheet</a>
+                <a href="#interview" class="nav-link text-slate-300">Interview</a>
+                <a href="../../index.html" class="text-slate-500 hover:text-white text-xs">← Academy</a>
+            </div>
+            <button class="md:hidden text-slate-400" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars text-xl"></i></button>
+        </div>
+    </nav>
+
+    <div class="max-w-screen-2xl mx-auto pt-16 pb-20 px-8">
+        <div class="grid md:grid-cols-12 gap-12 items-center">
+            <div class="md:col-span-7">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 text-accent rounded-full text-xs font-medium mb-6">
+                    <i class="fa-solid fa-shield-halved"></i> COURSE 4 · JAVA THREAD DUMP ANALYSIS
+                </div>
+                <h1 class="text-5xl md:text-6xl font-display font-bold tracking-tight mb-4">Master <span class="text-sky-400">Thread Dump</span> Analysis</h1>
+                <p class="text-xl text-slate-400 mb-8 max-w-lg">Capture and analyze Java thread dumps — detect deadlocks, lock contention, pool starvation, and blocked I/O in production.</p>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="startCourse()" class="px-8 py-3.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-3xl flex items-center gap-2"><i class="fa-solid fa-play"></i> Start Learning</button>
+                    <button onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})" class="px-6 py-3.5 border border-slate-700 rounded-3xl">Browse Curriculum</button>
+                </div>
+            </div>
+            <div class="md:col-span-5">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8">
+                    <div class="grid grid-cols-3 gap-4 text-center mb-6"><div><div class="text-3xl font-bold text-accent">16</div><div class="text-xs text-slate-500 mt-1">Modules</div></div><div><div class="text-3xl font-bold text-accent">6</div><div class="text-xs text-slate-500 mt-1">War Stories</div></div><div><div class="text-3xl font-bold text-accent">6</div><div class="text-xs text-slate-500 mt-1">Labs</div></div></div>
+                    <div class="border-t border-slate-800 pt-4 space-y-3 text-sm"><div class="flex gap-2"><i class="fa-solid fa-check text-accent"></i><span>jstack & jcmd Thread.print workflows</span></div><div class="flex gap-2"><i class="fa-solid fa-check text-accent"></i><span>Deadlock and BLOCKED thread patterns</span></div><div class="flex gap-2"><i class="fa-solid fa-check text-accent"></i><span>Tomcat, Spring, HikariCP thread analysis</span></div><div class="flex gap-2"><i class="fa-solid fa-check text-accent"></i><span>Correlate with JFR and strace</span></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-screen-2xl mx-auto px-8 py-12 border-t border-slate-800">
+        <h2 class="section-header mb-8">When you need a snapshot of JVM state</h2>
+        <div class="grid md:grid-cols-3 gap-6"><div class="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+        <i class="fa-solid fa-lock text-accent text-2xl mb-3"></i>
+        <h3 class="font-semibold text-lg mb-2">Deadlocks</h3><p class="text-sm text-slate-400">jstack reports Java deadlocks explicitly — instant RCA for hung services.</p></div><div class="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+        <i class="fa-solid fa-users text-accent text-2xl mb-3"></i>
+        <h3 class="font-semibold text-lg mb-2">Pool Starvation</h3><p class="text-sm text-slate-400">See all 200 threads BLOCKED on one lock or I/O wait.</p></div><div class="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+        <i class="fa-solid fa-bolt text-accent text-2xl mb-3"></i>
+        <h3 class="font-semibold text-lg mb-2">Fast & Safe</h3><p class="text-sm text-slate-400">Thread dumps have minimal overhead — capture every few minutes during incidents.</p></div></div>
+    </div>
+
+    <div id="curriculum" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <span class="text-accent text-sm font-semibold">17 MODULES</span>
+        <h2 class="section-header mt-2 mb-8">Complete Curriculum</h2>
+        <div class="relative hidden md:block mb-6 w-64">
+            <input type="text" id="search-input" placeholder="Search modules..." class="w-full bg-slate-900 border border-slate-700 rounded-2xl py-2.5 pl-10 pr-4 text-sm focus:outline-none">
+            <i class="fa-solid fa-search absolute left-4 top-3 text-slate-500"></i>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div onclick="document.getElementById('module-1').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 1</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Introduction to Thread Dumps</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">What thread dumps are and when to capture them.</p>
+            </div>
+            <div onclick="document.getElementById('module-2').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 2</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Why Every SRE Needs Thread Dump Skills</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Hangs and latency without error logs — thread dumps reveal the wait.</p>
+            </div>
+            <div onclick="document.getElementById('module-3').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 3</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Java Thread Fundamentals</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Platform vs virtual threads, thread pools, and monitors.</p>
+            </div>
+            <div onclick="document.getElementById('module-4').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 4</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Capturing Thread Dumps</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">jstack, jcmd, kill -3, and automation.</p>
+            </div>
+            <div onclick="document.getElementById('module-5').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 5</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Reading Thread Dump Format</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Thread headers, stack frames, and lock sections.</p>
+            </div>
+            <div onclick="document.getElementById('module-6').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 6</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Thread States Deep Dive</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">RUNNABLE, BLOCKED, WAITING, TIMED_WAITING meanings.</p>
+            </div>
+            <div onclick="document.getElementById('module-7').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 7</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Deadlock Detection</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Automatic jstack detection and manual cycle analysis.</p>
+            </div>
+            <div onclick="document.getElementById('module-8').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 8</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Lock Contention Analysis</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Many threads BLOCKED on one monitor — the hot lock.</p>
+            </div>
+            <div onclick="document.getElementById('module-9').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 9</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Thread Pool Starvation</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Tomcat, @Async, ForkJoin, and custom executors.</p>
+            </div>
+            <div onclick="document.getElementById('module-10').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 10</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Correlating with JFR and strace</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Three-layer diagnosis: JVM threads, JFR events, kernel syscalls.</p>
+            </div>
+            <div onclick="document.getElementById('module-11').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 11</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Kubernetes Thread Dump Capture</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">kubectl exec and ephemeral debug containers.</p>
+            </div>
+            <div onclick="document.getElementById('module-12').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 12</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Spring Boot Thread Issues</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">@Async, @Scheduled, Tomcat, WebFlux event loops.</p>
+            </div>
+            <div onclick="document.getElementById('module-13').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 13</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Database &amp; I/O Blocked Threads</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">JDBC, HTTP client, and messaging waits in stack traces.</p>
+            </div>
+            <div onclick="document.getElementById('module-14').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 14</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Production Best Practices</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Capture frequency, automation, and storage.</p>
+            </div>
+            <div onclick="document.getElementById('module-15').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 15</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">SRE Incident War Stories</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Real thread dump investigations.</p>
+            </div>
+            <div onclick="document.getElementById('module-16').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 16</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">Thread Dump vs Other Tools</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">jstack vs JFR vs strace decision guide.</p>
+            </div>
+            <div onclick="document.getElementById('module-17').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <span class="course-badge">Module 17</span>
+                <h4 class="font-semibold mt-3 text-lg group-hover:text-accent transition">SRE Production Playbook</h4>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Thread incident response workflow.</p>
+            </div></div>
+    </div>
+
+    <div id="modules-detail" class="max-w-screen-2xl mx-auto px-8 py-12 border-t border-slate-800 bg-slate-900/30">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold mb-2">Detailed Module Content</h2>
+            <p class="text-slate-400 mb-10">Production SRE playbooks, examples, and incident patterns</p>
+            
+            <div id="module-1" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 1</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Introduction to Thread Dumps</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">A <strong>thread dump</strong> is a snapshot of every thread's stack trace, state, and lock information at one instant. Essential for hangs, deadlocks, and pool exhaustion.</p>
+<ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Thread name and ID</li><li class="mb-1">State: RUNNABLE, BLOCKED, WAITING, TIMED_WAITING</li><li class="mb-1">Full stack trace per thread</li><li class="mb-1">Locked monitors and lock waiters</li><li class="mb-1">Deadlock detection (jstack)</li></ul></div>
+            </div>
+            <div id="module-2" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 2</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Why Every SRE Needs Thread Dump Skills</h3>
+                </div>
+                <div class="lesson-content"><div class="my-6 overflow-x-auto"><table class="w-full text-sm">
+                <thead><tr class="border-b border-slate-700"><th class="text-left py-3 px-4 font-semibold">Incident</th><th class="text-left py-3 px-4 font-semibold">Metrics</th><th class="text-left py-3 px-4 font-semibold">Thread Dump Shows</th></tr></thead>
+                <tbody class="divide-y divide-slate-700 text-slate-300"><tr><td class="py-3 px-4">API hung</td><td class="py-3 px-4">Threads maxed, no CPU</td><td class="py-3 px-4">200 threads BLOCKED on HikariCP.getConnection</td></tr><tr><td class="py-3 px-4">Deadlock</td><td class="py-3 px-4">Zero throughput</td><td class="py-3 px-4">Found Java-level deadlock: thread A ↔ B</td></tr><tr><td class="py-3 px-4">Slow recovery</td><td class="py-3 px-4">Gradual latency</td><td class="py-3 px-4">TIMED_WAITING on HTTP client read</td></tr></tbody></table></div></div>
+            </div>
+            <div id="module-3" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 3</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Java Thread Fundamentals</h3>
+                </div>
+                <div class="lesson-content"><ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1"><strong>Platform threads</strong>: 1:1 OS thread (traditional)</li><li class="mb-1"><strong>Virtual threads</strong> (JDK 21+): lightweight, still dumpable</li><li class="mb-1"><strong>Thread pools</strong>: ExecutorService, Tomcat workers</li><li class="mb-1"><strong>Monitors</strong>: synchronized blocks; <strong>AQS</strong>: ReentrantLock, Semaphore</li></ul></div>
+            </div>
+            <div id="module-4" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 4</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Capturing Thread Dumps</h3>
+                </div>
+                <div class="lesson-content"><div class="my-4"><div class="code-header">terminal</div><pre class="thread-code-block">jcmd &lt;PID&gt; Thread.print &gt; /tmp/td-$(date +%s).txt
+jstack -l &lt;PID&gt; &gt; /tmp/td.txt   # -l = extra lock info
+kill -3 &lt;PID&gt;                   # SIGQUIT — dumps to stdout/logs</pre></div>
+<div class="mt-6 p-4 bg-accent-muted border border-accent-border rounded-2xl text-sm">
+                <div class="text-xs uppercase tracking-widest text-accent mb-1">SRE TIP</div>
+                <p class="text-slate-300">Capture <strong>3 dumps 30 seconds apart</strong> during incidents — distinguishes stuck vs slow-progress threads.</p></div></div>
+            </div>
+            <div id="module-5" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 5</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Reading Thread Dump Format</h3>
+                </div>
+                <div class="lesson-content"><div class="my-4"><div class="code-header">terminal</div><pre class="thread-code-block">&quot;http-nio-8080-exec-12&quot; #45 daemon prio=5 os_prio=0 cpu=123ms elapsed=45s tid=0x... nid=0x... waiting on condition
+   java.lang.Thread.State: BLOCKED (on object monitor)
+   at com.zaxxer.hikari.pool.HikariPool.getConnection(...)
+   - waiting to lock &lt;0x00000007b2c4a8f0&gt; (a com.zaxxer.hikari.pool.HikariPool)</pre></div>
+<div class="bg-slate-950 border border-slate-700 p-5 rounded-2xl my-6 text-sm">
+                <div class="font-semibold mb-2 text-accent">Read Top to Bottom</div>
+                <p class="text-slate-300">Thread name → State → Stack frames (most recent at top) → Lock info at bottom of thread block.</p></div></div>
+            </div>
+            <div id="module-6" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 6</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Thread States Deep Dive</h3>
+                </div>
+                <div class="lesson-content"><div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-emerald-400">RUNNABLE</span><br><span class="text-xs text-slate-400 mt-1 block">Executing or ready for CPU</span></div><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-red-400">BLOCKED</span><br><span class="text-xs text-slate-400 mt-1 block">Waiting to enter synchronized block</span></div><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-amber-400">WAITING</span><br><span class="text-xs text-slate-400 mt-1 block">Object.wait() or LockSupport.park() no timeout</span></div><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-sky-400">TIMED_WAITING</span><br><span class="text-xs text-slate-400 mt-1 block">sleep, park with timeout, poll(timeout)</span></div></div></div>
+            </div>
+            <div id="module-7" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 7</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Deadlock Detection</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">jstack prints <code class="thread-code">Found one Java-level deadlock</code> with the cycle of threads and locks.</p>
+<ol class="list-decimal pl-5 mb-4 text-slate-300 space-y-1"><li class="mb-1">Capture jstack immediately on hang</li><li class="mb-1">Search for 'deadlock' (case insensitive)</li><li class="mb-1">Map threads to business operations</li><li class="mb-1">Fix lock ordering — always acquire locks in same global order</li><li class="mb-1">Add timeout locks where appropriate</li></ol></div>
+            </div>
+            <div id="module-8" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 8</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Lock Contention Analysis</h3>
+                </div>
+                <div class="lesson-content"><p class="text-slate-300 mb-4">Search dump for <code class="thread-code">BLOCKED</code> and group by lock address <code class="thread-code">&lt;0x...&gt;</code>. The lock with most waiters is your bottleneck.</p>
+<div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-red-400">synchronized method</span><br><span class="text-xs text-slate-400 mt-1 block">Entire method serialized</span></div><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-amber-400">ReentrantLock.tryLock</span><br><span class="text-xs text-slate-400 mt-1 block">Check if timeout configured</span></div></div></div>
+            </div>
+            <div id="module-9" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 9</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Thread Pool Starvation</h3>
+                </div>
+                <div class="lesson-content"><ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">All <code class="thread-code">http-nio-*-exec-*</code> BLOCKED → Tomcat workers stuck</li><li class="mb-1">All <code class="thread-code">pool-N-thread-M</code> WAITING → custom pool idle or blocked on task</li><li class="mb-1">Queue growing in metrics + all threads busy → undersized pool or slow tasks</li></ul>
+<div class="mt-6 p-4 bg-accent-muted border border-accent-border rounded-2xl text-sm">
+                <div class="text-xs uppercase tracking-widest text-accent mb-1">SRE TIP</div>
+                <p class="text-slate-300">If every worker is BLOCKED on external I/O, increasing pool size only delays failure — fix the dependency.</p></div></div>
+            </div>
+            <div id="module-10" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 10</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Correlating with JFR and strace</h3>
+                </div>
+                <div class="lesson-content"><div class="my-6 overflow-x-auto"><table class="w-full text-sm">
+                <thead><tr class="border-b border-slate-700"><th class="text-left py-3 px-4 font-semibold">Tool</th><th class="text-left py-3 px-4 font-semibold">Shows</th></tr></thead>
+                <tbody class="divide-y divide-slate-700 text-slate-300"><tr><td class="py-3 px-4">Thread dump</td><td class="py-3 px-4">Which Java method / lock threads wait on</td></tr><tr><td class="py-3 px-4">JFR</td><td class="py-3 px-4">JavaMonitorEnter duration, thread timeline</td></tr><tr><td class="py-3 px-4">strace</td><td class="py-3 px-4">futex wait, socket read block at kernel</td></tr></tbody></table></div></div>
+            </div>
+            <div id="module-11" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 11</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Kubernetes Thread Dump Capture</h3>
+                </div>
+                <div class="lesson-content"><div class="my-4"><div class="code-header">terminal</div><pre class="thread-code-block">kubectl exec &lt;pod&gt; -- jstack 1 &gt; thread-dump.txt
+kubectl exec &lt;pod&gt; -- jcmd 1 Thread.print
+# distroless:
+kubectl debug -it &lt;pod&gt; --image=amazoncorretto:17 --target=app --share-processes</pre></div></div>
+            </div>
+            <div id="module-12" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 12</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Spring Boot Thread Issues</h3>
+                </div>
+                <div class="lesson-content"><ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Tomcat <code class="thread-code">http-nio-*</code> — servlet blocking calls kill throughput</li><li class="mb-1"><code class="thread-code">@Async</code> pool threads — separate from HTTP workers</li><li class="mb-1">WebFlux should have few BLOCKED — if many, blocking call in reactive chain</li><li class="mb-1">Scheduler threads stuck on cron job holding global lock</li></ul></div>
+            </div>
+            <div id="module-13" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 13</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Database &amp; I/O Blocked Threads</h3>
+                </div>
+                <div class="lesson-content"><div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-red-400">socketRead0 + PG JDBC</span><br><span class="text-xs text-slate-400 mt-1 block">Threads waiting on slow PostgreSQL query</span></div><div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="font-mono text-sm text-amber-400">HttpClient.read</span><br><span class="text-xs text-slate-400 mt-1 block">Downstream API timeout or slowness</span></div></div></div>
+            </div>
+            <div id="module-14" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 14</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Production Best Practices</h3>
+                </div>
+                <div class="lesson-content"><ul class="list-disc pl-5 mb-4 text-slate-300"><li class="mb-1">Automate capture on health-check failure</li><li class="mb-1">Store dumps with timestamp in incident ticket</li><li class="mb-1">Never restart before capturing dump on hang</li><li class="mb-1">Use lightweight scripts — jcmd preferred</li><li class="mb-1">Correlate thread name with MDC/request ID in logs</li></ul></div>
+            </div>
+            <div id="module-15" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 15</span>
+                    <h3 class="text-3xl font-bold tracking-tight">SRE Incident War Stories</h3>
+                </div>
+                <div class="lesson-content"><div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">Payment Service Deadlock</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-red-400 rounded">SEV1</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> Complete payment outage 18 min</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> Zero throughput, CPU idle, no errors</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> jstack: deadlock between PaymentService.lock and LedgerService.lock</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> Inconsistent lock ordering across two services in same JVM</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> Global lock order: always Ledger then Payment; deployed hotfix</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: jstack deadlock section gave exact threads — fix in 15 min</p></div>
+<div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">Tomcat Thread Pool Exhausted</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-amber-400 rounded">SEV2</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> API timeouts, 503 errors</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> 200/200 Tomcat threads busy</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> All http-nio-exec BLOCKED on HikariPool.getConnection — pool timeout 30s</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> DB failover caused 30s connection attempts holding all workers</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> Reduced connection timeout to 3s; circuit breaker on DB</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: Thread dump showed pool issue faster than DB team escalation</p></div>
+<div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">Kafka Consumer Thread Hang</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-amber-400 rounded">SEV2</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> Consumer lag 5M messages</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> One consumer pod stuck, others fine</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> kafka-consumer-thread BLOCKED on ReentrantLock held by same thread — recursive lock bug</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> Custom interceptor re-entered synchronized block</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> Replaced synchronized with ReentrantLock + removed recursion</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: Single stuck thread in dump — not always all threads</p></div>
+<div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">Scheduled Job Global Lock</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-amber-400 rounded">SEV3</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> API slow every hour on the hour</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> Predictable latency spike</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> scheduling-1 RUNNABLE in heavy loop; 50 http threads BLOCKED on shared StaticLock</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> @Scheduled job held global synchronized lock for 4 minutes during report generation</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> Moved report to @Async with dedicated pool; removed global lock</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: Correlate latency spike time with scheduler thread in dump</p></div>
+<div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">HTTP Client Read Block</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-amber-400 rounded">SEV2</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> Checkout dependency timeout cascade</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> TIMED_WAITING on socket read</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> 80 threads in sun.nio.ch.SocketDispatcher.read waiting on inventory API</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> Inventory service degraded; no circuit breaker on caller</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> Added resilience4j timeout + fallback; reduced client read timeout</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: TIMED_WAITING + socket read = external dependency — not JVM bug</p></div>
+<div class="mb-6 p-6 bg-slate-950 border border-slate-700 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h4 class="font-semibold text-lg">False Alarm — GC Pause</h4>
+                    <span class="text-xs px-2 py-0.5 bg-slate-800 text-slate-400 rounded">SEV4</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-2"><strong>Impact:</strong> Brief hang reported by QA</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Symptoms:</span> All threads RUNNABLE in dump but service unresponsive momentarily</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-accent font-medium">Dump evidence:</span> Dump taken during long GC pause — threads runnable but JVM paused</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-red-400 font-medium">Root cause:</span> Full GC 8s pause — not thread issue</p>
+                <p class="text-sm text-slate-300 mb-2"><span class="text-emerald-400 font-medium">Resolution:</span> Tuned G1; used JFR for GC not thread dump</p>
+                <p class="text-xs text-slate-500 mt-3 italic">Lesson: Thread dump during STW GC is misleading — check GC logs too</p></div></div>
+            </div>
+            <div id="module-16" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 16</span>
+                    <h3 class="text-3xl font-bold tracking-tight">Thread Dump vs Other Tools</h3>
+                </div>
+                <div class="lesson-content"><div class="flex flex-wrap gap-2 my-4"><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Hang/deadlock → jstack</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Lock timing → JFR</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">OS wait → strace</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Memory → heap dump</span></div></div>
+            </div>
+            <div id="module-17" class="module-section mb-16 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <span class="px-4 py-1.5 text-sm font-bold bg-sky-900 text-sky-300 rounded-2xl">MODULE 17</span>
+                    <h3 class="text-3xl font-bold tracking-tight">SRE Production Playbook</h3>
+                </div>
+                <div class="lesson-content"><div class="flex flex-wrap gap-2 my-4"><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Alert: timeouts</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">3x thread dump 30s apart</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Deadlock?</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">BLOCKED group?</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">External I/O?</span><span class="text-xs px-3 py-1 bg-slate-800 rounded-full">Fix + verify</span></div>
+<div class="my-4"><div class="code-header">terminal</div><pre class="thread-code-block"># Incident script
+for i in 1 2 3; do jcmd $PID Thread.print &gt; /tmp/td-$i.txt; sleep 30; done
+diff /tmp/td-1.txt /tmp/td-3.txt  # stuck = identical stacks</pre></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="labs" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <span class="text-accent font-semibold text-sm">PRACTICAL EXPERIENCE</span>
+        <h2 class="section-header mt-2 mb-8">Hands-on Labs</h2>
+        <div class="max-w-4xl mx-auto space-y-4">
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-sky-900 text-sky-300 px-2.5 py-px rounded">LAB 1</span>
+                        <h4 class="font-semibold text-xl mt-2">Capture thread dump with jcmd Thread.print</h4>
+                        <p class="text-sm text-slate-400 mt-1">Safe capture during live incident.</p>
+                    </div><button onclick="simulateLab(1)" class="self-start px-5 py-2 text-sm font-medium bg-sky-600 hover:bg-sky-500 rounded-2xl flex items-center gap-x-2"><i class="fa-solid fa-play"></i><span>Simulate</span></button>
+                </div>
+            </div>
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-sky-900 text-sky-300 px-2.5 py-px rounded">LAB 2</span>
+                        <h4 class="font-semibold text-xl mt-2">Identify deadlock from jstack output</h4>
+                        <p class="text-sm text-slate-400 mt-1">Parse &#x27;Found one Java-level deadlock&#x27; section.</p>
+                    </div><button onclick="simulateLab(2)" class="self-start px-5 py-2 text-sm font-medium bg-sky-600 hover:bg-sky-500 rounded-2xl flex items-center gap-x-2"><i class="fa-solid fa-play"></i><span>Simulate</span></button>
+                </div>
+            </div>
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-sky-900 text-sky-300 px-2.5 py-px rounded">LAB 3</span>
+                        <h4 class="font-semibold text-xl mt-2">Diagnose Tomcat thread pool exhaustion</h4>
+                        <p class="text-sm text-slate-400 mt-1">All workers BLOCKED — find the monitor.</p>
+                    </div><button onclick="simulateLab(3)" class="self-start px-5 py-2 text-sm font-medium bg-sky-600 hover:bg-sky-500 rounded-2xl flex items-center gap-x-2"><i class="fa-solid fa-play"></i><span>Simulate</span></button>
+                </div>
+            </div>
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-sky-900 text-sky-300 px-2.5 py-px rounded">LAB 4</span>
+                        <h4 class="font-semibold text-xl mt-2">Correlate BLOCKED threads with slow DB</h4>
+                        <p class="text-sm text-slate-400 mt-1">Threads waiting on socket read to PostgreSQL.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-sky-900 text-sky-300 px-2.5 py-px rounded">LAB 5</span>
+                        <h4 class="font-semibold text-xl mt-2">Capture from Kubernetes pod</h4>
+                        <p class="text-sm text-slate-400 mt-1">kubectl exec + jstack workflow.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border border-slate-700 bg-slate-900 rounded-3xl p-6">
+                <div class="flex justify-between gap-4">
+                    <div>
+                        <span class="font-mono text-xs bg-sky-900 text-sky-300 px-2.5 py-px rounded">LAB 6</span>
+                        <h4 class="font-semibold text-xl mt-2">Compare 3 thread dumps 30s apart</h4>
+                        <p class="text-sm text-slate-400 mt-1">Stuck vs progressing threads.</p>
+                    </div>
+                </div>
+            </div></div>
+    </div>
+
+    <div id="quiz" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800 bg-slate-900">
+        <div class="max-w-3xl mx-auto text-center">
+            <span class="text-accent font-semibold">TEST YOUR KNOWLEDGE</span>
+            <h2 class="section-header mt-2 mb-8">Interactive Quiz</h2>
+            <div id="quiz-container" class="bg-slate-950 border border-slate-700 rounded-3xl p-8">
+                <div id="quiz-start">
+                    <i class="fa-solid fa-question-circle text-6xl text-accent mb-6"></i>
+                    <p class="text-slate-400 mb-8">10 questions · Instant feedback</p>
+                    <button onclick="startQuiz()" class="px-10 py-3.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-3xl text-lg">Start Quiz</button>
+                </div>
+                <div id="quiz-questions" class="hidden text-left"></div>
+                <div id="quiz-results" class="hidden py-6">
+                    <div id="quiz-score" class="text-6xl font-bold text-accent mb-2"></div>
+                    <p id="quiz-feedback" class="max-w-md mx-auto text-slate-300 mb-8"></p>
+                    <button onclick="restartQuiz()" class="px-8 py-2.5 border border-slate-600 rounded-2xl text-sm">Try Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="interview" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <span class="text-accent font-semibold text-sm">INTERVIEW PREP</span>
+        <h2 class="section-header mt-2 mb-8">Common Interview Questions</h2>
+        <div class="max-w-3xl mx-auto grid gap-4">
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q1</div>
+            <p class="font-medium mb-2">How to capture thread dump in production?</p>
+            <p class="text-sm text-slate-400">jcmd &lt;PID&gt; Thread.print or jstack &lt;PID&gt; — redirect to file. Repeat 2-3 times 30s apart.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q2</div>
+            <p class="font-medium mb-2">How to find deadlock?</p>
+            <p class="text-sm text-slate-400">Search for &#x27;Found one Java-level deadlock&#x27; or analyze lock chains manually in dump.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q3</div>
+            <p class="font-medium mb-2">What causes all Tomcat threads BLOCKED?</p>
+            <p class="text-sm text-slate-400">Slow DB, external API, lock contention, or pool misconfiguration.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q4</div>
+            <p class="font-medium mb-2">THREAD dump during high CPU?</p>
+            <p class="text-sm text-slate-400">Still useful — see if RUNNABLE threads are in tight loop vs blocked.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q5</div>
+            <p class="font-medium mb-2">How to analyze thread pool sizing?</p>
+            <p class="text-sm text-slate-400">Compare active vs max threads in dump; count WAITING on queue vs RUNNABLE.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q6</div>
+            <p class="font-medium mb-2">jstack vs jcmd Thread.print?</p>
+            <p class="text-sm text-slate-400">Equivalent output on modern JDK; jcmd preferred unified tool.</p>
+        </div>
+        <div class="p-5 bg-slate-950 border border-slate-700 rounded-2xl">
+            <div class="text-accent text-xs font-mono mb-2">Q7</div>
+            <p class="font-medium mb-2">Thread dump in Kubernetes?</p>
+            <p class="text-sm text-slate-400">kubectl exec + jstack 1 or jcmd 1 Thread.print; ephemeral container if needed.</p>
+        </div></div>
+    </div>
+
+    <div id="flowcharts" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800 bg-slate-900/30">
+        <span class="text-accent font-semibold text-sm">TROUBLESHOOTING</span>
+        <h2 class="section-header mt-2 mb-8">Investigation Flowcharts</h2>
+        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-4">
+        <div class="p-5 bg-slate-900 border border-slate-700 rounded-2xl">
+            <h4 class="font-semibold text-accent mb-3">Service Hung</h4>
+            <p class="text-sm text-slate-300">No progress on requests → Thread dump x3 → All BLOCKED? → Find lock/socket → Deadlock? → Fix ordering or timeout</p>
+        </div>
+        <div class="p-5 bg-slate-900 border border-slate-700 rounded-2xl">
+            <h4 class="font-semibold text-accent mb-3">High Latency</h4>
+            <p class="text-sm text-slate-300">P99 up → Thread dump → Pool exhausted? → Scale pool or fix slow dep → Lock contention?</p>
+        </div>
+        <div class="p-5 bg-slate-900 border border-slate-700 rounded-2xl">
+            <h4 class="font-semibold text-accent mb-3">Deadlock</h4>
+            <p class="text-sm text-slate-300">Complete hang → jstack → Deadlock section? → Fix lock order → Verify with new dump</p>
+        </div>
+        <div class="p-5 bg-slate-900 border border-slate-700 rounded-2xl">
+            <h4 class="font-semibold text-accent mb-3">DB Slowness</h4>
+            <p class="text-sm text-slate-300">Threads BLOCKED → Stack shows socket read JDBC → DB metrics → Query or pool fix</p>
+        </div></div>
+    </div>
+
+    <div id="cheatsheet" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <h2 class="section-header mb-8">Production Cheat Sheet</h2>
+        <div class="grid lg:grid-cols-2 gap-6 max-w-5xl">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+            <h4 class="font-semibold text-accent mb-4">Capture</h4>
+            <pre class="thread-code-block rounded-2xl">jcmd &lt;PID&gt; Thread.print &gt; /tmp/td.txt
+jstack &lt;PID&gt; &gt; /tmp/td.txt</pre>
+        </div>
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+            <h4 class="font-semibold text-accent mb-4">Thread States</h4>
+            <ul class="text-sm text-slate-300 space-y-2"><li>RUNNABLE</li><li>BLOCKED (monitor)</li><li>WAITING (park)</li><li>TIMED_WAITING</li></ul>
+        </div>
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+            <h4 class="font-semibold text-accent mb-4">Red Flags</h4>
+            <ul class="text-sm text-slate-300 space-y-2"><li>Found Java-level deadlock</li><li>All threads BLOCKED same lock</li><li>pool exhausted</li></ul>
+        </div>
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+            <h4 class="font-semibold text-accent mb-4">Analysis Tips</h4>
+            <ul class="text-sm text-slate-300 space-y-2"><li>Take 3 dumps 30s apart</li><li>Search for BLOCKED</li><li>Correlate with JFR lock events</li></ul>
+        </div></div>
+    </div>
+
+    <footer class="border-t border-slate-800 bg-slate-900 py-12">
+        <div class="max-w-screen-2xl mx-auto px-8 text-sm text-slate-500 flex flex-col md:flex-row justify-between gap-4">
+            <span>© 2026 Thread Dump SRE Academy</span>
+            <div class="flex flex-wrap gap-5">
+                <a href="../../index.html" class="hover:text-slate-300">SRE Academy</a>
+                <a href="../strace/index.html" class="hover:text-slate-300">strace</a>
+                <a href="../jfr/index.html" class="hover:text-slate-300">JFR</a>
+                <a href="../heapdump/index.html" class="hover:text-slate-300">Heap Dump</a>
+                <a href="../threaddump/index.html" class="hover:text-slate-300">Thread Dump</a>
+                <a href="https://github.com/ManjuReddyT/sre-pages" target="_blank" rel="noopener" class="hover:text-slate-300">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const quizData = [{"q": "Primary tool to capture thread dump?", "options": ["jmap", "jstack or jcmd Thread.print", "jstat", "jfr"], "answer": 1, "explanation": "jstack/Thread.print captures all thread stacks."}, {"q": "Thread state waiting for monitor?", "options": ["RUNNABLE", "BLOCKED", "NEW", "TERMINATED"], "answer": 1, "explanation": "BLOCKED = waiting to enter synchronized block."}, {"q": "jstack reports deadlock explicitly?", "options": ["No, manual analysis only", "Yes, 'Found Java-level deadlock'", "Only with special flags", "Only on Linux"], "answer": 1, "explanation": "jstack detects and prints deadlock cycles."}, {"q": "200 threads BLOCKED on same lock means?", "options": ["Normal", "Severe contention or pool starvation", "GC issue", "Memory leak"], "answer": 1, "explanation": "Mass BLOCKED = bottleneck on one resource."}, {"q": "WAITING vs TIMED_WAITING?", "options": ["Same thing", "WAITING indefinite; TIMED_WAITING has timeout", "TIMED_WAITING is deadlock", "WAITING is runnable"], "answer": 1, "explanation": "TIMED_WAITING has park timeout (e.g. poll with timeout)."}, {"q": "Thread dump vs JFR for threads?", "options": ["Identical", "jstack snapshot; JFR shows thread states over time", "JFR cannot see threads", "jstack shows allocation"], "answer": 1, "explanation": "jstack = point in time; JFR = timeline."}, {"q": "Safe frequency during incident?", "options": ["Once only", "Every 30\u201360s \u2014 low overhead", "Every second", "Never in production"], "answer": 1, "explanation": "Multiple dumps show if threads are stuck or progressing."}, {"q": "'Parking to wait for' in dump means?", "options": ["Thread exiting", "LockSupport.park / java.util.concurrent", "GC pause", "OOM"], "answer": 1, "explanation": "Parking = java.util.concurrent locks and semaphores."}, {"q": "Runnable but service slow?", "options": ["Impossible", "Threads runnable but downstream slow, or few threads vs load", "Always deadlock", "Always DNS"], "answer": 1, "explanation": "May need more threads or fix external wait."}, {"q": "Combine thread dump with strace when?", "options": ["Never", "BLOCKED in dump but need kernel-level wait proof", "Memory leak", "GC only"], "answer": 1, "explanation": "strace shows futex/socket wait at OS level."}];
+        const labSims = {"1": {"title": "Lab 1: Capture thread dump", "output": "jcmd 18472 Thread.print > /tmp/threads.txt\n# or\njstack 18472 > /tmp/threads.txt", "insight": "Thread dumps are lightweight \u2014 safe to capture multiple during an incident."}, "2": {"title": "Lab 2: Deadlock detected", "output": "Found one Java-level deadlock:\n\"pool-1-thread-3\" waiting for lock held by \"pool-1-thread-7\"\n\"pool-1-thread-7\" waiting for lock held by \"pool-1-thread-3\"", "insight": "jstack explicitly reports deadlocks \u2014 fix lock ordering immediately."}, "3": {"title": "Lab 3: Thread pool exhausted", "output": "\"http-nio-8080-exec-48\" BLOCKED on java.util.concurrent.Semaphore\n... (200 similar threads all BLOCKED on same monitor)", "insight": "All Tomcat worker threads blocked \u2014 new requests queue indefinitely."}};
+
+        function startCourse() {
+            document.getElementById('curriculum').scrollIntoView({ behavior: 'smooth' });
+        }
+        function toggleMobileMenu() {
+            const m = document.createElement('div');
+            m.className = 'md:hidden fixed inset-0 bg-slate-950/95 z-[60] p-8';
+            m.innerHTML = '<button onclick="this.parentElement.remove()" class="text-3xl mb-8">×</button><div class="flex flex-col gap-4 text-xl"><a href="#curriculum">Curriculum</a><a href="#labs">Labs</a><a href="#quiz">Quiz</a><a href="#cheatsheet">Cheat Sheet</a><a href="../../index.html">Academy</a></div>';
+            document.body.appendChild(m);
+        }
+        function simulateLab(n) {
+            const lab = labSims[n];
+            if (!lab) return;
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-[80] p-6';
+            modal.innerHTML = `<div class="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-3xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-700 flex justify-between bg-slate-950"><span class="font-semibold">${lab.title}</span>
+                <button onclick="this.closest('.fixed').remove()" class="text-xl">×</button></div>
+                <div class="p-6 text-sm"><pre class="thread-code-block rounded-2xl mb-4 text-xs">${lab.output}</pre>
+                <div class="bg-accent-muted border border-accent-border p-4 rounded-2xl text-xs"><strong class="text-accent">SRE insight:</strong> ${lab.insight}</div>
+                <button onclick="this.closest('.fixed').remove()" class="mt-5 w-full py-2.5 bg-sky-600 rounded-2xl font-medium">Close</button></div></div>`;
+            document.body.appendChild(modal);
+        }
+        document.getElementById('search-input')?.addEventListener('input', function() {
+            const t = this.value.toLowerCase();
+            document.querySelectorAll('.module-card, .module-section').forEach(el => {
+                el.style.display = !t || el.textContent.toLowerCase().includes(t) ? '' : 'none';
+            });
+        });
+        let cq = 0, score = 0;
+        function startQuiz() {
+            cq = 0; score = 0;
+            document.getElementById('quiz-start').classList.add('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-questions').classList.remove('hidden');
+            showQ();
+        }
+        function showQ() {
+            const q = quizData[cq];
+            const pct = Math.round((cq / quizData.length) * 100);
+            document.getElementById('quiz-questions').innerHTML = `
+                <div class="mb-6"><div class="flex justify-between text-xs mb-1.5"><span class="text-accent font-medium">Q ${cq+1} / ${quizData.length}</span><span>${pct}%</span></div>
+                <div class="h-1.5 bg-slate-800 rounded-full"><div class="h-1.5 bg-sky-500 rounded-full" style="width:${pct}%"></div></div></div>
+                <div class="text-xl font-semibold mb-6">${q.q}</div>
+                <div class="space-y-3">${q.options.map((o,i) => `<button onclick="answer(${i})" class="quiz-option w-full text-left px-5 py-3.5 border border-slate-700 hover:border-sky-600 rounded-2xl">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>`;
+        }
+        function answer(i) {
+            if (i === quizData[cq].answer) score++;
+            document.querySelectorAll('.quiz-option').forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === quizData[cq].answer) btn.classList.add('!border-sky-500', 'bg-sky-900/30');
+            });
+            setTimeout(() => { cq++; if (cq < quizData.length) showQ(); else {
+                document.getElementById('quiz-questions').classList.add('hidden');
+                document.getElementById('quiz-results').classList.remove('hidden');
+                const pct = Math.round(score/quizData.length*100);
+                document.getElementById('quiz-score').innerHTML = pct + '<span class="text-3xl">%</span>';
+                document.getElementById('quiz-feedback').textContent = pct >= 80 ? 'Excellent — production-ready!' : pct >= 60 ? 'Good foundation — review war stories.' : 'Review modules 1–6 and cheat sheet.';
+            }; }, 1100);
+        }
+        function restartQuiz() {
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-start').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
