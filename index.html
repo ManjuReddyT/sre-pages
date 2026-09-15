@@ -1,134 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SRE Pages Academy</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
-        body { font-family: 'Inter', system-ui, sans-serif; }
-        .font-display { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 600; }
-        .course-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .course-card:hover { transform: translateY(-6px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.25); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manjunatha Reddy T · SRE &amp; Performance</title>
+  <meta name="description" content="Site Reliability and Performance Engineer. Tools, courses, and production debugging practice." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+    body { font-family: Inter, system-ui, sans-serif; }
+    .font-display { font-family: 'Space Grotesk', Inter, sans-serif; }
+    .card { transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -20px rgb(16 185 129 / 0.35); }
+  </style>
 </head>
 <body class="bg-slate-950 text-slate-200 min-h-screen">
-    <nav class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-emerald-600 to-amber-500 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-shield-halved text-white"></i>
-                </div>
-                <span class="font-display text-xl font-semibold">SRE Pages Academy</span>
-            </div>
-            <a href="https://github.com/ManjuReddyT/sre-pages" target="_blank" rel="noopener" class="text-sm text-slate-400 hover:text-white transition">
-                <i class="fa-brands fa-github mr-1"></i> GitHub
-            </a>
-        </div>
-    </nav>
+  <nav class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5">
+        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-amber-500 grid place-items-center text-white text-sm"><i class="fa-solid fa-diagram-project"></i></span>
+        <span class="font-display font-semibold tracking-tight">sreroot</span>
+      </a>
+      <div class="hidden sm:flex items-center gap-6 text-sm text-slate-400">
+        <a href="#work" class="hover:text-white">Work</a>
+        <a href="academy.html" class="hover:text-white">Academy</a>
+        <a href="https://devutil.sreroot.com" class="hover:text-white">Tools</a>
+        <a href="https://github.com/ManjuReddyT" target="_blank" rel="noopener" class="hover:text-white"><i class="fa-brands fa-github"></i></a>
+      </div>
+    </div>
+  </nav>
 
-    <main class="max-w-6xl mx-auto px-6 py-16">
-        <div class="text-center mb-16">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-900 border border-slate-800 rounded-full text-sm text-emerald-400 mb-6">
-                <i class="fa-solid fa-graduation-cap"></i>
-                <span>Production-focused SRE training</span>
-            </div>
-            <h1 class="font-display text-5xl md:text-6xl font-bold tracking-tight mb-4">
-                Master production<br>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-400">debugging &amp; observability</span>
-            </h1>
-            <p class="text-xl text-slate-400 max-w-2xl mx-auto">
-                Hands-on courses for SREs and platform engineers. Linux syscall tracing, JFR profiling, heap dumps, and thread dumps — the way you'd use them in real incidents.
-            </p>
-        </div>
+  <header class="max-w-5xl mx-auto px-6 pt-16 pb-12 md:pt-24">
+    <p class="text-emerald-400 text-sm font-medium tracking-wide mb-4">Site Reliability &amp; Performance Engineer · Bengaluru</p>
+    <h1 class="font-display text-4xl md:text-6xl font-bold tracking-tight text-white leading-[1.05] mb-6">
+      When the same diagnosis<br class="hidden md:block" /> repeats, it becomes a tool.
+    </h1>
+    <p class="text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed">
+      I work on reliability and performance of large distributed systems — load, latency, JVM runtime, and Kubernetes health.
+      Thirteen years of turning production evidence into a clear next step.
+    </p>
+  </header>
 
-        <div class="grid md:grid-cols-2 gap-6">
-            <a href="courses/strace/index.html" class="course-card block bg-slate-900 border border-slate-800 hover:border-emerald-600 rounded-3xl p-8 group">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-14 h-14 bg-emerald-600/20 text-emerald-400 rounded-2xl flex items-center justify-center text-2xl">
-                        <i class="fa-solid fa-terminal"></i>
-                    </div>
-                    <span class="text-xs font-semibold px-3 py-1 bg-emerald-900/50 text-emerald-300 rounded-full">COURSE 1</span>
-                </div>
-                <h2 class="font-display text-2xl font-bold mb-2 group-hover:text-emerald-400 transition">strace Academy</h2>
-                <p class="text-slate-400 mb-6">Master Linux system call tracing for diagnosing hangs, CPU spikes, container failures, and network issues.</p>
-                <div class="flex flex-wrap gap-2 text-xs text-slate-500 mb-6">
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">14 modules</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">15 labs</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">Interactive quiz</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">Cheat sheet</span>
-                </div>
-                <span class="text-emerald-400 font-medium text-sm flex items-center gap-2">
-                    Start Course <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
-                </span>
-            </a>
+  <section class="max-w-5xl mx-auto px-6 pb-16">
+    <div class="grid md:grid-cols-12 gap-10 items-start">
+      <div class="md:col-span-7 space-y-5 text-slate-300 leading-relaxed">
+        <p>Most incidents are not mysterious. They are a missing correlation between metrics, logs, a dump, and what the platform was doing at that moment.</p>
+        <p>My practice is evidence first: traces, JFR, heap and thread dumps, GC behavior, probe failures, and capacity under sustained load — before any change in production.</p>
+        <p>The public work here is the reusable part of that practice: courses for production debugging, and tools that cut the time between “something is wrong” and “here is the cause.”</p>
+      </div>
+      <aside class="md:col-span-5 bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+        <p class="text-xs uppercase tracking-wider text-slate-500 mb-4">Focus</p>
+        <ul class="space-y-3 text-sm text-slate-300">
+          <li class="flex gap-3"><span class="text-emerald-400 mt-0.5">●</span> Performance engineering &amp; NFR</li>
+          <li class="flex gap-3"><span class="text-emerald-400 mt-0.5">●</span> JVM diagnostics (JFR, dumps, GC)</li>
+          <li class="flex gap-3"><span class="text-emerald-400 mt-0.5">●</span> Kubernetes workload health</li>
+          <li class="flex gap-3"><span class="text-emerald-400 mt-0.5">●</span> Observability &amp; incident RCA</li>
+          <li class="flex gap-3"><span class="text-emerald-400 mt-0.5">●</span> Internal tools that replace repeat work</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
 
-            <a href="courses/jfr/index.html" class="course-card block bg-slate-900 border border-slate-800 hover:border-amber-500 rounded-3xl p-8 group">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-14 h-14 bg-amber-600/20 text-amber-400 rounded-2xl flex items-center justify-center text-2xl">
-                        <i class="fa-brands fa-java"></i>
-                    </div>
-                    <span class="text-xs font-semibold px-3 py-1 bg-amber-900/50 text-amber-300 rounded-full">COURSE 2</span>
-                </div>
-                <h2 class="font-display text-2xl font-bold mb-2 group-hover:text-amber-400 transition">Java Flight Recorder (JFR)</h2>
-                <p class="text-slate-400 mb-6">Master JVM observability — CPU hotspots, memory leaks, GC pauses, lock contention, and Kubernetes debugging.</p>
-                <div class="flex flex-wrap gap-2 text-xs text-slate-500 mb-6">
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">20 modules</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">3 bonus modules</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">7 labs</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">Cheat sheet</span>
-                </div>
-                <span class="text-amber-400 font-medium text-sm flex items-center gap-2">
-                    Start Course <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
-                </span>
-            </a>
+  <section id="work" class="max-w-5xl mx-auto px-6 pb-20">
+    <h2 class="font-display text-2xl font-semibold text-white mb-6">Start here</h2>
+    <div class="grid md:grid-cols-3 gap-5">
+      <a href="academy.html" class="card block rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/60">
+        <p class="text-xs text-emerald-400 mb-3">Courses</p>
+        <h3 class="font-display text-xl text-white mb-2">SRE Academy</h3>
+        <p class="text-sm text-slate-400 mb-4">strace, JFR, heap dumps, thread dumps — production debugging as it is done on-call.</p>
+        <p class="text-sm text-emerald-400">Open academy →</p>
+      </a>
+      <a href="https://devutil.sreroot.com" class="card block rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-violet-500/60">
+        <p class="text-xs text-violet-400 mb-3">Tools</p>
+        <h3 class="font-display text-xl text-white mb-2">DevUtil</h3>
+        <p class="text-sm text-slate-400 mb-4">Client-side utilities for formats, diffs, tokens, SQL, and everyday engineer work.</p>
+        <p class="text-sm text-violet-400">Open DevUtil →</p>
+      </a>
+      <a href="https://perf.sreroot.com" class="card block rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-amber-500/60">
+        <p class="text-xs text-amber-400 mb-3">Performance</p>
+        <h3 class="font-display text-xl text-white mb-2">PerfAnalyzer</h3>
+        <p class="text-sm text-slate-400 mb-4">Read JMeter and related reports locally. Compare runs. Find the slow path.</p>
+        <p class="text-sm text-amber-400">Open PerfAnalyzer →</p>
+      </a>
+    </div>
+  </section>
 
-            <a href="courses/heapdump/index.html" class="course-card block bg-slate-900 border border-slate-800 hover:border-violet-500 rounded-3xl p-8 group">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-14 h-14 bg-violet-600/20 text-violet-400 rounded-2xl flex items-center justify-center text-2xl">
-                        <i class="fa-solid fa-database"></i>
-                    </div>
-                    <span class="text-xs font-semibold px-3 py-1 bg-violet-900/50 text-violet-300 rounded-full">COURSE 3 · NEW</span>
-                </div>
-                <h2 class="font-display text-2xl font-bold mb-2 group-hover:text-violet-400 transition">Java Heap Dump Analysis</h2>
-                <p class="text-slate-400 mb-6">Capture and analyze heap dumps with Eclipse MAT — find memory leaks, OOM root causes, and dominator retainers.</p>
-                <div class="flex flex-wrap gap-2 text-xs text-slate-500 mb-6">
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">16 modules</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">6 war stories</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">6 labs</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">Cheat sheet</span>
-                </div>
-                <span class="text-violet-400 font-medium text-sm flex items-center gap-2">
-                    Start Course <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
-                </span>
-            </a>
+  <section class="max-w-5xl mx-auto px-6 pb-20">
+    <h2 class="font-display text-2xl font-semibold text-white mb-4">How I work</h2>
+    <div class="grid md:grid-cols-2 gap-4 text-sm text-slate-400">
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40">Evidence before change. Dumps and traces beat guesswork.</div>
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40">Least privilege on clusters. Auditable workflows over standing write access.</div>
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40">Shift-left performance. Load and latency checked before release, not after.</div>
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40">Repeatable diagnosis becomes a tool. That is the origin of this site.</div>
+    </div>
+  </section>
 
-            <a href="courses/threaddump/index.html" class="course-card block bg-slate-900 border border-slate-800 hover:border-sky-500 rounded-3xl p-8 group">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-14 h-14 bg-sky-600/20 text-sky-400 rounded-2xl flex items-center justify-center text-2xl">
-                        <i class="fa-solid fa-diagram-project"></i>
-                    </div>
-                    <span class="text-xs font-semibold px-3 py-1 bg-sky-900/50 text-sky-300 rounded-full">COURSE 4 · NEW</span>
-                </div>
-                <h2 class="font-display text-2xl font-bold mb-2 group-hover:text-sky-400 transition">Java Thread Dump Analysis</h2>
-                <p class="text-slate-400 mb-6">Detect deadlocks, lock contention, pool starvation, and blocked I/O — jstack and jcmd workflows for hung JVMs.</p>
-                <div class="flex flex-wrap gap-2 text-xs text-slate-500 mb-6">
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">16 modules</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">6 war stories</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">6 labs</span>
-                    <span class="px-2.5 py-1 bg-slate-800 rounded-full">Cheat sheet</span>
-                </div>
-                <span class="text-sky-400 font-medium text-sm flex items-center gap-2">
-                    Start Course <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
-                </span>
-            </a>
-        </div>
-
-        <div class="mt-16 text-center text-sm text-slate-500">
-            <p>Hosted on <a href="https://manjureddyt.github.io/sre-pages/" class="text-slate-400 hover:text-white">GitHub Pages</a> · Open source · Built for production SREs</p>
-        </div>
-    </main>
+  <footer class="border-t border-slate-800">
+    <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between text-sm text-slate-500">
+      <p>sreroot.com · public work only</p>
+      <div class="flex gap-4">
+        <a class="hover:text-white" href="https://github.com/ManjuReddyT" target="_blank" rel="noopener">GitHub</a>
+        <a class="hover:text-white" href="https://x.com/tmanjureddy" target="_blank" rel="noopener">X</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
