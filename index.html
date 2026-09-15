@@ -3,105 +3,121 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manjunatha Reddy T · SRE &amp; Performance</title>
-  <meta name="description" content="Site Reliability and Performance Engineer. Tools, courses, and production debugging practice." />
+  <title>Manjunatha Reddy T · Site Reliability &amp; Performance</title>
+  <meta name="description" content="Site Reliability and Performance Engineer based in Bengaluru. Public tools and courses for production debugging." />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { theme: { extend: { colors: { ink: '#0f172a', muted: '#475569', line: '#e2e8f0', paper: '#f7f7f5', card: '#ffffff' }, fontFamily: { sans: ['Source Sans 3', 'system-ui', 'sans-serif'], display: ['Source Serif 4', 'Georgia', 'serif'] } } } }</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
-    body { font-family: Inter, system-ui, sans-serif; }
-    .font-display { font-family: 'Space Grotesk', Inter, sans-serif; }
-    .card { transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -20px rgb(16 185 129 / 0.35); }
+    body { font-family: 'Source Sans 3', system-ui, sans-serif; background: #f7f7f5; color: #0f172a; }
+    .font-display { font-family: 'Source Serif 4', Georgia, serif; }
+    .card { transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -16px rgba(15, 23, 42, .18); border-color: #cbd5e1; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-200 min-h-screen">
-  <nav class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+<body class="min-h-screen">
+  <header class="border-b border-line bg-paper/90 backdrop-blur sticky top-0 z-50">
     <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2.5">
-        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-amber-500 grid place-items-center text-white text-sm"><i class="fa-solid fa-diagram-project"></i></span>
-        <span class="font-display font-semibold tracking-tight">sreroot</span>
+      <a href="/" class="flex items-center gap-3">
+        <span class="text-[13px] tracking-[0.18em] uppercase text-muted">sreroot</span>
+        <span class="hidden sm:inline text-line">|</span>
+        <span class="hidden sm:inline text-sm text-ink font-medium">Manjunatha Reddy T</span>
       </a>
-      <div class="hidden sm:flex items-center gap-6 text-sm text-slate-400">
-        <a href="#work" class="hover:text-white">Work</a>
-        <a href="academy.html" class="hover:text-white">Academy</a>
-        <a href="https://devutil.sreroot.com" class="hover:text-white">Tools</a>
-        <a href="https://github.com/ManjuReddyT" target="_blank" rel="noopener" class="hover:text-white"><i class="fa-brands fa-github"></i></a>
-      </div>
+      <nav class="flex items-center gap-5 text-sm text-muted">
+        <a class="hover:text-ink" href="#practice">Practice</a>
+        <a class="hover:text-ink" href="#work">Work</a>
+        <a class="hover:text-ink" href="academy.html">Academy</a>
+        <a class="hover:text-ink" href="https://www.linkedin.com/in/manjureddyt" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a class="hover:text-ink" href="https://github.com/ManjuReddyT" target="_blank" rel="noopener" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+      </nav>
     </div>
-  </nav>
-
-  <header class="max-w-5xl mx-auto px-6 pt-16 pb-12 md:pt-24">
-    <p class="text-emerald-400 text-sm font-medium tracking-wide mb-4">Site Reliability &amp; Performance Engineer · Bengaluru</p>
-    <h1 class="font-display text-4xl md:text-6xl font-bold tracking-tight text-white leading-[1.05] mb-6">
-      When the same diagnosis<br class="hidden md:block" /> repeats, it becomes a tool.
-    </h1>
-    <p class="text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed">
-      I work on reliability and performance of large distributed systems — load, latency, JVM runtime, and Kubernetes health.
-      Thirteen years of turning production evidence into a clear next step.
-    </p>
   </header>
 
-  <section class="max-w-5xl mx-auto px-6 pb-16">
-    <div class="grid md:grid-cols-12 gap-10 items-start">
-      <div class="md:col-span-7 space-y-5 text-slate-300 leading-relaxed">
-        <p>Most incidents are not mysterious. They are a missing correlation between metrics, logs, a dump, and what the platform was doing at that moment.</p>
-        <p>My practice is evidence first: traces, JFR, heap and thread dumps, GC behavior, probe failures, and capacity under sustained load — before any change in production.</p>
-        <p>The public work here is the reusable part of that practice: courses for production debugging, and tools that cut the time between “something is wrong” and “here is the cause.”</p>
+  <main>
+    <section class="max-w-5xl mx-auto px-6 pt-16 pb-12 md:pt-24 md:pb-16 border-b border-line">
+      <p class="text-sm tracking-wide text-muted mb-5">Site Reliability &amp; Performance Engineer · Bengaluru</p>
+      <h1 class="font-display text-[2.15rem] md:text-5xl leading-[1.15] font-semibold text-ink max-w-3xl">
+        Reliability work that starts with evidence, not a guess.
+      </h1>
+      <p class="mt-6 text-lg text-muted max-w-2xl leading-relaxed">
+        I spend my time on load, latency, JVM runtime behaviour, and Kubernetes health in large distributed systems.
+        Thirteen years of turning production signals into a decision the next person can act on.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="#work" class="inline-flex items-center rounded-md bg-ink text-white text-sm px-4 py-2.5 hover:bg-slate-800">View public work</a>
+        <a href="https://www.linkedin.com/in/manjureddyt" target="_blank" rel="noopener" class="inline-flex items-center rounded-md border border-line bg-white text-sm px-4 py-2.5 hover:border-slate-400">LinkedIn</a>
       </div>
-      <aside class="md:col-span-5 bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
-        <p class="text-xs uppercase tracking-wider text-slate-500 mb-4">Focus</p>
-        <ul class="space-y-3 text-sm text-slate-300">
-          <li class="flex gap-3"><span class="text-emerald-400 mt-0.5">●</span> Performance engineering &amp; NFR</li>
-          <li class="flex gap-3"><span class="text-emerald-400 mt-0.5">●</span> JVM diagnostics (JFR, dumps, GC)</li>
-          <li class="flex gap-3"><span class="text-emerald-400 mt-0.5">●</span> Kubernetes workload health</li>
-          <li class="flex gap-3"><span class="text-emerald-400 mt-0.5">●</span> Observability &amp; incident RCA</li>
-          <li class="flex gap-3"><span class="text-emerald-400 mt-0.5">●</span> Internal tools that replace repeat work</li>
-        </ul>
+    </section>
+
+    <section id="practice" class="max-w-5xl mx-auto px-6 py-16 grid md:grid-cols-12 gap-12 border-b border-line">
+      <div class="md:col-span-7 space-y-4 text-[17px] leading-relaxed text-slate-700">
+        <h2 class="font-display text-2xl text-ink mb-2">A short note</h2>
+        <p>Most incidents are not mysterious. They are a missing join between metrics, logs, a dump, and what the platform was doing at that moment.</p>
+        <p>The working rule is simple: collect evidence first. Traces, JFR, heap and thread dumps, GC behaviour, probe failures, and capacity under sustained load — before any production change.</p>
+        <p>What you will find on this site is the reusable part of that practice. Courses for production debugging. Tools that shorten the path from “something is wrong” to “here is the cause.”</p>
+      </div>
+      <aside class="md:col-span-5">
+        <div class="bg-white border border-line rounded-lg p-6">
+          <p class="text-xs uppercase tracking-[0.16em] text-muted mb-4">Focus</p>
+          <ul class="space-y-3 text-sm text-slate-700">
+            <li class="border-b border-line pb-3">Performance engineering and NFR</li>
+            <li class="border-b border-line pb-3">JVM diagnostics — JFR, dumps, GC</li>
+            <li class="border-b border-line pb-3">Kubernetes workload health</li>
+            <li class="border-b border-line pb-3">Observability and incident RCA</li>
+            <li>Tools that replace repeated diagnosis</li>
+          </ul>
+        </div>
       </aside>
-    </div>
-  </section>
+    </section>
 
-  <section id="work" class="max-w-5xl mx-auto px-6 pb-20">
-    <h2 class="font-display text-2xl font-semibold text-white mb-6">Start here</h2>
-    <div class="grid md:grid-cols-3 gap-5">
-      <a href="academy.html" class="card block rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/60">
-        <p class="text-xs text-emerald-400 mb-3">Courses</p>
-        <h3 class="font-display text-xl text-white mb-2">SRE Academy</h3>
-        <p class="text-sm text-slate-400 mb-4">strace, JFR, heap dumps, thread dumps — production debugging as it is done on-call.</p>
-        <p class="text-sm text-emerald-400">Open academy →</p>
-      </a>
-      <a href="https://devutil.sreroot.com" class="card block rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-violet-500/60">
-        <p class="text-xs text-violet-400 mb-3">Tools</p>
-        <h3 class="font-display text-xl text-white mb-2">DevUtil</h3>
-        <p class="text-sm text-slate-400 mb-4">Client-side utilities for formats, diffs, tokens, SQL, and everyday engineer work.</p>
-        <p class="text-sm text-violet-400">Open DevUtil →</p>
-      </a>
-      <a href="https://perf.sreroot.com" class="card block rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-amber-500/60">
-        <p class="text-xs text-amber-400 mb-3">Performance</p>
-        <h3 class="font-display text-xl text-white mb-2">PerfAnalyzer</h3>
-        <p class="text-sm text-slate-400 mb-4">Read JMeter and related reports locally. Compare runs. Find the slow path.</p>
-        <p class="text-sm text-amber-400">Open PerfAnalyzer →</p>
-      </a>
-    </div>
-  </section>
+    <section id="work" class="max-w-5xl mx-auto px-6 py-16">
+      <div class="flex items-end justify-between mb-8">
+        <h2 class="font-display text-2xl text-ink">Public work</h2>
+        <p class="text-sm text-muted hidden sm:block">Courses and tools. Nothing confidential.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-5">
+        <a href="academy.html" class="card block bg-white border border-line rounded-lg p-6">
+          <p class="text-xs uppercase tracking-[0.14em] text-muted mb-3">01 · Courses</p>
+          <h3 class="font-display text-xl text-ink mb-2">SRE Academy</h3>
+          <p class="text-sm text-slate-600 mb-6 leading-relaxed">strace, JFR, heap dumps, and thread dumps — production debugging as it is done on-call.</p>
+          <p class="text-sm font-medium text-ink">Open academy →</p>
+        </a>
+        <a href="https://devutil.sreroot.com" class="card block bg-white border border-line rounded-lg p-6">
+          <p class="text-xs uppercase tracking-[0.14em] text-muted mb-3">02 · Tools</p>
+          <h3 class="font-display text-xl text-ink mb-2">DevUtil</h3>
+          <p class="text-sm text-slate-600 mb-6 leading-relaxed">Client-side utilities for formats, diffs, tokens, SQL, and everyday engineering work.</p>
+          <p class="text-sm font-medium text-ink">Open DevUtil →</p>
+        </a>
+        <a href="https://perf.sreroot.com" class="card block bg-white border border-line rounded-lg p-6">
+          <p class="text-xs uppercase tracking-[0.14em] text-muted mb-3">03 · Performance</p>
+          <h3 class="font-display text-xl text-ink mb-2">PerfAnalyzer</h3>
+          <p class="text-sm text-slate-600 mb-6 leading-relaxed">Read JMeter reports locally. Compare runs. Isolate the slow path without uploading data.</p>
+          <p class="text-sm font-medium text-ink">Open PerfAnalyzer →</p>
+        </a>
+      </div>
+    </section>
 
-  <section class="max-w-5xl mx-auto px-6 pb-20">
-    <h2 class="font-display text-2xl font-semibold text-white mb-4">How I work</h2>
-    <div class="grid md:grid-cols-2 gap-4 text-sm text-slate-400">
-      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40">Evidence before change. Dumps and traces beat guesswork.</div>
-      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40">Least privilege on clusters. Auditable workflows over standing write access.</div>
-      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40">Shift-left performance. Load and latency checked before release, not after.</div>
-      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40">Repeatable diagnosis becomes a tool. That is the origin of this site.</div>
-    </div>
-  </section>
+    <section class="max-w-5xl mx-auto px-6 pb-20">
+      <h2 class="font-display text-2xl text-ink mb-6">Working principles</h2>
+      <ol class="grid md:grid-cols-2 gap-px bg-line border border-line rounded-lg overflow-hidden">
+        <li class="bg-white p-6 text-sm text-slate-700"><span class="block text-muted text-xs mb-2">01</span>Evidence before change. Dumps and traces beat guesswork.</li>
+        <li class="bg-white p-6 text-sm text-slate-700"><span class="block text-muted text-xs mb-2">02</span>Least privilege on clusters. Auditable workflows over standing write access.</li>
+        <li class="bg-white p-6 text-sm text-slate-700"><span class="block text-muted text-xs mb-2">03</span>Shift-left performance. Load and latency checked before release.</li>
+        <li class="bg-white p-6 text-sm text-slate-700"><span class="block text-muted text-xs mb-2">04</span>If the same diagnosis repeats, it becomes a tool.</li>
+      </ol>
+    </section>
+  </main>
 
-  <footer class="border-t border-slate-800">
-    <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between text-sm text-slate-500">
-      <p>sreroot.com · public work only</p>
-      <div class="flex gap-4">
-        <a class="hover:text-white" href="https://github.com/ManjuReddyT" target="_blank" rel="noopener">GitHub</a>
-        <a class="hover:text-white" href="https://x.com/tmanjureddy" target="_blank" rel="noopener">X</a>
+  <footer class="border-t border-line bg-white">
+    <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm text-muted">
+      <p>sreroot.com</p>
+      <div class="flex gap-5">
+        <a class="hover:text-ink" href="https://www.linkedin.com/in/manjureddyt" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="hover:text-ink" href="https://github.com/ManjuReddyT" target="_blank" rel="noopener">GitHub</a>
+        <a class="hover:text-ink" href="https://x.com/tmanjureddy" target="_blank" rel="noopener">X</a>
       </div>
     </div>
   </footer>
