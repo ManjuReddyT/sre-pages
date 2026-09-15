@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manjunatha Reddy T · Site Reliability & Performance</title>
   <meta name="description" content="Site Reliability and Performance Engineer based in Bengaluru. Public tools and courses for production debugging." />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { colors: { ink: '#0f172a', muted: '#475569', line: '#e2e8f0', paper: '#f7f7f5', card: '#ffffff' }, fontFamily: { sans: ['Source Sans 3', 'system-ui', 'sans-serif'], display: ['Source Serif 4', 'Georgia', 'serif'] } } } }</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,9 +24,10 @@
   <header class="border-b border-line bg-paper/90 backdrop-blur sticky top-0 z-50">
     <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
       <a href="/" class="flex items-center gap-3">
-        <span class="text-[13px] tracking-[0.18em] uppercase text-muted">sreroot</span>
+        <img src="assets/favicon.svg" alt="sreroot" class="w-8 h-8" />
+        <span class="text-sm font-semibold tracking-tight text-ink">sreroot</span>
         <span class="hidden sm:inline text-line">|</span>
-        <span class="hidden sm:inline text-sm text-ink font-medium">Manjunatha Reddy T</span>
+        <span class="hidden sm:inline text-sm text-muted">Manjunatha Reddy T</span>
       </a>
       <nav class="flex items-center gap-5 text-sm text-muted">
         <a class="hover:text-ink" href="#practice">Practice</a>
@@ -113,7 +116,7 @@
 
   <footer class="border-t border-line bg-white">
     <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm text-muted">
-      <p>sreroot.com</p>
+      <p class="flex items-center gap-2"><img src="assets/favicon.svg" alt="" class="w-4 h-4" /> sreroot.com</p>
       <div class="flex gap-5">
         <a class="hover:text-ink" href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener">LinkedIn</a>
         <a class="hover:text-ink" href="https://github.com/ManjuReddyT" target="_blank" rel="noopener">GitHub</a>
