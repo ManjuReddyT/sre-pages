@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About · Manjunatha Reddy T</title>
+  <meta name="description" content="Site Reliability and Performance Engineer. Evidence-first diagnostics, tools, and production debugging." />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07111a; --card: #0d1c27; --line: #1e3342;
+      --text: #d7e3ec; --muted: #8aa0b0; --green: #3dd68c; --blue: #7eb6ff;
+    }
+    [data-theme="light"] {
+      --bg: #f4f6f5; --card: #ffffff; --line: #d5ddd8;
+      --text: #1b2a33; --muted: #5b6f7a; --green: #0f8a56; --blue: #155eef;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: "IBM Plex Sans", system-ui, sans-serif; line-height: 1.55; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    header { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    .nav { display: flex; align-items: center; justify-content: space-between; height: 56px; gap: 16px; }
+    .prompt { color: var(--green); font-size: 13px; white-space: nowrap; }
+    .links { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+    .links a { color: var(--muted); text-decoration: none; }
+    .links a:hover, .links a.active { color: var(--green); }
+    .icon-btn { background: transparent; border: 1px solid var(--line); color: var(--text); width: 34px; height: 34px; border-radius: 8px; cursor: pointer; }
+    .hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 28px; padding: 48px 0 28px; }
+    h1 { margin: 0 0 8px; font-size: clamp(32px, 5vw, 52px); letter-spacing: -.03em; }
+    h1 .g { color: var(--green); }
+    .role { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
+    .tag { color: var(--muted); margin: 0 0 16px; }
+    .win { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-height: 220px; }
+    .win-bar { display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .win-body { display: grid; grid-template-columns: 1fr 1fr; }
+    pre { margin: 0; padding: 16px; color: var(--blue); font-size: 11px; line-height: 1.25; }
+    .quote { padding: 16px; border-left: 1px solid var(--line); font-size: 13px; }
+    .quote p { color: var(--green); margin: 0 0 10px; }
+    .quote .who { color: var(--muted); margin-bottom: 12px; }
+    .quote ul { margin: 0; padding: 0; }
+    .quote li { list-style: none; color: var(--green); }
+    .cta { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 18px; font-size: 14px; }
+    .btn { display: inline-flex; border: 1px solid var(--green); color: var(--green); padding: 8px 12px; border-radius: 6px; text-decoration: none; }
+    .btn:hover { background: color-mix(in srgb, var(--green) 12%, transparent); text-decoration: none; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 8px 0 40px; }
+    .stat { padding: 18px 12px; text-align: center; border-right: 1px solid var(--line); background: var(--card); }
+    .stat:last-child { border-right: 0; }
+    .stat b { display: block; font-size: 20px; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    section { padding: 8px 0 36px; }
+    .sec { display: flex; align-items: baseline; gap: 12px; color: var(--green); font-size: 14px; font-weight: 600; letter-spacing: .04em; margin-bottom: 16px; }
+    .sec:after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    h2 { margin: 0 0 10px; font-size: 26px; }
+    .grid-2 { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; }
+    .box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+    .box h3 { margin: 0 0 10px; font-size: 14px; color: var(--green); }
+    .box ul { margin: 0; padding-left: 18px; }
+    .cmd { color: var(--green); font-size: 13px; margin: 14px 0 8px; }
+    .philo { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; color: var(--muted); }
+    .exp { display: grid; grid-template-columns: 1fr 1fr 1fr .9fr; gap: 16px; }
+    .job h3 { margin: 0 0 4px; font-size: 16px; color: var(--blue); }
+    .job .when { color: var(--green); font-size: 13px; }
+    .quote2 { border: 1px dashed var(--line); padding: 16px; color: var(--green); font-size: 14px; }
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .cards3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .pill { font-size: 11px; border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; color: var(--muted); }
+    footer { border-top: 1px solid var(--line); padding: 18px 0 28px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .connect { display: grid; grid-template-columns: 1.2fr auto 1fr; gap: 20px; align-items: center; }
+    .socials { display: flex; gap: 28px; font-size: 13px; }
+    .socials a { color: var(--text); text-decoration: none; }
+    @media (max-width: 900px) {
+      .hero, .win-body, .grid-2, .exp, .cards, .cards3, .connect, .stats { grid-template-columns: 1fr; }
+      .stat { border-right: 0; border-bottom: 1px solid var(--line); }
+      .links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a class="mono prompt" href="index.html">manju@sreroot:~$</a>
+      <nav class="links mono">
+        <a href="index.html">[01] Home</a>
+        <a href="about.html" class="active">[02] About</a>
+        <a href="#experience">[03] Experience</a>
+        <a href="#projects">[04] Projects</a>
+        <a href="#notes">[05] Notes</a>
+        <a href="#contact">[06] Contact</a>
+      </nav>
+      <button class="icon-btn" id="theme" aria-label="Toggle theme">☼</button>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <p class="mono" style="color:var(--muted);margin:0 0 10px">Hello, I’m</p>
+        <h1><span class="g">Manjunatha</span> Reddy T<span class="g">_</span></h1>
+        <p class="role">Site Reliability &amp; Performance Engineer</p>
+        <p class="tag">Understanding systems. Building reliability.</p>
+        <p>I work at the intersection of performance, reliability and real-world operations — investigating issues, improving systems, and building tools that make engineering work repeatable.</p>
+        <div class="cta">
+          <span class="mono" style="color:var(--green)">&gt;</span>
+          <a class="btn" href="#projects">View my work</a>
+          <a href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/ManjuReddyT" target="_blank" rel="noopener">GitHub</a>
+          <a href="index.html">sreroot home</a>
+        </div>
+      </div>
+      <aside class="win">
+        <div class="win-bar"><span class="dot" style="background:#ff5f56"></span><span class="dot" style="background:#ffbd2e"></span><span class="dot" style="background:#27c93f"></span></div>
+        <div class="win-body">
+          <pre class="mono">        /\
+       /  \
+      /_/\_\
+        ||
+     __ || __
+    /  \||/  \
+   /    \/    \
+   reliability
+     root</pre>
+          <div class="quote mono">
+            <p>"Reliable systems don’t happen by chance. They are designed, observed, debugged and continuously improved."</p>
+            <div class="who">— Manjunatha Reddy</div>
+            <ul>
+              <li>&gt; Solve real problems</li>
+              <li>&gt; Follow the evidence</li>
+              <li>&gt; Automate the repetitive</li>
+              <li>&gt; Make systems better</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </section>
+    <div class="stats">
+      <div class="stat"><b>13+</b><span>Years experience</span></div>
+      <div class="stat"><b>Large scale</b><span>Distributed systems</span></div>
+      <div class="stat"><b>End-to-end</b><span>Performance &amp; reliability</span></div>
+      <div class="stat"><b>Engineer</b><span>Builder | Learner</span></div>
+    </div>
+    <section id="about">
+      <div class="sec mono">01. ABOUT</div>
+      <div class="grid-2">
+        <div>
+          <h2>From performance testing to production reliability</h2>
+          <p>I am a Site Reliability and Performance Engineer with 13 years of experience on large-scale distributed systems. The work started in performance testing and moved into production investigation, JVM diagnostics, and reliability engineering.</p>
+          <p>The useful part is turning that loop into practice and tools: understand behaviour under load, find why it failed, then make the next diagnosis cheaper.</p>
+          <p class="cmd mono">&gt; cat philosophy.txt</p>
+          <div class="philo mono">Understand the problem.<br/>Follow the evidence.<br/>Fix the root cause.<br/>Improve the system.</div>
+        </div>
+        <div>
+          <div class="box">
+            <h3>Areas I focus on</h3>
+            <ul>
+              <li>Performance engineering and capacity planning</li>
+              <li>Production incident investigation and RCA</li>
+              <li>Application and JVM diagnostics</li>
+              <li>Distributed systems and Kubernetes reliability</li>
+              <li>Observability and operational excellence</li>
+              <li>Engineering automation and internal tooling</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="experience">
+      <div class="sec mono">02. EXPERIENCE</div>
+      <div class="exp">
+        <div class="job">
+          <div class="when mono">2020 — Present</div>
+          <h3>Senior Site Reliability &amp; Performance Engineer</h3>
+          <p>Performance engineering, production diagnostics, reliability and SRE automation for large-scale systems.</p>
+        </div>
+        <div class="job">
+          <div class="when mono">2013 — 2020</div>
+          <h3>Performance Engineer</h3>
+          <p>Workload modeling, bottleneck analysis and capacity planning for enterprise applications.</p>
+        </div>
+        <div class="job">
+          <div class="when mono">Earlier</div>
+          <h3>Software Engineer</h3>
+          <p>Started in software engineering and moved into performance testing and reliability work.</p>
+        </div>
+        <div class="quote2">“Every incident is a learning opportunity to build a more reliable system.”</div>
+      </div>
+    </section>
+    <section id="projects">
+      <div class="sec mono">03. FEATURED PROJECTS</div>
+      <div class="cards">
+        <article class="box"><div style="display:flex;justify-content:space-between"><strong>KubeView</strong><span class="pill">In-house</span></div><p>Kubernetes operations platform: visibility, controlled access, troubleshooting without standing shell access.</p></article>
+        <article class="box"><div style="display:flex;justify-content:space-between"><strong>SRE Toolkit</strong><span class="pill">In-house</span></div><p>Diagnostics for logs, GC, databases and performance reports. Built to cut repeat analysis time.</p></article>
+        <article class="box"><div style="display:flex;justify-content:space-between"><strong>DevUtil</strong><span class="pill">Live</span></div><p>Client-side engineer utilities.</p><a href="https://devutil.sreroot.com">Open DevUtil →</a></article>
+        <article class="box"><div style="display:flex;justify-content:space-between"><strong>PerfAnalyzer</strong><span class="pill">Live</span></div><p>Local JMeter report analysis.</p><a href="https://perf.sreroot.com">Open PerfAnalyzer →</a></article>
+      </div>
+    </section>
+    <section id="notes">
+      <div class="sec mono">04. ENGINEERING NOTES</div>
+      <div class="cards3">
+        <a class="box" href="courses/jfr/index.html" style="color:inherit;text-decoration:none"><strong>JVM diagnostics</strong><p>JFR, memory, GC and runtime behaviour.</p><span style="color:var(--blue)">Read more →</span></a>
+        <a class="box" href="courses/threaddump/index.html" style="color:inherit;text-decoration:none"><strong>Performance issues</strong><p>From symptom to cause.</p><span style="color:var(--blue)">Read more →</span></a>
+        <a class="box" href="academy.html" style="color:inherit;text-decoration:none"><strong>SRE Academy</strong><p>When the same diagnosis repeats, it becomes a tool.</p><span style="color:var(--blue)">Read more →</span></a>
+      </div>
+    </section>
+    <section id="contact">
+      <div class="sec mono">05. LET’S CONNECT</div>
+      <div class="connect">
+        <p>Open to discussing hard reliability problems, tooling, or a focused technical conversation.</p>
+        <div class="socials">
+          <a href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/ManjuReddyT" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://x.com/tmanjureddy" target="_blank" rel="noopener">X</a>
+        </div>
+        <div class="box mono" style="color:var(--green)">&gt; echo "Thanks for visiting!"<br/>Thanks for visiting!</div>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap">
+    <span>© 2026 Manjunatha Reddy T</span>
+    <a href="index.html" style="color:inherit">sreroot home</a>
+  </footer>
+  <script>
+    const root = document.documentElement;
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') root.setAttribute('data-theme', 'light');
+    document.getElementById('theme').onclick = () => {
+      const light = root.getAttribute('data-theme') === 'light';
+      if (light) { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); }
+      else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); }
+    };
+  </script>
+</body>
+</html>
