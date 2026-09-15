@@ -3,126 +3,328 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manjunatha Reddy T · Site Reliability & Performance</title>
-  <meta name="description" content="Site Reliability and Performance Engineer based in Bengaluru. Public tools and courses for production debugging." />
+  <title>Manjunatha Reddy T · SRE &amp; Performance</title>
+  <meta name="description" content="Site Reliability and Performance Engineer. Evidence-first diagnostics, tools, and production debugging." />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="assets/favicon.svg" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>tailwind.config = { theme: { extend: { colors: { ink: '#0f172a', muted: '#475569', line: '#e2e8f0', paper: '#f7f7f5', card: '#ffffff' }, fontFamily: { sans: ['Source Sans 3', 'system-ui', 'sans-serif'], display: ['Source Serif 4', 'Georgia', 'serif'] } } } }</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Source Sans 3', system-ui, sans-serif; background: #f7f7f5; color: #0f172a; }
-    .font-display { font-family: 'Source Serif 4', Georgia, serif; }
-    .card { transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease; }
-    .card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -16px rgba(15, 23, 42, .18); border-color: #cbd5e1; }
+    :root {
+      --bg: #07111a;
+      --bg2: #0b1822;
+      --card: #0d1c27;
+      --line: #1e3342;
+      --text: #d7e3ec;
+      --muted: #8aa0b0;
+      --green: #3dd68c;
+      --blue: #7eb6ff;
+      --ink: #e8f1f7;
+    }
+    [data-theme="light"] {
+      --bg: #f4f6f5;
+      --bg2: #ffffff;
+      --card: #ffffff;
+      --line: #d5ddd8;
+      --text: #1b2a33;
+      --muted: #5b6f7a;
+      --green: #0f8a56;
+      --blue: #155eef;
+      --ink: #102027;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      line-height: 1.55;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    header {
+      position: sticky; top: 0; z-index: 20;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px; gap: 16px;
+    }
+    .prompt { color: var(--green); font-size: 13px; white-space: nowrap; }
+    .links { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+    .links a { color: var(--muted); text-decoration: none; }
+    .links a:hover, .links a.active { color: var(--green); }
+    .icon-btn {
+      background: transparent; border: 1px solid var(--line); color: var(--text);
+      width: 34px; height: 34px; border-radius: 8px; cursor: pointer;
+    }
+    .hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 28px; padding: 48px 0 28px; }
+    h1 { margin: 0 0 8px; font-size: clamp(32px, 5vw, 52px); letter-spacing: -.03em; }
+    h1 .g { color: var(--green); }
+    .role { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
+    .tag { color: var(--muted); margin: 0 0 16px; }
+    .win {
+      background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+      overflow: hidden; min-height: 220px;
+    }
+    .win-bar { display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .win-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    pre {
+      margin: 0; padding: 16px; color: var(--blue); font-size: 11px; line-height: 1.25;
+      overflow: hidden;
+    }
+    .quote { padding: 16px; border-left: 1px solid var(--line); font-size: 13px; }
+    .quote p { color: var(--green); margin: 0 0 10px; }
+    .quote .who { color: var(--muted); margin-bottom: 12px; }
+    .quote li { list-style: none; color: var(--green); }
+    .quote ul { margin: 0; padding: 0; }
+    .cta { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 18px; font-size: 14px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--green); color: var(--green); padding: 8px 12px; border-radius: 6px;
+      text-decoration: none; font-size: 14px;
+    }
+    .btn:hover { background: color-mix(in srgb, var(--green) 12%, transparent); text-decoration: none; }
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 8px 0 40px;
+    }
+    .stat { padding: 18px 12px; text-align: center; border-right: 1px solid var(--line); background: var(--card); }
+    .stat:last-child { border-right: 0; }
+    .stat b { display: block; font-size: 20px; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    section { padding: 8px 0 36px; }
+    .sec {
+      display: flex; align-items: baseline; gap: 12px;
+      color: var(--green); font-size: 14px; font-weight: 600; letter-spacing: .04em;
+      margin-bottom: 16px;
+    }
+    .sec:after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    h2 { margin: 0 0 10px; font-size: 26px; }
+    .grid-2 { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; }
+    .box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+    .box h3 { margin: 0 0 10px; font-size: 14px; color: var(--green); }
+    .box ul { margin: 0; padding-left: 18px; color: var(--text); }
+    .cmd { color: var(--green); font-size: 13px; margin: 14px 0 8px; }
+    .philo { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; color: var(--muted); }
+    .exp { display: grid; grid-template-columns: 1fr 1fr 1fr .9fr; gap: 16px; }
+    .job h3 { margin: 0 0 4px; font-size: 16px; color: var(--blue); }
+    .job .when { color: var(--green); font-size: 13px; }
+    .quote2 { border: 1px dashed var(--line); padding: 16px; color: var(--green); font-size: 14px; }
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .cards3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .pill { font-size: 11px; border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; color: var(--muted); }
+    footer { border-top: 1px solid var(--line); padding: 18px 0 28px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .connect { display: grid; grid-template-columns: 1.2fr auto 1fr; gap: 20px; align-items: center; }
+    .socials { display: flex; gap: 28px; text-align: center; font-size: 13px; }
+    .socials a { color: var(--text); text-decoration: none; }
+    @media (max-width: 900px) {
+      .hero, .win-body, .grid-2, .exp, .cards, .cards3, .connect, .stats { grid-template-columns: 1fr; }
+      .stat { border-right: 0; border-bottom: 1px solid var(--line); }
+      .links { display: none; }
+    }
   </style>
 </head>
-<body class="min-h-screen">
-  <header class="border-b border-line bg-paper/90 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-3">
-        <img src="assets/favicon.svg" alt="sreroot" class="w-8 h-8" />
-        <span class="text-sm font-semibold tracking-tight text-ink">sreroot</span>
-        <span class="hidden sm:inline text-line">|</span>
-        <span class="hidden sm:inline text-sm text-muted">Manjunatha Reddy T</span>
-      </a>
-      <nav class="flex items-center gap-5 text-sm text-muted">
-        <a class="hover:text-ink" href="#practice">Practice</a>
-        <a class="hover:text-ink" href="#work">Work</a>
-        <a class="hover:text-ink" href="academy.html">Academy</a>
-        <a class="hover:text-ink" href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-        <a class="hover:text-ink" href="https://github.com/ManjuReddyT" target="_blank" rel="noopener" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div class="mono prompt">manju@sreroot:~$</div>
+      <nav class="links mono">
+        <a href="#home" class="active">[01] Home</a>
+        <a href="#about">[02] About</a>
+        <a href="#experience">[03] Experience</a>
+        <a href="#projects">[04] Projects</a>
+        <a href="#notes">[05] Notes</a>
+        <a href="#contact">[06] Contact</a>
       </nav>
+      <button class="icon-btn" id="theme" aria-label="Toggle theme">☼</button>
     </div>
   </header>
 
-  <main>
-    <section class="max-w-5xl mx-auto px-6 pt-16 pb-12 md:pt-24 md:pb-16 border-b border-line">
-      <p class="text-sm tracking-wide text-muted mb-5">Site Reliability & Performance Engineer · Bengaluru</p>
-      <h1 class="font-display text-[2.15rem] md:text-5xl leading-[1.15] font-semibold text-ink max-w-3xl">
-        Reliability work that starts with evidence, not a guess.
-      </h1>
-      <p class="mt-6 text-lg text-muted max-w-2xl leading-relaxed">
-        I spend my time on load, latency, JVM runtime behaviour, and Kubernetes health in large distributed systems.
-        Thirteen years of turning production signals into a decision the next person can act on.
-      </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href="#work" class="inline-flex items-center rounded-md bg-ink text-white text-sm px-4 py-2.5 hover:bg-slate-800">View public work</a>
-        <a href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener" class="inline-flex items-center rounded-md border border-line bg-white text-sm px-4 py-2.5 hover:border-slate-400">LinkedIn</a>
+  <main class="wrap">
+    <section id="home" class="hero">
+      <div>
+        <p class="mono" style="color:var(--muted);margin:0 0 10px">Hello, I’m</p>
+        <h1><span class="g">Manjunatha</span> Reddy T<span class="g">_</span></h1>
+        <p class="role">Site Reliability &amp; Performance Engineer</p>
+        <p class="tag">Understanding systems. Building reliability.</p>
+        <p>I work at the intersection of performance, reliability and real-world operations — investigating issues, improving systems, and building tools that make engineering work repeatable.</p>
+        <div class="cta">
+          <span class="mono" style="color:var(--green)">&gt;</span>
+          <a class="btn" href="#projects">View my work</a>
+          <a href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/ManjuReddyT" target="_blank" rel="noopener">GitHub</a>
+          <a href="academy.html">Academy</a>
+        </div>
       </div>
-    </section>
-
-    <section id="practice" class="max-w-5xl mx-auto px-6 py-16 grid md:grid-cols-12 gap-12 border-b border-line">
-      <div class="md:col-span-7 space-y-4 text-[17px] leading-relaxed text-slate-700">
-        <h2 class="font-display text-2xl text-ink mb-2">A short note</h2>
-        <p>Most incidents are not mysterious. They are a missing join between metrics, logs, a dump, and what the platform was doing at that moment.</p>
-        <p>The working rule is simple: collect evidence first. Traces, JFR, heap and thread dumps, GC behaviour, probe failures, and capacity under sustained load — before any production change.</p>
-        <p>What you will find on this site is the reusable part of that practice. Courses for production debugging. Tools that shorten the path from “something is wrong” to “here is the cause.”</p>
-      </div>
-      <aside class="md:col-span-5">
-        <div class="bg-white border border-line rounded-lg p-6">
-          <p class="text-xs uppercase tracking-[0.16em] text-muted mb-4">Focus</p>
-          <ul class="space-y-3 text-sm text-slate-700">
-            <li class="border-b border-line pb-3">Performance engineering and NFR</li>
-            <li class="border-b border-line pb-3">JVM diagnostics — JFR, dumps, GC</li>
-            <li class="border-b border-line pb-3">Kubernetes workload health</li>
-            <li class="border-b border-line pb-3">Observability and incident RCA</li>
-            <li>Tools that replace repeated diagnosis</li>
-          </ul>
+      <aside class="win">
+        <div class="win-bar"><span class="dot" style="background:#ff5f56"></span><span class="dot" style="background:#ffbd2e"></span><span class="dot" style="background:#27c93f"></span></div>
+        <div class="win-body">
+          <pre class="mono">        /\
+       /  \
+      /_/\_\
+        ||
+     __ || __
+    /  \||/  \
+   /    \/    \
+   reliability
+     root</pre>
+          <div class="quote mono">
+            <p>"Reliable systems don’t happen by chance. They are designed, observed, debugged and continuously improved."</p>
+            <div class="who">— Manjunatha Reddy</div>
+            <ul>
+              <li>&gt; Solve real problems</li>
+              <li>&gt; Follow the evidence</li>
+              <li>&gt; Automate the repetitive</li>
+              <li>&gt; Make systems better</li>
+            </ul>
+          </div>
         </div>
       </aside>
     </section>
 
-    <section id="work" class="max-w-5xl mx-auto px-6 py-16">
-      <div class="flex items-end justify-between mb-8">
-        <h2 class="font-display text-2xl text-ink">Public work</h2>
-        <p class="text-sm text-muted hidden sm:block">Courses and tools. Nothing confidential.</p>
+    <div class="stats">
+      <div class="stat"><b>13+</b><span>Years experience</span></div>
+      <div class="stat"><b>Large scale</b><span>Distributed systems</span></div>
+      <div class="stat"><b>End-to-end</b><span>Performance &amp; reliability</span></div>
+      <div class="stat"><b>Engineer</b><span>Builder | Learner</span></div>
+    </div>
+
+    <section id="about">
+      <div class="sec mono">01. ABOUT</div>
+      <div class="grid-2">
+        <div>
+          <h2>From performance testing to production reliability</h2>
+          <p>I am a Site Reliability and Performance Engineer with 13 years of experience on large-scale distributed systems. The work started in performance testing and moved into production investigation, JVM diagnostics, and reliability engineering.</p>
+          <p>The useful part is turning that loop into practice and tools: understand behaviour under load, find why it failed, then make the next diagnosis cheaper.</p>
+          <p class="cmd mono">&gt; cat philosophy.txt</p>
+          <div class="philo mono">Understand the problem.<br/>Follow the evidence.<br/>Fix the root cause.<br/>Improve the system.</div>
+        </div>
+        <div>
+          <div class="box">
+            <h3>Areas I focus on</h3>
+            <ul>
+              <li>Performance engineering and capacity planning</li>
+              <li>Production incident investigation and RCA</li>
+              <li>Application and JVM diagnostics</li>
+              <li>Distributed systems and Kubernetes reliability</li>
+              <li>Observability and operational excellence</li>
+              <li>Engineering automation and internal tooling</li>
+            </ul>
+          </div>
+          <div class="box" style="margin-top:14px">
+            <h3>Public work on this domain</h3>
+            <ul>
+              <li><a href="academy.html">SRE Academy</a></li>
+              <li><a href="https://devutil.sreroot.com">DevUtil</a></li>
+              <li><a href="https://perf.sreroot.com">PerfAnalyzer</a></li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div class="grid md:grid-cols-3 gap-5">
-        <a href="academy.html" class="card block bg-white border border-line rounded-lg p-6">
-          <p class="text-xs uppercase tracking-[0.14em] text-muted mb-3">01 · Courses</p>
-          <h3 class="font-display text-xl text-ink mb-2">SRE Academy</h3>
-          <p class="text-sm text-slate-600 mb-6 leading-relaxed">strace, JFR, heap dumps, and thread dumps — production debugging as it is done on-call.</p>
-          <p class="text-sm font-medium text-ink">Open academy →</p>
+    </section>
+
+    <section id="experience">
+      <div class="sec mono">02. EXPERIENCE</div>
+      <div class="exp">
+        <div class="job">
+          <div class="when mono">2020 — Present</div>
+          <h3>Senior Site Reliability &amp; Performance Engineer</h3>
+          <p>Performance engineering, production diagnostics, reliability and SRE automation for large-scale systems.</p>
+        </div>
+        <div class="job">
+          <div class="when mono">2013 — 2020</div>
+          <h3>Performance Engineer</h3>
+          <p>Workload modeling, bottleneck analysis and capacity planning for enterprise applications. Performance checks in CI.</p>
+        </div>
+        <div class="job">
+          <div class="when mono">Earlier</div>
+          <h3>Software Engineer</h3>
+          <p>Started in software engineering and moved into performance testing and reliability work.</p>
+        </div>
+        <div class="quote2">“Every incident is a learning opportunity to build a more reliable system.”</div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="sec mono">03. FEATURED PROJECTS</div>
+      <div class="cards">
+        <article class="box">
+          <div style="display:flex;justify-content:space-between;gap:8px"><strong>KubeView</strong><span class="pill">In-house</span></div>
+          <p>Kubernetes operations platform: cluster visibility, controlled access, and troubleshooting workflows without standing shell access.</p>
+        </article>
+        <article class="box">
+          <div style="display:flex;justify-content:space-between;gap:8px"><strong>SRE Toolkit</strong><span class="pill">In-house</span></div>
+          <p>Diagnostics for logs, GC, databases and performance reports. Built to cut repeat analysis time.</p>
+        </article>
+        <article class="box">
+          <div style="display:flex;justify-content:space-between;gap:8px"><strong>DevUtil</strong><span class="pill">Live</span></div>
+          <p>Client-side engineer utilities. Formats, diffs, tokens, SQL — local processing.</p>
+          <a href="https://devutil.sreroot.com">Open DevUtil →</a>
+        </article>
+        <article class="box">
+          <div style="display:flex;justify-content:space-between;gap:8px"><strong>PerfAnalyzer</strong><span class="pill">Live</span></div>
+          <p>Local JMeter report analysis and run comparison. Data stays in the browser.</p>
+          <a href="https://perf.sreroot.com">Open PerfAnalyzer →</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="notes">
+      <div class="sec mono">04. ENGINEERING NOTES</div>
+      <div class="cards3">
+        <a class="box" href="courses/jfr/index.html" style="color:inherit;text-decoration:none">
+          <strong>Lessons from JVM diagnostics</strong>
+          <p>JFR, memory, GC and runtime behaviour in real systems.</p>
+          <span style="color:var(--blue)">Read more →</span>
         </a>
-        <a href="https://devutil.sreroot.com" class="card block bg-white border border-line rounded-lg p-6">
-          <p class="text-xs uppercase tracking-[0.14em] text-muted mb-3">02 · Tools</p>
-          <h3 class="font-display text-xl text-ink mb-2">DevUtil</h3>
-          <p class="text-sm text-slate-600 mb-6 leading-relaxed">Client-side utilities for formats, diffs, tokens, SQL, and everyday engineering work.</p>
-          <p class="text-sm font-medium text-ink">Open DevUtil →</p>
+        <a class="box" href="courses/threaddump/index.html" style="color:inherit;text-decoration:none">
+          <strong>Investigating performance issues</strong>
+          <p>A practical path from symptom to cause.</p>
+          <span style="color:var(--blue)">Read more →</span>
         </a>
-        <a href="https://perf.sreroot.com" class="card block bg-white border border-line rounded-lg p-6">
-          <p class="text-xs uppercase tracking-[0.14em] text-muted mb-3">03 · Performance</p>
-          <h3 class="font-display text-xl text-ink mb-2">PerfAnalyzer</h3>
-          <p class="text-sm text-slate-600 mb-6 leading-relaxed">Read JMeter reports locally. Compare runs. Isolate the slow path without uploading data.</p>
-          <p class="text-sm font-medium text-ink">Open PerfAnalyzer →</p>
+        <a class="box" href="academy.html" style="color:inherit;text-decoration:none">
+          <strong>Building useful SRE tools</strong>
+          <p>When the same diagnosis repeats, it becomes a tool.</p>
+          <span style="color:var(--blue)">Read more →</span>
         </a>
       </div>
     </section>
 
-    <section class="max-w-5xl mx-auto px-6 pb-20">
-      <h2 class="font-display text-2xl text-ink mb-6">Working principles</h2>
-      <ol class="grid md:grid-cols-2 gap-px bg-line border border-line rounded-lg overflow-hidden">
-        <li class="bg-white p-6 text-sm text-slate-700"><span class="block text-muted text-xs mb-2">01</span>Evidence before change. Dumps and traces beat guesswork.</li>
-        <li class="bg-white p-6 text-sm text-slate-700"><span class="block text-muted text-xs mb-2">02</span>Least privilege on clusters. Auditable workflows over standing write access.</li>
-        <li class="bg-white p-6 text-sm text-slate-700"><span class="block text-muted text-xs mb-2">03</span>Shift-left performance. Load and latency checked before release.</li>
-        <li class="bg-white p-6 text-sm text-slate-700"><span class="block text-muted text-xs mb-2">04</span>If the same diagnosis repeats, it becomes a tool.</li>
-      </ol>
+    <section id="contact">
+      <div class="sec mono">05. LET’S CONNECT</div>
+      <div class="connect">
+        <p>Open to discussing hard reliability problems, tooling, or a focused technical conversation.</p>
+        <div class="socials">
+          <a href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/ManjuReddyT" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://x.com/tmanjureddy" target="_blank" rel="noopener">X</a>
+        </div>
+        <div class="box mono" style="color:var(--green)">&gt; echo "Thanks for visiting!"<br/>Thanks for visiting!</div>
+      </div>
     </section>
   </main>
 
-  <footer class="border-t border-line bg-white">
-    <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm text-muted">
-      <p class="flex items-center gap-2"><img src="assets/favicon.svg" alt="" class="w-4 h-4" /> sreroot.com</p>
-      <div class="flex gap-5">
-        <a class="hover:text-ink" href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener">LinkedIn</a>
-        <a class="hover:text-ink" href="https://github.com/ManjuReddyT" target="_blank" rel="noopener">GitHub</a>
-        <a class="hover:text-ink" href="https://x.com/tmanjureddy" target="_blank" rel="noopener">X</a>
-      </div>
-    </div>
+  <footer class="wrap">
+    <span>© 2026 Manjunatha Reddy T</span>
+    <span>Built for systems that keep running.</span>
   </footer>
+  <script>
+    const root = document.documentElement;
+    const saved = localStorage.getItem('theme');
+    if (saved) root.setAttribute('data-theme', saved);
+    document.getElementById('theme').onclick = () => {
+      const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      if (next === 'dark') root.removeAttribute('data-theme');
+      else root.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', next === 'dark' ? 'dark' : 'light');
+    };
+  </script>
 </body>
 </html>
