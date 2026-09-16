@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guides · sreroot</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    :root { --bg:#f4f6fb; --card:#fff; --line:#e2e8f0; --text:#0f172a; --muted:#64748b; --accent:#5b5ce6; }
+    [data-theme="dark"] { --bg:#0f1220; --card:#171a2b; --line:#2a3048; --text:#e8eaf4; --muted:#94a3b8; --accent:#818cf8; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:"IBM Plex Sans",system-ui,sans-serif; }
+    a { color:inherit; text-decoration:none; }
+    header { background:var(--card); border-bottom:1px solid var(--line); }
+    .bar { max-width:1040px; margin:0 auto; padding:0 24px; height:60px; display:flex; align-items:center; justify-content:space-between; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:700; }
+    .brand img { width:28px; height:28px; }
+    .word i { color:var(--accent); font-style:normal; }
+    nav { display:flex; gap:20px; font-size:14px; color:var(--muted); }
+    nav a:hover, nav a.active { color:var(--accent); }
+    .icon-btn { width:36px; height:36px; border-radius:10px; border:1px solid var(--line); background:var(--card); cursor:pointer; color:var(--text); }
+    main { max-width:1040px; margin:0 auto; padding:56px 24px 72px; }
+    h1 { margin:0 0 10px; font-size:clamp(28px,4vw,40px); letter-spacing:-.03em; }
+    .lead { color:var(--muted); max-width:640px; font-size:17px; line-height:1.6; margin:0 0 36px; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px; min-height:180px; }
+    .card:hover { border-color:#c7c9f6; }
+    .pill { display:inline-block; font-size:11px; font-weight:600; color:var(--accent); background:#eef0ff; padding:3px 8px; border-radius:999px; margin-bottom:12px; }
+    [data-theme="dark"] .pill { background:#23264a; }
+    .card h2 { margin:0 0 8px; font-size:22px; }
+    .card p { margin:0 0 16px; color:var(--muted); line-height:1.55; }
+    .card .go { color:var(--accent); font-weight:600; font-size:14px; }
+    @media (max-width:800px) { .grid { grid-template-columns:1fr; } nav { display:none; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <a class="brand" href="/"><img src="assets/favicon.svg" alt="" /><span class="word">sre<i>root</i></span></a>
+      <nav>
+        <a href="/">Home</a>
+        <a class="active" href="guides.html">Guides</a>
+        <a href="https://devutil.sreroot.com">DevUtil</a>
+        <a href="https://perf.sreroot.com">PerfAnalyzer</a>
+        <a href="about.html">About</a>
+      </nav>
+      <button class="icon-btn" id="theme" aria-label="Toggle theme">☼</button>
+    </div>
+  </header>
+  <main>
+    <h1>Field guides</h1>
+    <p class="lead">Handbooks for production debugging. Not a course — notes you can open when a process hangs, a JVM stalls, or a dump needs a first pass.</p>
+    <div class="grid">
+      <a class="card" href="courses/strace/index.html">
+        <div class="pill">Handbook</div>
+        <h2>strace</h2>
+        <p>Linux system call tracing for hangs, CPU spikes, container failures, and network issues.</p>
+        <span class="go">Open handbook →</span>
+      </a>
+      <a class="card" href="courses/jfr/index.html">
+        <div class="pill">Handbook</div>
+        <h2>Java Flight Recorder</h2>
+        <p>JVM observability — CPU hotspots, memory leaks, GC pauses, lock contention.</p>
+        <span class="go">Open handbook →</span>
+      </a>
+      <a class="card" href="courses/heapdump/index.html">
+        <div class="pill">Handbook</div>
+        <h2>Heap dump analysis</h2>
+        <p>Find memory leaks and OOM root causes from production heap dumps.</p>
+        <span class="go">Open handbook →</span>
+      </a>
+      <a class="card" href="courses/threaddump/index.html">
+        <div class="pill">Handbook</div>
+        <h2>Thread dump analysis</h2>
+        <p>Deadlocks, lock contention, pool starvation, and hung JVM workflows.</p>
+        <span class="go">Open handbook →</span>
+      </a>
+    </div>
+  </main>
+  <script>
+    const root = document.documentElement;
+    if (localStorage.getItem('theme') === 'dark') root.setAttribute('data-theme','dark');
+    document.getElementById('theme').onclick = () => {
+      const dark = root.getAttribute('data-theme') === 'dark';
+      if (dark) { root.removeAttribute('data-theme'); localStorage.setItem('theme','light'); }
+      else { root.setAttribute('data-theme','dark'); localStorage.setItem('theme','dark'); }
+    };
+  </script>
+</body>
+</html>

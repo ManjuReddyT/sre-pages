@@ -3,56 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sreroot · tools and training for production reliability</title>
-  <meta name="description" content="Academy, DevUtil and PerfAnalyzer — public tools and courses for SRE and performance work." />
+  <title>sreroot · tools and guides for production reliability</title>
+  <meta name="description" content="Handbooks and browser tools for SRE and performance work." />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="assets/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg:#07111a; --card:#0d1c27; --line:#1e3342; --text:#d7e3ec; --muted:#8aa0b0; --green:#3dd68c; --blue:#7eb6ff; }
-    [data-theme="light"] { --bg:#f4f6f5; --card:#fff; --line:#d5ddd8; --text:#1b2a33; --muted:#5b6f7a; --green:#0f8a56; --blue:#155eef; }
-    * { box-sizing:border-box; }
-    body { margin:0; min-height:100vh; display:flex; flex-direction:column; background:var(--bg); color:var(--text); font-family:"IBM Plex Sans",system-ui,sans-serif; }
-    a { color:inherit; text-decoration:none; }
-    .mono { font-family:"IBM Plex Mono",ui-monospace,monospace; }
-    header { border-bottom:1px solid var(--line); }
-    .bar { max-width:980px; margin:0 auto; padding:0 20px; height:56px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
-    .brand img.mark { width:28px; height:28px; }
-    .brand { display:flex; align-items:center; gap:10px; }
-    .word { font-weight:650; letter-spacing:-.04em; font-size:18px; }
-    .word i { color:var(--green); font-style:normal; }
-    nav { display:flex; gap:18px; font-size:13px; color:var(--muted); }
-    nav a:hover { color:var(--green); }
-    .icon-btn { width:34px; height:34px; border-radius:8px; cursor:pointer; background:transparent; border:1px solid var(--line); color:var(--text); }
-    main { flex:1; max-width:980px; margin:0 auto; padding:72px 20px 48px; width:100%; }
-    .kicker { color:var(--green); font-size:13px; margin:0 0 14px; }
-    h1 { margin:0 0 14px; font-size:clamp(28px,4vw,42px); letter-spacing:-.03em; line-height:1.15; }
-    .lead { max-width:560px; color:var(--muted); font-size:17px; line-height:1.6; margin:0 0 36px; }
-    .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-    .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px; min-height:180px; display:flex; flex-direction:column; }
-    .card:hover { border-color:color-mix(in srgb,var(--green) 45%, var(--line)); }
-    .card .n { color:var(--green); font-size:12px; margin-bottom:10px; }
-    .card h2 { margin:0 0 8px; font-size:20px; }
-    .card p { margin:0 0 16px; color:var(--muted); font-size:14px; line-height:1.5; flex:1; }
-    .card span { color:var(--blue); font-size:13px; }
-    .who { margin-top:36px; color:var(--muted); font-size:14px; }
-    .who a { color:var(--green); }
-    footer { border-top:1px solid var(--line); color:var(--muted); font-size:12px; }
-    @media (max-width:800px) { .grid { grid-template-columns:1fr; } nav { display:none; } }
+    :root {
+      --bg: #f4f6fb; --card: #ffffff; --line: #e2e8f0;
+      --text: #0f172a; --muted: #64748b; --accent: #5b5ce6; --navy: #1e1b4b;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1220; --card: #171a2b; --line: #2a3048;
+      --text: #e8eaf4; --muted: #94a3b8; --accent: #818cf8; --navy: #e8eaf4;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); color: var(--text); font-family: "IBM Plex Sans", system-ui, sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    header, footer { background: var(--card); border-color: var(--line); }
+    header { border-bottom: 1px solid var(--line); }
+    footer { border-top: 1px solid var(--line); margin-top: auto; }
+    .bar { max-width: 1040px; margin: 0 auto; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .brand img { width: 28px; height: 28px; }
+    .word i { color: var(--accent); font-style: normal; }
+    nav { display: flex; gap: 20px; font-size: 14px; color: var(--muted); }
+    nav a:hover { color: var(--accent); }
+    .icon-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
+    main { max-width: 1040px; margin: 0 auto; padding: 64px 24px 56px; width: 100%; }
+    .kicker { color: var(--accent); font-size: 13px; font-weight: 600; margin: 0 0 12px; }
+    h1 { margin: 0 0 14px; font-size: clamp(30px, 4vw, 44px); letter-spacing: -.03em; line-height: 1.15; }
+    .lead { max-width: 560px; color: var(--muted); font-size: 17px; line-height: 1.65; margin: 0 0 36px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; min-height: 188px; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+    .card:hover { border-color: #c7c9f6; box-shadow: 0 8px 24px rgba(91,92,230,.08); }
+    .card .n { color: var(--accent); font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+    .card h2 { margin: 0 0 8px; font-size: 20px; }
+    .card p { margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.55; flex: 1; }
+    .card span { color: var(--accent); font-size: 13px; font-weight: 600; }
+    .who { margin-top: 36px; color: var(--muted); font-size: 14px; }
+    .who a { color: var(--accent); font-weight: 600; }
+    footer { color: var(--muted); font-size: 13px; }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } nav { display: none; } }
   </style>
 </head>
 <body>
   <header>
     <div class="bar">
-      <a class="brand" href="/">
-        <img class="mark" src="assets/favicon.svg" alt="" />
-        <span class="word">sre<i>root</i></span>
-      </a>
-      <nav class="mono">
+      <a class="brand" href="/"><img src="assets/favicon.svg" alt="" /><span class="word">sre<i>root</i></span></a>
+      <nav>
         <a href="/">Home</a>
-        <a href="academy.html">Academy</a>
+        <a href="guides.html">Guides</a>
         <a href="https://devutil.sreroot.com">DevUtil</a>
         <a href="https://perf.sreroot.com">PerfAnalyzer</a>
         <a href="about.html">About</a>
@@ -61,24 +63,39 @@
     </div>
   </header>
   <main>
-    <p class="kicker mono">sreroot.com</p>
-    <h1>Tools and training<br>for production reliability.</h1>
-    <p class="lead">Courses for on-call debugging. Utilities that stay in the browser. Built from work that kept repeating.</p>
+    <p class="kicker">sreroot.com</p>
+    <h1>Tools and field guides<br>for production reliability.</h1>
+    <p class="lead">Handbooks you can use on-call. Utilities that stay in the browser. Written from work that kept repeating.</p>
     <div class="grid">
-      <a class="card" href="academy.html"><div class="n mono">01</div><h2>Academy</h2><p>strace, JFR, heap dumps and thread dumps — production debugging as it is done on-call.</p><span>Open academy →</span></a>
-      <a class="card" href="https://devutil.sreroot.com"><div class="n mono">02</div><h2>DevUtil</h2><p>Client-side tools for formats, diffs, tokens and SQL. Nothing uploaded.</p><span>Open DevUtil →</span></a>
-      <a class="card" href="https://perf.sreroot.com"><div class="n mono">03</div><h2>PerfAnalyzer</h2><p>Read JMeter reports locally. Compare runs. Find the slow path.</p><span>Open PerfAnalyzer →</span></a>
+      <a class="card" href="guides.html">
+        <div class="n">01 · Guides</div>
+        <h2>Handbooks</h2>
+        <p>strace, JFR, heap dumps and thread dumps — practical notes for production debugging.</p>
+        <span>Open guides →</span>
+      </a>
+      <a class="card" href="https://devutil.sreroot.com">
+        <div class="n">02 · Tools</div>
+        <h2>DevUtil</h2>
+        <p>Client-side tools for formats, diffs, tokens and SQL. Nothing uploaded.</p>
+        <span>Open DevUtil →</span>
+      </a>
+      <a class="card" href="https://perf.sreroot.com">
+        <div class="n">03 · Tools</div>
+        <h2>PerfAnalyzer</h2>
+        <p>Read JMeter reports locally. Compare runs. Find the slow path.</p>
+        <span>Open PerfAnalyzer →</span>
+      </a>
     </div>
-    <p class="who">Built by <a href="about.html">Manjunatha Reddy T</a> · Site Reliability & Performance Engineer, Bengaluru.</p>
+    <p class="who">Built by <a href="about.html">Manjunatha Reddy T</a> · Site Reliability &amp; Performance Engineer, Bengaluru.</p>
   </main>
-  <footer><div class="bar"><span class="word" style="font-size:14px">sre<i>root</i></span><a href="about.html">About</a></div></footer>
+  <footer><div class="bar"><span class="word">sre<i>root</i></span><a href="about.html">About</a></div></footer>
   <script>
     const root = document.documentElement;
-    if (localStorage.getItem('theme') === 'light') root.setAttribute('data-theme','light');
+    if (localStorage.getItem('theme') === 'dark') root.setAttribute('data-theme','dark');
     document.getElementById('theme').onclick = () => {
-      const light = root.getAttribute('data-theme') === 'light';
-      if (light) { root.removeAttribute('data-theme'); localStorage.setItem('theme','dark'); }
-      else { root.setAttribute('data-theme','light'); localStorage.setItem('theme','light'); }
+      const dark = root.getAttribute('data-theme') === 'dark';
+      if (dark) { root.removeAttribute('data-theme'); localStorage.setItem('theme','light'); }
+      else { root.setAttribute('data-theme','dark'); localStorage.setItem('theme','dark'); }
     };
   </script>
 </body>
