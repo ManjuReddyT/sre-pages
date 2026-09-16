@@ -1,0 +1,27 @@
+name: Fix guide copy
+on:
+  push:
+    paths:
+      - .github/workflows/fix-guide-copy.yml
+      - scripts/fix_guide_copy.py
+  workflow_dispatch:
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply copy fixes
+        run: python3 scripts/fix_guide_copy.py
+      - name: Commit if needed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add courses/strace/index.html courses/heapdump/index.html courses/jfr/index.html courses/threaddump/index.html
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+          else
+            git commit -m "Remove FAANG and training claims from field guides"
+            git push
+          fi
