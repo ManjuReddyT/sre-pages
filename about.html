@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg:#07141c; --panel:#0a1c26; --line:#1a4d4a; --soft:#14343a; --text:#d5ece6; --muted:#7fa39c; --acc:#3dff9a; }
-    [data-theme="light"] { --bg:#f3f1e8; --panel:#fffcf5; --line:#b9c6be; --soft:#d7ddd6; --text:#1b2c28; --muted:#5b6f69; --acc:#0b7a48; }
+    :root { --bg:#f4f6fb; --panel:#ffffff; --line:#e2e8f0; --soft:#e8eaf4; --text:#0f172a; --muted:#64748b; --acc:#5b5ce6; }
+    [data-theme="dark"] { --bg:#0f1220; --panel:#171a2b; --line:#2a3048; --soft:#232844; --text:#e8eaf4; --muted:#94a3b8; --acc:#818cf8; }
     * { box-sizing:border-box; } html { scroll-behavior:smooth; }
     body { margin:0; background:var(--bg); color:var(--text); font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.55; }
     .mono { font-family:"IBM Plex Mono",ui-monospace,monospace; }
@@ -268,13 +268,13 @@
   <script>
     const root = document.documentElement;
     const btn = document.getElementById('theme');
-    if (localStorage.getItem('about-theme') === 'light') root.setAttribute('data-theme','light');
-    const label = () => btn.textContent = 'theme: ' + (root.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+    if (localStorage.getItem('theme') === 'dark') root.setAttribute('data-theme','dark');
+    const label = () => btn.textContent = 'theme: ' + (root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
     label();
     btn.onclick = () => {
-      const light = root.getAttribute('data-theme') === 'light';
-      if (light) { root.removeAttribute('data-theme'); localStorage.setItem('about-theme','dark'); }
-      else { root.setAttribute('data-theme','light'); localStorage.setItem('about-theme','light'); }
+      const dark = root.getAttribute('data-theme') === 'dark';
+      if (dark) { root.removeAttribute('data-theme'); localStorage.setItem('theme','light'); }
+      else { root.setAttribute('data-theme','dark'); localStorage.setItem('theme','dark'); }
       label();
     };
   </script>
