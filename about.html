@@ -5,32 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About · Manjunatha Reddy T</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="assets/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg:#07111a; --card:#0d1c27; --line:#1e3342; --text:#d7e3ec; --muted:#8aa0b0; --green:#3dd68c; --blue:#7eb6ff; }
-    [data-theme="light"] { --bg:#f4f6f5; --card:#fff; --line:#d5ddd8; --text:#1b2a33; --muted:#5b6f7a; --green:#0f8a56; --blue:#155eef; }
-    * { box-sizing: border-box; } html { scroll-behavior: smooth; }
+    :root { --bg:#f4f6fb; --card:#fff; --line:#e2e8f0; --text:#0f172a; --muted:#64748b; --green:#5b5ce6; --blue:#4338ca; }
+    [data-theme="dark"] { --bg:#0f1220; --card:#171a2b; --line:#2a3048; --text:#e8eaf4; --muted:#94a3b8; --green:#818cf8; --blue:#a5b4fc; }
+    * { box-sizing:border-box; } html { scroll-behavior:smooth; }
     body { margin:0; background:var(--bg); color:var(--text); font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.55; }
     a { color:var(--blue); text-decoration:none; } a:hover { text-decoration:underline; }
     .wrap { max-width:1120px; margin:0 auto; padding:0 20px; }
     .mono { font-family:"IBM Plex Mono",ui-monospace,monospace; }
-    header { position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--bg) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+    header { position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--card) 90%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
     .nav { display:flex; align-items:center; justify-content:space-between; height:56px; gap:16px; }
-    .prompt { color:var(--green); font-size:13px; white-space:nowrap; display:flex; align-items:center; gap:8px; text-decoration:none; }
+    .prompt { color:var(--green); font-size:13px; display:flex; align-items:center; gap:8px; text-decoration:none; }
     .prompt img { width:22px; height:22px; }
-    .links { display:flex; gap:14px; flex-wrap:wrap; font-size:13px; }
+    .links { display:flex; gap:14px; font-size:13px; }
     .links a { color:var(--muted); text-decoration:none; }
     .links a:hover, .links a.active { color:var(--green); }
-    .icon-btn { background:transparent; border:1px solid var(--line); color:var(--text); width:34px; height:34px; border-radius:8px; cursor:pointer; }
+    .icon-btn { background:var(--card); border:1px solid var(--line); color:var(--text); width:34px; height:34px; border-radius:8px; cursor:pointer; }
     .hero { display:grid; grid-template-columns:1.15fr .85fr; gap:28px; padding:48px 0 28px; }
     h1 { margin:0 0 8px; font-size:clamp(32px,5vw,52px); letter-spacing:-.03em; }
     h1 .g { color:var(--green); }
     .role { font-size:20px; font-weight:600; margin:0 0 6px; }
     .tag { color:var(--muted); margin:0 0 16px; }
-    .win { background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+    .win { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
     .win-bar { display:flex; gap:6px; padding:10px 12px; border-bottom:1px solid var(--line); }
     .dot { width:10px; height:10px; border-radius:50%; }
     .win-body { display:grid; grid-template-columns:1fr 1fr; }
@@ -40,29 +39,23 @@
     .quote .who { color:var(--muted); margin-bottom:12px; }
     .quote ul { margin:0; padding:0; } .quote li { list-style:none; color:var(--green); }
     .cta { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-top:18px; font-size:14px; }
-    .btn { display:inline-flex; border:1px solid var(--green); color:var(--green); padding:8px 12px; border-radius:6px; text-decoration:none; }
-    .stats { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); border-radius:10px; overflow:hidden; margin:8px 0 40px; }
+    .btn { display:inline-flex; border:1px solid var(--green); color:var(--green); padding:8px 12px; border-radius:8px; text-decoration:none; }
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); border-radius:12px; overflow:hidden; margin:8px 0 40px; }
     .stat { padding:18px 12px; text-align:center; border-right:1px solid var(--line); background:var(--card); }
     .stat:last-child { border-right:0; } .stat b { display:block; font-size:20px; } .stat span { color:var(--muted); font-size:12px; }
     section { padding:8px 0 36px; }
     .sec { display:flex; align-items:baseline; gap:12px; color:var(--green); font-size:14px; font-weight:600; margin-bottom:16px; }
     .sec:after { content:""; flex:1; height:1px; background:var(--line); }
-    h2 { margin:0 0 10px; font-size:26px; }
-    .grid-2 { display:grid; grid-template-columns:1.2fr .8fr; gap:18px; }
-    .box { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; }
-    .box h3 { margin:0 0 10px; font-size:14px; color:var(--green); }
-    .cmd { color:var(--green); font-size:13px; margin:14px 0 8px; }
-    .philo { border:1px solid var(--line); border-radius:8px; padding:12px 14px; color:var(--muted); }
     .exp { display:grid; grid-template-columns:1fr 1fr 1fr .9fr; gap:16px; }
     .job h3 { margin:0 0 4px; font-size:16px; color:var(--blue); } .job .when { color:var(--green); font-size:13px; }
-    .quote2 { border:1px dashed var(--line); padding:16px; color:var(--green); font-size:14px; }
+    .quote2 { border:1px dashed var(--line); padding:16px; color:var(--green); font-size:14px; background:var(--card); border-radius:12px; }
     .cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    .cards3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+    .box { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
     .pill { font-size:11px; border:1px solid var(--line); padding:2px 8px; border-radius:999px; color:var(--muted); }
     footer { border-top:1px solid var(--line); padding:18px 0 28px; color:var(--muted); font-size:12px; display:flex; justify-content:space-between; }
-    .connect { display:grid; grid-template-columns:1.2fr auto 1fr; gap:20px; align-items:center; }
+    .connect { display:grid; grid-template-columns:1.2fr auto; gap:20px; align-items:center; }
     .socials { display:flex; gap:28px; font-size:13px; } .socials a { color:var(--text); text-decoration:none; }
-    @media (max-width:900px) { .hero,.win-body,.grid-2,.exp,.cards,.cards3,.connect,.stats { grid-template-columns:1fr; } .links { display:none; } }
+    @media (max-width:900px) { .hero,.win-body,.exp,.cards,.connect,.stats { grid-template-columns:1fr; } .links { display:none; } }
   </style>
 </head>
 <body>
@@ -74,7 +67,7 @@
         <a href="about.html" class="active">[02] About</a>
         <a href="#experience">[03] Experience</a>
         <a href="#projects">[04] Projects</a>
-        <a href="#notes">[05] Notes</a>
+        <a href="guides.html">[05] Guides</a>
         <a href="#contact">[06] Contact</a>
       </nav>
       <button class="icon-btn" id="theme" aria-label="Toggle theme">☼</button>
@@ -85,14 +78,13 @@
       <div>
         <p class="mono" style="color:var(--muted);margin:0 0 10px">Hello, I’m</p>
         <h1><span class="g">Manjunatha</span> Reddy T<span class="g">_</span></h1>
-        <p class="role">Site Reliability & Performance Engineer</p>
+        <p class="role">Site Reliability &amp; Performance Engineer</p>
         <p class="tag">Understanding systems. Building reliability.</p>
         <p>I work at the intersection of performance, reliability and real-world operations — investigating issues, improving systems, and building tools that make engineering work repeatable.</p>
-        <div class="cta"><span class="mono" style="color:var(--green)">></span>
+        <div class="cta"><span class="mono" style="color:var(--green)">&gt;</span>
           <a class="btn" href="#projects">View my work</a>
           <a href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener">LinkedIn</a>
           <a href="https://github.com/ManjuReddyT" target="_blank" rel="noopener">GitHub</a>
-          <a href="index.html">sreroot home</a>
         </div>
       </div>
       <aside class="win">
@@ -107,7 +99,7 @@
           <div class="quote mono">
             <p>"Reliable systems don’t happen by chance. They are designed, observed, debugged and continuously improved."</p>
             <div class="who">— Manjunatha Reddy</div>
-            <ul><li>> Solve real problems</li><li>> Follow the evidence</li><li>> Automate the repetitive</li><li>> Make systems better</li></ul>
+            <ul><li>&gt; Solve real problems</li><li>&gt; Follow the evidence</li><li>&gt; Automate the repetitive</li></ul>
           </div>
         </div>
       </aside>
@@ -115,20 +107,20 @@
     <div class="stats">
       <div class="stat"><b>13+</b><span>Years experience</span></div>
       <div class="stat"><b>Large scale</b><span>Distributed systems</span></div>
-      <div class="stat"><b>End-to-end</b><span>Performance & reliability</span></div>
+      <div class="stat"><b>End-to-end</b><span>Performance &amp; reliability</span></div>
       <div class="stat"><b>Engineer</b><span>Builder | Learner</span></div>
     </div>
     <section id="experience">
       <div class="sec mono">02. EXPERIENCE</div>
       <div class="exp">
-        <div class="job"><div class="when mono">2020 — Present</div><h3>Senior Site Reliability & Performance Engineer</h3><p>Performance engineering, production diagnostics, reliability and SRE automation.</p></div>
+        <div class="job"><div class="when mono">2020 — Present</div><h3>Senior Site Reliability &amp; Performance Engineer</h3><p>Performance engineering, production diagnostics, reliability and SRE automation.</p></div>
         <div class="job"><div class="when mono">2013 — 2020</div><h3>Performance Engineer</h3><p>Workload modeling, bottleneck analysis and capacity planning.</p></div>
         <div class="job"><div class="when mono">Earlier</div><h3>Software Engineer</h3><p>Moved from software engineering into performance and reliability work.</p></div>
-        <div class="quote2">“Every incident is a learning opportunity to build a more reliable system.”</div>
+        <div class="quote2">Every incident is a chance to make the next diagnosis cheaper.</div>
       </div>
     </section>
     <section id="projects">
-      <div class="sec mono">03. FEATURED PROJECTS</div>
+      <div class="sec mono">03. WORK</div>
       <div class="cards">
         <article class="box"><strong>KubeView</strong> <span class="pill">In-house</span><p>Kubernetes operations without standing shell access.</p></article>
         <article class="box"><strong>SRE Toolkit</strong> <span class="pill">In-house</span><p>Logs, GC, database and performance diagnostics.</p></article>
@@ -151,11 +143,11 @@
   <footer class="wrap"><span>© 2026 Manjunatha Reddy T</span><a href="index.html" style="color:inherit">sreroot home</a></footer>
   <script>
     const root = document.documentElement;
-    if (localStorage.getItem('theme') === 'light') root.setAttribute('data-theme','light');
+    if (localStorage.getItem('theme') === 'dark') root.setAttribute('data-theme','dark');
     document.getElementById('theme').onclick = () => {
-      const light = root.getAttribute('data-theme') === 'light';
-      if (light) { root.removeAttribute('data-theme'); localStorage.setItem('theme','dark'); }
-      else { root.setAttribute('data-theme','light'); localStorage.setItem('theme','light'); }
+      const dark = root.getAttribute('data-theme') === 'dark';
+      if (dark) { root.removeAttribute('data-theme'); localStorage.setItem('theme','light'); }
+      else { root.setAttribute('data-theme','dark'); localStorage.setItem('theme','dark'); }
     };
   </script>
 </body>
