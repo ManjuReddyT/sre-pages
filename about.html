@@ -9,52 +9,54 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg:#f4f6fb; --panel:#ffffff; --line:#e2e8f0; --soft:#e8eaf4; --text:#0f172a; --muted:#64748b; --acc:#5b5ce6; }
-    [data-theme="dark"] { --bg:#0f1220; --panel:#171a2b; --line:#2a3048; --soft:#232844; --text:#e8eaf4; --muted:#94a3b8; --acc:#818cf8; }
+    :root { --bg:#f4f6fb; --panel:#ffffff; --line:#e2e8f0; --soft:#e8eaf4; --text:#0f172a; --muted:#64748b; --acc:#5b5ce6; --good:#059669; }
+    [data-theme="dark"] { --bg:#0f1220; --panel:#171a2b; --line:#2a3048; --soft:#232844; --text:#e8eaf4; --muted:#94a3b8; --acc:#818cf8; --good:#4ade80; }
     * { box-sizing:border-box; } html { scroll-behavior:smooth; }
-    body { margin:0; background:var(--bg); color:var(--text); font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.55; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.65; }
     .mono { font-family:"IBM Plex Mono",ui-monospace,monospace; }
     a { color:var(--acc); text-decoration:none; } a:hover { text-decoration:underline; }
-    .wrap { max-width:1180px; margin:0 auto; padding:0 18px; }
+    .wrap { max-width:1120px; margin:auto; padding:0 20px; }
     header { position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--bg) 92%, transparent); border-bottom:1px solid var(--soft); backdrop-filter:blur(8px); }
-    .nav { height:52px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    .prompt { color:var(--acc); font-size:13px; }
-    .links { display:flex; gap:12px; font-size:12px; flex-wrap:wrap; }
-    .links a { color:var(--muted); text-decoration:none; }
-    .links a.active, .links a:hover { color:var(--acc); }
-    .right { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--muted); }
-    .live { width:7px; height:7px; border-radius:50%; background:var(--acc); display:inline-block; }
-    .theme { font:inherit; font-size:12px; background:var(--panel); color:var(--text); border:1px solid var(--line); padding:4px 8px; cursor:pointer; }
-    .box { border:1px solid var(--line); background:var(--panel); }
-    .hero { display:grid; grid-template-columns:1.15fr .72fr .95fr; gap:14px; padding:26px 0 16px; }
-    .hello { margin:0 0 6px; color:var(--muted); }
-    h1 { margin:0 0 6px; font-size:clamp(28px,4.2vw,42px); letter-spacing:-.03em; }
+    .nav { min-height:54px; display:flex; align-items:center; gap:14px; }
+    .prompt { font-size:13px; white-space:nowrap; }
+    .links { display:flex; gap:14px; font-size:12px; flex:1; justify-content:center; }
+    .links a { color:var(--muted); } .links a.active, .links a:hover { color:var(--acc); }
+    .right { margin-left:auto; color:var(--muted); font-size:12px; display:flex; align-items:center; gap:10px; white-space:nowrap; }
+    .live { width:7px; height:7px; border-radius:50%; display:inline-block; background:var(--good); }
+    .theme { font:inherit; color:var(--text); background:var(--panel); border:1px solid var(--line); padding:5px 8px; cursor:pointer; }
+    main { padding-bottom:32px; } section { scroll-margin-top:75px; }
+    .hero { display:grid; grid-template-columns:minmax(0,1.18fr) minmax(280px,.82fr); gap:18px; padding:36px 0 24px; }
+    .hello { color:var(--muted); margin:0 0 4px; }
+    h1 { font-size:clamp(34px,6vw,52px); letter-spacing:-.04em; margin:0 0 8px; line-height:1.05; }
     h1 em { color:var(--acc); font-style:normal; }
-    .role { margin:0 0 12px; font-size:18px; }
-    .intro { margin:0 0 12px; max-width:48ch; }
-    .quote { border:1px solid var(--acc); color:var(--acc); padding:10px 12px; margin:0 0 14px; font-size:13px; }
-    .cta { display:flex; gap:8px; flex-wrap:wrap; }
-    .btn { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--acc); color:var(--acc); padding:8px 12px; font-size:13px; text-decoration:none; }
-    .btn.ghost { border-color:var(--line); color:var(--text); }
-    .art { padding:12px; text-align:center; display:flex; flex-direction:column; justify-content:space-between; min-height:240px; }
-    .art pre { margin:0; color:var(--acc); font-size:10px; line-height:1.15; text-align:left; display:inline-block; }
-    .cap { color:var(--muted); font-size:12px; margin:8px 0; }
-    .spark { border:1px solid var(--line); padding:8px; font-size:12px; color:var(--muted); display:flex; gap:8px; align-items:flex-start; text-align:left; }
-    .side { display:flex; flex-direction:column; gap:12px; }
-    .pane { padding:12px 14px; font-size:13px; }
-    .pane h2 { margin:0 0 8px; color:var(--acc); font-size:13px; font-weight:500; }
-    .kv { display:grid; grid-template-columns:86px 1fr; gap:3px 8px; }
+    .role { font-size:19px; margin:0 0 14px; }
+    .intro { max-width:66ch; margin:0 0 16px; color:var(--muted); }
+    .promptline { color:var(--acc); margin:0 0 14px; font-size:13px; }
+    .quote { padding:10px 14px; background:var(--panel); border:1px solid var(--line); border-left:2px solid var(--acc); margin-bottom:16px; }
+    .cta { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn { display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border:1px solid var(--acc); font-size:13px; }
+    .btn.ghost { color:var(--text); border-color:var(--line); }
+    .box { border:1px solid var(--line); background:var(--panel); }
+    .console { padding:16px; }
+    .console-head { color:var(--muted); font-size:12px; margin-bottom:10px; }
+    .console-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 18px; }
+    .kv { display:grid; grid-template-columns:72px 1fr; gap:4px 8px; font-size:12px; }
     .k { color:var(--muted); }
-    .pills { display:grid; grid-template-columns:repeat(5,1fr); border-top:1px solid var(--soft); border-bottom:1px solid var(--soft); margin:6px 0 18px; }
-    .pills div { padding:12px 8px; text-align:center; border-right:1px solid var(--soft); font-size:12px; }
-    .pills div:last-child { border-right:0; }
-    .pills b { display:block; }
-    .pills span { color:var(--muted); font-size:11px; }
-    .ico { width:18px; height:18px; stroke:var(--acc); fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; display:block; margin:0 auto 6px; }
-    .ico.sm { width:16px; height:16px; margin:2px 0 0; }
-    .ico.inline { display:inline-block; margin:0; vertical-align:middle; }
-    .g2 { display:grid; grid-template-columns:1.15fr .85fr; gap:14px; margin-bottom:14px; }
-    .sec { color:var(--acc); font-size:14px; font-weight:600; margin:0 0 12px; }
+    .terminal { margin-top:14px; border:1px solid var(--line); padding:12px; font-size:12px; color:var(--muted); }
+    .terminal b { color:var(--acc); font-weight:500; }
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--soft); border-bottom:1px solid var(--soft); margin:4px 0 22px; }
+    .stat { padding:14px 10px; border-right:1px solid var(--soft); text-align:center; }
+    .stat:last-child { border-right:0; }
+    .stat strong { display:block; font:600 20px "IBM Plex Mono",monospace; color:var(--acc); }
+    .stat span { display:block; color:var(--muted); font-size:11px; margin-top:4px; }
+    .section-title { display:flex; align-items:center; gap:10px; margin:22px 0 12px; font:600 14px "IBM Plex Mono",monospace; color:var(--acc); }
+    .section-title:after { content:""; height:1px; background:var(--soft); flex:1; }
+    .grid2 { display:grid; grid-template-columns:1.08fr .92fr; gap:14px; }
+    .card { padding:17px; }
+    .card h3 { margin:0 0 8px; font-size:16px; }
+    .card p { margin:0; color:var(--muted); font-size:13px; }
+    .chips { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; }
+    .chip { border:1px dashed var(--line); padding:5px 8px; color:var(--muted); font:12px "IBM Plex Mono",monospace; }
     .tl { list-style:none; margin:0; padding:0; }
     .tl li { display:grid; grid-template-columns:12px 1fr auto; gap:10px; margin:0 0 14px; }
     .dot { width:8px; height:8px; border-radius:50%; background:var(--acc); margin-top:6px; }
@@ -62,42 +64,50 @@
     .tl .tag { color:var(--acc); font-size:11px; font-weight:500; }
     .tl p { margin:2px 0 0; color:var(--muted); font-size:13px; }
     .when { color:var(--muted); font-size:12px; white-space:nowrap; }
-    .pad { padding:16px; }
-    .thought { margin-top:12px; padding:12px; color:var(--acc); font-size:13px; }
-    .proj { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-    .proj a { color:inherit; }
-    .proj h3 { margin:0 0 6px; display:flex; align-items:center; gap:8px; }
-    .learn .row { display:grid; grid-template-columns:22px 1fr; gap:8px; margin:0 0 10px; font-size:13px; }
-    .learn b { display:block; }
-    .learn span { color:var(--muted); font-weight:400; }
-    .phil { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .q2 { border:1px solid var(--acc); padding:12px; color:var(--acc); font-size:13px; }
-    .ok { margin:0; padding:0; list-style:none; font-size:13px; }
-    .ok li { margin:5px 0; }
-    .ok li:before { content:"✓ "; color:var(--acc); }
-    .social { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+    .projects { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .project { color:inherit; display:block; }
+    .project h3 { display:flex; align-items:center; gap:8px; margin:0 0 8px; font-size:16px; }
+    .project .label { margin-left:auto; color:var(--acc); font:11px "IBM Plex Mono",monospace; }
+    .project p { margin:0; color:var(--muted); font-size:13px; }
+    .project ul { margin:10px 0 0 18px; padding:0; color:var(--muted); font-size:12px; }
+    .project li { margin-bottom:4px; }
+    .learning { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .learn-row { display:grid; grid-template-columns:28px 1fr; gap:8px; margin-bottom:12px; }
+    .learn-row:last-child { margin-bottom:0; }
+    .learn-icon { color:var(--acc); font:600 15px "IBM Plex Mono",monospace; }
+    .learn-row b { font-size:13px; }
+    .learn-row span { display:block; color:var(--muted); font-size:12px; }
+    .principles { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .principles blockquote { margin:0; border:1px solid var(--acc); padding:16px; color:var(--acc); font-size:13px; }
+    .ok { list-style:none; padding:0; margin:0; font-size:13px; }
+    .ok li { margin:6px 0; }
+    .ok li:before { content:"\2713 "; color:var(--acc); }
+    .contact { display:flex; justify-content:space-between; gap:16px; align-items:center; flex-wrap:wrap; }
+    .contact h3 { margin:0 0 6px; font-size:16px; }
+    .social { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
     .social a { display:inline-flex; align-items:center; gap:6px; }
-    footer { border-top:1px dashed var(--soft); padding:14px 0 26px; color:var(--muted); font-size:12px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-    @media (max-width:960px) {
-      .hero,.g2,.proj,.phil,.pills { grid-template-columns:1fr; }
+    .ico { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+    footer { border-top:1px dashed var(--soft); margin-top:22px; padding:16px 0 24px; color:var(--muted); font-size:12px; display:flex; justify-content:space-between; gap:12px; }
+    @media (max-width:900px) {
       .links { display:none; }
-      .pills div { border-right:0; border-bottom:1px solid var(--soft); }
+      .hero, .grid2, .learning, .principles { grid-template-columns:1fr; }
+      .projects { grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width:620px) {
+      .wrap { padding:0 14px; }
+      .hero { padding-top:26px; }
+      .stats { grid-template-columns:1fr 1fr; }
+      .stat:nth-child(2) { border-right:0; }
+      .stat:nth-child(-n+2) { border-bottom:1px solid var(--soft); }
+      .projects { grid-template-columns:1fr; }
+      .console-grid { grid-template-columns:1fr; }
+      footer { display:block; }
+      footer span { display:block; margin-bottom:6px; }
     }
   </style>
 </head>
 <body>
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-    <symbol id="i-bars" viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-7M22 19V8"/></symbol>
-    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-3z"/></symbol>
-    <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 3l9 5v8l-9 5-9-5V8l9-5zM12 13l9-5M12 13v10M12 13L3 8"/></symbol>
-    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M4.2 6.2l1.4 1.4M18.4 16.4l1.4 1.4M3 12h2M19 12h2M4.2 17.8l1.4-1.4M18.4 7.6l1.4-1.4"/></symbol>
-    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5h8a3 3 0 013 3v13H7a3 3 0 00-3 3V5zM20 5h-8"/><path d="M12 5v16"/></symbol>
-    <symbol id="i-cup" viewBox="0 0 24 24"><path d="M5 8h10v6a4 4 0 01-4 4H9a4 4 0 01-4-4V8z"/><path d="M15 10h2a3 3 0 010 6h-2"/><path d="M8 20h6"/></symbol>
-    <symbol id="i-hex" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/></symbol>
-    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
-    <symbol id="i-term" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10l3 2-3 2M12 14h5"/></symbol>
-    <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13 6l-2 12"/></symbol>
-    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M8 14a5 5 0 117.5-4.3A4 4 0 0116 14H8z"/></symbol>
     <symbol id="i-in" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7h.01M12 17v-4.5a2 2 0 014 0V17"/></symbol>
     <symbol id="i-gh" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 00-.9-2.6c3-.3 6.1-1.5 6.1-6.6A5 5 0 0019 4.8 4.6 4.6 0 0019 1s-1.1-.3-3.5 1.3a12 12 0 00-6 0C7.1.7 6 1 6 1a4.6 4.6 0 000 3.8A5 5 0 004.8 8.9c0 5.1 3.1 6.3 6.1 6.6a3.4 3.4 0 00-.9 2.6V22"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></symbol>
@@ -105,171 +115,185 @@
 
   <header>
     <div class="wrap nav">
-      <a class="mono prompt" href="index.html">manju@portfolio:~$</a>
+      <a class="mono prompt" href="index.html">manju@sreroot:~$</a>
       <nav class="links mono">
         <a href="index.html">[01] Home</a>
         <a class="active" href="about.html">[02] About</a>
-        <a href="#story">[03] Experience</a>
-        <a href="#projects">[04] Field kit</a>
-        <a href="#learning">[05] Skills</a>
-        <a href="#notes">[06] Notes</a>
-        <a href="#contact">[07] Contact</a>
+        <a href="#journey">[03] Journey</a>
+        <a href="#field-kit">[04] Field kit</a>
+        <a href="#learning">[05] Learning</a>
+        <a href="#principles">[06] Principles</a>
+        <a href="#contact">[07] Connect</a>
       </nav>
       <div class="right mono">
         <span><i class="live"></i> systems: online</span>
-        <button class="theme" id="theme" type="button">theme: dark</button>
+        <button class="theme" id="theme" type="button">theme: light</button>
       </div>
     </div>
   </header>
 
   <main class="wrap">
-    <section class="hero">
+    <section class="hero" id="about">
       <div>
-        <p class="hello">Hello, I’m</p>
+        <p class="hello mono">$ whoami</p>
         <h1><em>Manjunatha</em> Reddy T<em>_</em></h1>
-        <p class="role">Site Reliability & Performance Engineer</p>
+        <p class="role">Site Reliability &amp; Performance Engineer</p>
         <p class="intro">Thirteen years in performance engineering, non-functional testing, and production diagnosis — workload models, latency and capacity, JVM dumps, and the quiet work of making the next incident shorter.</p>
-        <div class="quote mono">> Evidence first: logs, metrics, traces, and runtime dumps<br>&nbsp;&nbsp;before any change in production.</div>
+        <p class="promptline mono">$ cat /notes/approach.txt</p>
+        <div class="quote mono">Read the system first. Follow the evidence. Change little. Leave a shorter path.</div>
         <div class="cta">
-          <a class="btn mono" href="#projects">> Field kit</a>
-          <a class="btn ghost mono" href="#about">> About</a>
+          <a class="btn mono" href="#field-kit">&gt; field_kit</a>
+          <a class="btn ghost mono" href="#journey">&gt; read_journey</a>
         </div>
       </div>
-      <aside class="box art">
-        <pre class="mono">
-      .  *   o
-    *    .    *
-        /\
-       /  \
-      /_/\_\
-        ||
-   ~~~~~~~~~~~~~~
-        </pre>
-        <div class="cap mono">Measure → Diagnose → Automate → Recheck</div>
-        <div class="spark"><svg class="ico sm"><use href="#i-bulb"/></svg><span>If the same diagnosis repeats, it becomes a small tool.</span></div>
-      </aside>
-      <div class="side">
-        <div class="box pane mono">
-          <h2>-- [ system status ]</h2>
+      <aside class="box console mono">
+        <div class="console-head">manju@sreroot:~$ neofetch --public</div>
+        <div class="console-grid">
           <div class="kv">
-            <span class="k">Since</span><span>2012</span>
-            <span class="k">Role</span><span>SRE / Performance</span>
-            <span class="k">Location</span><span>Bengaluru, India</span>
-            <span class="k">Focus</span><span>NFR, JVM, k8s ops, observability</span>
-            <span class="k">Status</span><span>Still learning</span>
+            <span class="k">role</span><span>SRE / Performance</span>
+            <span class="k">since</span><span>2012</span>
+            <span class="k">focus</span><span>Reliability</span>
+          </div>
+          <div class="kv">
+            <span class="k">work</span><span>Distributed systems</span>
+            <span class="k">base</span><span>Bengaluru</span>
+            <span class="k">mode</span><span>Still learning</span>
           </div>
         </div>
-        <div class="box pane mono">
-          <h2>-- [ current activity ]</h2>
-          <div>> Performance and capacity work</div>
-          <div>> JVM and runtime diagnosis</div>
-          <div>> Notes and a small field kit</div>
+        <div class="terminal">
+          &gt; <b>current_focus</b><br>
+          performance · diagnostics · reliability · notes<br><br>
+          &gt; <b>status</b><br>
+          reading dumps / writing shorter paths
         </div>
+      </aside>
+    </section>
+
+    <div class="stats mono">
+      <div class="stat"><strong>13+</strong><span>years in engineering</span></div>
+      <div class="stat"><strong>4</strong><span>core focus areas</span></div>
+      <div class="stat"><strong>3</strong><span>tools in the field kit</span></div>
+      <div class="stat"><strong>1</strong><span>working practice</span></div>
+    </div>
+
+    <section id="journey">
+      <div class="section-title"><span>01.</span> JOURNEY</div>
+      <div class="grid2">
+        <article class="box card">
+          <h3>From performance to reliability</h3>
+          <p>The work started with performance: workloads, latency, capacity, and how an application changes when the load is no longer polite. Over time that sat next to production diagnosis.</p>
+          <p style="margin-top:12px">Most days are ordinary. Read the dump. Check the probe. Compare this run with the last one. Write down what actually moved the needle. When the same diagnosis returns, a small tool or a short guide is enough.</p>
+          <div class="chips">
+            <span class="chip">performance</span>
+            <span class="chip">production</span>
+            <span class="chip">diagnostics</span>
+            <span class="chip">reliability</span>
+            <span class="chip">notes</span>
+          </div>
+        </article>
+        <article class="box card">
+          <ul class="tl">
+            <li><span class="dot"></span><div><h3>Studies</h3><p>BE in Computer Science. Learned to reason about programs before putting a load on one.</p></div><span class="when mono">2008 — 2012</span></li>
+            <li><span class="dot"></span><div><h3>Started with tests</h3><span class="tag">Performance engineer</span><p>Performance testing and workload behaviour.</p></div><span class="when mono">~2012</span></li>
+            <li><span class="dot"></span><div><h3>Closer to production</h3><p>Live issues, dumps and traces. Reliability next to performance.</p></div><span class="when mono">~2015</span></li>
+            <li><span class="dot"></span><div><h3>Tests in the pipeline</h3><span class="tag">2013 — 2020</span><p>JMeter in CI. Capacity forecasts. Bottlenecks across versions.</p></div><span class="when mono">~2016</span></li>
+            <li><span class="dot"></span><div><h3>Distributed systems</h3><p>More hops. Same questions — latency, restarts, where it waits.</p></div><span class="when mono">~2018</span></li>
+            <li><span class="dot"></span><div><h3>SRE and performance together</h3><span class="tag">Senior SRE &amp; Performance</span><p>NFR plus diagnosis across application, JVM, data and Kubernetes.</p></div><span class="when mono">2020 — now</span></li>
+            <li><span class="dot"></span><div><h3>Helpers for repeated steps</h3><p>Small tools and notes for diagnoses that kept returning.</p></div><span class="when mono">~2021</span></li>
+            <li><span class="dot"></span><div><h3>Still studying</h3><p>Runtime diagnostics. A local model on a log is early. Guides when they help someone start faster.</p></div><span class="when mono">~2024 — now</span></li>
+          </ul>
+        </article>
       </div>
     </section>
 
-    <div class="pills">
-      <div><svg class="ico"><use href="#i-bars"/></svg><b>Performance & NFR</b><span>Workload, latency, capacity</span></div>
-      <div><svg class="ico"><use href="#i-shield"/></svg><b>Reliability</b><span>Investigate, resolve, prevent</span></div>
-      <div><svg class="ico"><use href="#i-cube"/></svg><b>Distributed systems</b><span>Observe and operate</span></div>
-      <div><svg class="ico"><use href="#i-gear"/></svg><b>Automation</b><span>Only after it repeats</span></div>
-      <div><svg class="ico"><use href="#i-book"/></svg><b>Learning</b><span>Notes, dumps, guides</span></div>
-    </div>
-
-    <div class="g2" id="story">
-      <section class="box pad">
-        <div class="sec mono">01. EXPERIENCE</div>
-        <ul class="tl">
-          <li><span class="dot"></span><div><h3>Studies</h3><p>BE in Computer Science. Learned to reason about programs before I ever put a load on one.</p></div><span class="when mono">2008 — 2012</span></li>
-          <li><span class="dot"></span><div><h3>Started with tests</h3><span class="tag">Performance engineer</span><p>Performance testing and workload behaviour. How a system changes when the load is no longer polite.</p></div><span class="when mono">~2012</span></li>
-          <li><span class="dot"></span><div><h3>Closer to production</h3><p>Live issues, application diagnostics, dumps and traces. Reliability started to sit next to performance.</p></div><span class="when mono">~2015</span></li>
-          <li><span class="dot"></span><div><h3>Tests in the pipeline</h3><span class="tag">Performance engineer, 2013 — 2020</span><p>JMeter in CI so a regression could show up before release. Capacity forecasts. Bottlenecks tracked across versions.</p></div><span class="when mono">~2016</span></li>
-          <li><span class="dot"></span><div><h3>Distributed systems</h3><p>Larger systems, more hops. Same questions — latency, restarts, where it waits — just further apart.</p></div><span class="when mono">~2018</span></li>
-          <li><span class="dot"></span><div><h3>SRE and performance together</h3><span class="tag">Senior SRE & Performance Engineer</span><p>End-to-end NFR plus production diagnosis across application, JVM, data and Kubernetes. Logs, metrics, traces and dumps before a change.</p></div><span class="when mono">2020 — now</span></li>
-          <li><span class="dot"></span><div><h3>Helpers for repeated steps</h3><p>Small tools and notes for diagnoses that kept returning. Nothing public at first — just a shorter path the next time.</p></div><span class="when mono">~2021</span></li>
-          <li><span class="dot"></span><div><h3>Still studying</h3><p>Runtime diagnostics, and how a local model might summarise a log. That part is early. Tools and guides when they help someone else start faster.</p></div><span class="when mono">~2024 — now</span></li>
-        </ul>
-      </section>
-      <div>
-        <section class="box pad" id="about">
-          <div class="sec mono">02. ABOUT</div>
-          <p>I work where performance testing meets live systems: model a workload, measure latency and throughput, then follow a slow path into the JVM or the platform when something breaks.</p>
-          <p>Most of the useful work is ordinary. Read the dump. Check the probe. Compare this run with the last one. Write down what actually moved the needle.</p>
-          <p>When the same diagnosis keeps returning, I prefer a small tool or a short guide over another long thread.</p>
-        </section>
-        <aside class="box thought mono" id="notes">
-          -- [ practice ] —<br><br>
-          Evidence first. Least surprise in production. Shift performance left when a test can catch it.
-        </aside>
-      </div>
-    </div>
-
-    <div class="g2" id="projects">
-      <section>
-        <div class="sec mono">03. FIELD KIT</div>
-        <div class="proj">
-          <a class="box pad" href="https://devutil.sreroot.com">
-            <h3><svg class="ico sm inline"><use href="#i-code"/></svg> DevUtil</h3>
-            <p>Browser tools for formats, diffs, tokens and SQL. Nothing is uploaded.</p>
-            <span class="mono">Open →</span>
-          </a>
-          <a class="box pad" href="https://perf.sreroot.com">
-            <h3><svg class="ico sm inline"><use href="#i-bars"/></svg> PerfAnalyzer</h3>
-            <p>Read JMeter reports on the local machine. Compare runs. Find the wait.</p>
-            <span class="mono">Open →</span>
-          </a>
-          <a class="box pad" href="guides.html">
-            <h3><svg class="ico sm inline"><use href="#i-book"/></svg> Guides</h3>
-            <p>Field notes on strace, JFR, heap dumps and thread dumps.</p>
-            <span class="mono">Open →</span>
-          </a>
-        </div>
-      </section>
-      <section class="box pad learn" id="learning">
-        <div class="sec mono">04. SKILLS I USE</div>
-        <div class="row"><svg class="ico sm"><use href="#i-cup"/></svg><div><b>Java / JVM</b><span>JFR, GC logs, heap dumps, thread dumps</span></div></div>
-        <div class="row"><svg class="ico sm"><use href="#i-bars"/></svg><div><b>Performance</b><span>Workload modeling, JMeter, latency, capacity</span></div></div>
-        <div class="row"><svg class="ico sm"><use href="#i-hex"/></svg><div><b>Kubernetes</b><span>Pod health, probes, limits, deployment issues</span></div></div>
-        <div class="row"><svg class="ico sm"><use href="#i-eye"/></svg><div><b>Observability</b><span>Prometheus, Grafana, ELK</span></div></div>
-        <div class="row"><svg class="ico sm"><use href="#i-term"/></svg><div><b>Languages</b><span>Java, Python, Bash, SQL</span></div></div>
-      </section>
-    </div>
-
-    <div class="g2">
-      <section class="box pad">
-        <div class="sec mono">05. HOW I TRY TO WORK</div>
-        <div class="phil">
-          <div class="q2">Read the system first.<br>Follow the evidence.<br>Change little.<br>Leave a shorter path.</div>
-          <ul class="ok">
-            <li>Dumps and traces before a production change</li>
-            <li>Performance tests in CI when they can catch a regression</li>
-            <li>Automate only a diagnosis that has already repeated</li>
-            <li>Share notes when they help someone else start faster</li>
+    <section id="field-kit">
+      <div class="section-title"><span>02.</span> FIELD KIT</div>
+      <div class="projects">
+        <a class="box card project" href="https://devutil.sreroot.com">
+          <h3>DevUtil <span class="label">OPEN</span></h3>
+          <p>Browser tools for formats, diffs, tokens and SQL. Nothing is uploaded.</p>
+          <ul>
+            <li>formats and diffs</li>
+            <li>tokens and SQL helpers</li>
+            <li>stays in the browser</li>
           </ul>
+        </a>
+        <a class="box card project" href="https://perf.sreroot.com">
+          <h3>PerfAnalyzer <span class="label">OPEN</span></h3>
+          <p>Read JMeter reports on the local machine. Compare runs. Find the wait.</p>
+          <ul>
+            <li>local report parsing</li>
+            <li>run comparison</li>
+            <li>latency paths</li>
+          </ul>
+        </a>
+        <a class="box card project" href="guides.html">
+          <h3>Guides <span class="label">NOTES</span></h3>
+          <p>Field notes on strace, JFR, heap dumps and thread dumps.</p>
+          <ul>
+            <li>strace and JFR</li>
+            <li>heap and thread dumps</li>
+            <li>short paths for on-call</li>
+          </ul>
+        </a>
+      </div>
+    </section>
+
+    <section id="learning">
+      <div class="section-title"><span>03.</span> LEARNING</div>
+      <div class="learning">
+        <article class="box card">
+          <div class="learn-row"><div class="learn-icon">01</div><div><b>Java / JVM</b><span>JFR, GC logs, heap dumps, thread dumps.</span></div></div>
+          <div class="learn-row"><div class="learn-icon">02</div><div><b>Performance</b><span>Workload modeling, JMeter, latency, capacity.</span></div></div>
+          <div class="learn-row"><div class="learn-icon">03</div><div><b>Kubernetes</b><span>Pod health, probes, limits, deployment issues.</span></div></div>
+        </article>
+        <article class="box card">
+          <div class="learn-row"><div class="learn-icon">04</div><div><b>Observability</b><span>Prometheus, Grafana, ELK — enough to follow a path.</span></div></div>
+          <div class="learn-row"><div class="learn-icon">05</div><div><b>Languages</b><span>Java, Python, Bash, SQL.</span></div></div>
+          <div class="learn-row"><div class="learn-icon">06</div><div><b>Notes and helpers</b><span>Small tools when a diagnosis repeats. Local models on logs are early.</span></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="principles">
+      <div class="section-title"><span>04.</span> PRINCIPLES</div>
+      <div class="principles">
+        <blockquote class="mono">Read the system first.<br>Follow the evidence.<br>Change little.<br>Leave a shorter path.</blockquote>
+        <ul class="ok">
+          <li>Dumps and traces before a production change</li>
+          <li>Performance tests in CI when they can catch a regression</li>
+          <li>Automate only a diagnosis that has already repeated</li>
+          <li>Share notes when they help someone else start faster</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="section-title"><span>05.</span> LET'S CONNECT</div>
+      <div class="box card contact">
+        <div>
+          <h3>Open to a technical conversation.</h3>
+          <p>Professional questions, collaboration, and ideas around reliable systems. LinkedIn is the best place to reach me.</p>
         </div>
-      </section>
-      <section class="box pad" id="contact">
-        <div class="sec mono">06. CONTACT</div>
-        <p>Happy to talk if the problem is technical. LinkedIn is the best place to reach me.</p>
         <div class="social mono">
-          <a href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener"><svg class="ico sm inline"><use href="#i-in"/></svg> LinkedIn</a>
-          <a href="https://github.com/ManjuReddyT" target="_blank" rel="noopener"><svg class="ico sm inline"><use href="#i-gh"/></svg> GitHub</a>
-          <a href="https://x.com/tmanjureddy" target="_blank" rel="noopener"><svg class="ico sm inline"><use href="#i-x"/></svg> X</a>
+          <a href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener"><svg class="ico"><use href="#i-in"/></svg>[LinkedIn]</a>
+          <a href="https://github.com/ManjuReddyT" target="_blank" rel="noopener"><svg class="ico"><use href="#i-gh"/></svg>[GitHub]</a>
+          <a href="https://x.com/tmanjureddy" target="_blank" rel="noopener"><svg class="ico"><use href="#i-x"/></svg>[X]</a>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   </main>
 
   <footer class="wrap mono">
-    <div>manju@portfolio:~$ echo thanks<br>thanks</div>
-    <div><a href="index.html">cd home</a></div>
+    <span>manju@sreroot:~$ echo "Thanks for visiting"</span>
+    <span><a href="index.html">cd home</a></span>
   </footer>
 
   <script>
     const root = document.documentElement;
     const btn = document.getElementById('theme');
     if (localStorage.getItem('theme') === 'dark') root.setAttribute('data-theme','dark');
-    const label = () => btn.textContent = 'theme: ' + (root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+    const label = () => { btn.textContent = 'theme: ' + (root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'); };
     label();
     btn.onclick = () => {
       const dark = root.getAttribute('data-theme') === 'dark';
