@@ -34,12 +34,12 @@
     .intro { margin:0 0 12px; max-width:48ch; }
     .quote { border:1px solid var(--acc); color:var(--acc); padding:10px 12px; margin:0 0 14px; font-size:13px; }
     .cta { display:flex; gap:8px; flex-wrap:wrap; }
-    .btn { display:inline-flex; border:1px solid var(--acc); color:var(--acc); padding:8px 12px; font-size:13px; text-decoration:none; }
+    .btn { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--acc); color:var(--acc); padding:8px 12px; font-size:13px; text-decoration:none; }
     .btn.ghost { border-color:var(--line); color:var(--text); }
     .art { padding:12px; text-align:center; display:flex; flex-direction:column; justify-content:space-between; min-height:240px; }
     .art pre { margin:0; color:var(--acc); font-size:10px; line-height:1.15; text-align:left; display:inline-block; }
     .cap { color:var(--muted); font-size:12px; margin:8px 0; }
-    .spark { border:1px solid var(--line); padding:8px; font-size:12px; color:var(--muted); }
+    .spark { border:1px solid var(--line); padding:8px; font-size:12px; color:var(--muted); display:flex; gap:8px; align-items:flex-start; text-align:left; }
     .side { display:flex; flex-direction:column; gap:12px; }
     .pane { padding:12px 14px; font-size:13px; }
     .pane h2 { margin:0 0 8px; color:var(--acc); font-size:13px; font-weight:500; }
@@ -50,6 +50,9 @@
     .pills div:last-child { border-right:0; }
     .pills b { display:block; }
     .pills span { color:var(--muted); font-size:11px; }
+    .ico { width:18px; height:18px; stroke:var(--acc); fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; display:block; margin:0 auto 6px; }
+    .ico.sm { width:16px; height:16px; margin:2px 0 0; }
+    .ico.inline { display:inline-block; margin:0; vertical-align:middle; }
     .g2 { display:grid; grid-template-columns:1.15fr .85fr; gap:14px; margin-bottom:14px; }
     .sec { color:var(--acc); font-size:14px; font-weight:600; margin:0 0 12px; }
     .tl { list-style:none; margin:0; padding:0; }
@@ -61,7 +64,9 @@
     .pad { padding:16px; }
     .thought { margin-top:12px; padding:12px; color:var(--acc); font-size:13px; }
     .proj { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-    .learn p { margin:0 0 10px; font-size:13px; }
+    .proj a { color:inherit; }
+    .proj h3 { margin:0 0 6px; display:flex; align-items:center; gap:8px; }
+    .learn .row { display:grid; grid-template-columns:22px 1fr; gap:8px; margin:0 0 10px; font-size:13px; }
     .learn b { display:block; }
     .learn span { color:var(--muted); font-weight:400; }
     .phil { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
@@ -69,6 +74,8 @@
     .ok { margin:0; padding:0; list-style:none; font-size:13px; }
     .ok li { margin:5px 0; }
     .ok li:before { content:"✓ "; color:var(--acc); }
+    .social { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+    .social a { display:inline-flex; align-items:center; gap:6px; }
     footer { border-top:1px dashed var(--soft); padding:14px 0 26px; color:var(--muted); font-size:12px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
     @media (max-width:960px) {
       .hero,.g2,.proj,.phil,.pills { grid-template-columns:1fr; }
@@ -78,6 +85,23 @@
   </style>
 </head>
 <body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="i-bars" viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-7M22 19V8"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-3z"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 3l9 5v8l-9 5-9-5V8l9-5zM12 13l9-5M12 13v10M12 13L3 8"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M4.2 6.2l1.4 1.4M18.4 16.4l1.4 1.4M3 12h2M19 12h2M4.2 17.8l1.4-1.4M18.4 7.6l1.4-1.4"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5h8a3 3 0 013 3v13H7a3 3 0 00-3 3V5zM20 5h-8"/><path d="M12 5v16"/></symbol>
+    <symbol id="i-cup" viewBox="0 0 24 24"><path d="M5 8h10v6a4 4 0 01-4 4H9a4 4 0 01-4-4V8z"/><path d="M15 10h2a3 3 0 010 6h-2"/><path d="M8 20h6"/></symbol>
+    <symbol id="i-hex" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-term" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10l3 2-3 2M12 14h5"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13 6l-2 12"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M8 14a5 5 0 117.5-4.3A4 4 0 0116 14H8z"/></symbol>
+    <symbol id="i-in" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7h.01M12 17v-4.5a2 2 0 014 0V17"/></symbol>
+    <symbol id="i-gh" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 00-.9-2.6c3-.3 6.1-1.5 6.1-6.6A5 5 0 0019 4.8 4.6 4.6 0 0019 1s-1.1-.3-3.5 1.3a12 12 0 00-6 0C7.1.7 6 1 6 1a4.6 4.6 0 000 3.8A5 5 0 004.8 8.9c0 5.1 3.1 6.3 6.1 6.6a3.4 3.4 0 00-.9 2.6V22"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></symbol>
+  </svg>
+
   <header>
     <div class="wrap nav">
       <a class="mono prompt" href="index.html">manju@portfolio:~$</a>
@@ -121,7 +145,7 @@
    ~~~~~~~~~~~~~~
         </pre>
         <div class="cap mono">Measure → Diagnose → Automate → Recheck</div>
-        <div class="spark">If the same diagnosis repeats, it becomes a small tool.</div>
+        <div class="spark"><svg class="ico sm"><use href="#i-bulb"/></svg><span>If the same diagnosis repeats, it becomes a small tool.</span></div>
       </aside>
       <div class="side">
         <div class="box pane mono">
@@ -144,11 +168,11 @@
     </section>
 
     <div class="pills">
-      <div><b>Performance & NFR</b><span>Workload, latency, capacity</span></div>
-      <div><b>JVM</b><span>JFR, GC, heap, threads</span></div>
-      <div><b>Kubernetes</b><span>Health, probes, limits</span></div>
-      <div><b>Observability</b><span>Logs, metrics, dashboards</span></div>
-      <div><b>Engineering</b><span>Java, Python, SQL, Bash</span></div>
+      <div><svg class="ico"><use href="#i-bars"/></svg><b>Performance & NFR</b><span>Workload, latency, capacity</span></div>
+      <div><svg class="ico"><use href="#i-shield"/></svg><b>Reliability</b><span>Investigate, resolve, prevent</span></div>
+      <div><svg class="ico"><use href="#i-cube"/></svg><b>Distributed systems</b><span>Observe and operate</span></div>
+      <div><svg class="ico"><use href="#i-gear"/></svg><b>Automation</b><span>Only after it repeats</span></div>
+      <div><svg class="ico"><use href="#i-book"/></svg><b>Learning</b><span>Notes, dumps, guides</span></div>
     </div>
 
     <div class="g2" id="story">
@@ -179,17 +203,17 @@
         <div class="sec mono">03. PUBLIC PROJECTS</div>
         <div class="proj">
           <a class="box pad" href="https://devutil.sreroot.com">
-            <h3>DevUtil</h3>
+            <h3><svg class="ico sm inline"><use href="#i-code"/></svg> DevUtil</h3>
             <p>Browser tools for formats, diffs, tokens and SQL. Nothing is uploaded.</p>
             <span class="mono">Open →</span>
           </a>
           <a class="box pad" href="https://perf.sreroot.com">
-            <h3>PerfAnalyzer</h3>
+            <h3><svg class="ico sm inline"><use href="#i-bars"/></svg> PerfAnalyzer</h3>
             <p>Read JMeter reports on the local machine. Compare runs. Find the wait.</p>
             <span class="mono">Open →</span>
           </a>
           <a class="box pad" href="guides.html">
-            <h3>Guides</h3>
+            <h3><svg class="ico sm inline"><use href="#i-book"/></svg> Guides</h3>
             <p>Field notes on strace, JFR, heap dumps and thread dumps.</p>
             <span class="mono">Open →</span>
           </a>
@@ -197,11 +221,11 @@
       </section>
       <section class="box pad learn" id="learning">
         <div class="sec mono">04. SKILLS I USE</div>
-        <p><b>Performance</b><span>Workload modeling, JMeter, latency, scalability, capacity</span></p>
-        <p><b>JVM</b><span>JFR, GC logs, heap dumps, thread dumps</span></p>
-        <p><b>Kubernetes</b><span>Pod health, probes, limits, deployment issues</span></p>
-        <p><b>Observability</b><span>Prometheus, Grafana, ELK — logs with metrics</span></p>
-        <p><b>Languages</b><span>Java, Python, Bash, SQL</span></p>
+        <div class="row"><svg class="ico sm"><use href="#i-cup"/></svg><div><b>Java / JVM</b><span>JFR, GC logs, heap dumps, thread dumps</span></div></div>
+        <div class="row"><svg class="ico sm"><use href="#i-bars"/></svg><div><b>Performance</b><span>Workload modeling, JMeter, latency, capacity</span></div></div>
+        <div class="row"><svg class="ico sm"><use href="#i-hex"/></svg><div><b>Kubernetes</b><span>Pod health, probes, limits, deployment issues</span></div></div>
+        <div class="row"><svg class="ico sm"><use href="#i-eye"/></svg><div><b>Observability</b><span>Prometheus, Grafana, ELK</span></div></div>
+        <div class="row"><svg class="ico sm"><use href="#i-term"/></svg><div><b>Languages</b><span>Java, Python, Bash, SQL</span></div></div>
       </section>
     </div>
 
@@ -221,13 +245,11 @@
       <section class="box pad" id="contact">
         <div class="sec mono">06. CONTACT</div>
         <p>Happy to talk if the problem is technical. LinkedIn is the best place to reach me.</p>
-        <p class="mono">
-          <a href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener">LinkedIn</a>
-          &nbsp;·&nbsp;
-          <a href="https://github.com/ManjuReddyT" target="_blank" rel="noopener">GitHub</a>
-          &nbsp;·&nbsp;
-          <a href="https://x.com/tmanjureddy" target="_blank" rel="noopener">X</a>
-        </p>
+        <div class="social mono">
+          <a href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener"><svg class="ico sm inline"><use href="#i-in"/></svg> LinkedIn</a>
+          <a href="https://github.com/ManjuReddyT" target="_blank" rel="noopener"><svg class="ico sm inline"><use href="#i-gh"/></svg> GitHub</a>
+          <a href="https://x.com/tmanjureddy" target="_blank" rel="noopener"><svg class="ico sm inline"><use href="#i-x"/></svg> X</a>
+        </div>
       </section>
     </div>
   </main>
