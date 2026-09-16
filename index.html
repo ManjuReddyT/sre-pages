@@ -28,7 +28,7 @@
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
     .brand img { width: 28px; height: 28px; }
     .word i { color: var(--accent); font-style: normal; }
-    nav { display: flex; gap: 20px; font-size: 14px; color: var(--muted); }
+    nav { display: flex; gap: 16px; font-size: 14px; color: var(--muted); flex-wrap: wrap; justify-content: center; }
     nav a:hover { color: var(--accent); }
     .icon-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
     main { max-width: 1040px; margin: 0 auto; padding: 48px 24px 40px; width: 100%; }
@@ -37,8 +37,8 @@
     .byline { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
     .byline a { color: var(--accent); font-weight: 600; }
     .lead { max-width: 560px; color: var(--muted); font-size: 16px; line-height: 1.6; margin: 0 0 24px; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-height: 164px; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-height: 148px; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
     .card:hover { border-color: #c7c9f6; box-shadow: 0 8px 24px rgba(91,92,230,.08); }
     .card .n { color: var(--accent); font-size: 12px; font-weight: 600; margin-bottom: 8px; }
     .card h2 { margin: 0 0 6px; font-size: 19px; }
@@ -67,6 +67,7 @@
         <a href="guides.html">Guides</a>
         <a href="https://devutil.sreroot.com">DevUtil</a>
         <a href="https://perf.sreroot.com">PerfAnalyzer</a>
+        <a href="https://omni-trace-seven.vercel.app">OmniTrace</a>
         <a href="about.html">About</a>
       </nav>
       <button class="icon-btn" id="theme" aria-label="Toggle theme">☼</button>
@@ -95,6 +96,12 @@
         <h2>PerfAnalyzer</h2>
         <p>Read JMeter reports locally. Compare runs. Find the slow path.</p>
         <span>Open PerfAnalyzer →</span>
+      </a>
+      <a class="card" href="https://omni-trace-seven.vercel.app">
+        <div class="n">04 · Tools</div>
+        <h2>OmniTrace</h2>
+        <p>Privacy-first log analysis in the browser. Latency, errors, and cluster patterns from a local file.</p>
+        <span>Open OmniTrace →</span>
       </a>
     </div>
     <p class="who"><a href="about.html#field-kit">More in the field kit →</a></p>
