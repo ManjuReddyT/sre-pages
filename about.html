@@ -9,14 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg:#07141c; --panel:#0a1c26; --line:#1a4d4a; --soft:#14343a;
-      --text:#d5ece6; --muted:#7fa39c; --acc:#3dff9a;
-    }
-    [data-theme="light"] {
-      --bg:#f3f1e8; --panel:#fffcf5; --line:#b9c6be; --soft:#d7ddd6;
-      --text:#1b2c28; --muted:#5b6f69; --acc:#0b7a48;
-    }
+    :root { --bg:#07141c; --panel:#0a1c26; --line:#1a4d4a; --soft:#14343a; --text:#d5ece6; --muted:#7fa39c; --acc:#3dff9a; }
+    [data-theme="light"] { --bg:#f3f1e8; --panel:#fffcf5; --line:#b9c6be; --soft:#d7ddd6; --text:#1b2c28; --muted:#5b6f69; --acc:#0b7a48; }
     * { box-sizing:border-box; } html { scroll-behavior:smooth; }
     body { margin:0; background:var(--bg); color:var(--text); font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.55; }
     .mono { font-family:"IBM Plex Mono",ui-monospace,monospace; }
@@ -37,7 +31,7 @@
     h1 { margin:0 0 6px; font-size:clamp(28px,4.2vw,42px); letter-spacing:-.03em; }
     h1 em { color:var(--acc); font-style:normal; }
     .role { margin:0 0 12px; font-size:18px; }
-    .intro { margin:0 0 12px; max-width:46ch; }
+    .intro { margin:0 0 12px; max-width:48ch; }
     .quote { border:1px solid var(--acc); color:var(--acc); padding:10px 12px; margin:0 0 14px; font-size:13px; }
     .cta { display:flex; gap:8px; flex-wrap:wrap; }
     .btn { display:inline-flex; border:1px solid var(--acc); color:var(--acc); padding:8px 12px; font-size:13px; text-decoration:none; }
@@ -57,14 +51,13 @@
     .pills b { display:block; }
     .pills span { color:var(--muted); font-size:11px; }
     .g2 { display:grid; grid-template-columns:1.15fr .85fr; gap:14px; margin-bottom:14px; }
-    .g21 { display:grid; grid-template-columns:1.15fr .85fr; gap:14px; margin-bottom:14px; }
     .sec { color:var(--acc); font-size:14px; font-weight:600; margin:0 0 12px; }
     .tl { list-style:none; margin:0; padding:0; }
     .tl li { display:grid; grid-template-columns:12px 1fr auto; gap:10px; margin:0 0 13px; }
     .dot { width:8px; height:8px; border-radius:50%; background:var(--acc); margin-top:6px; }
     .tl h3 { margin:0; font-size:14px; }
     .tl p { margin:2px 0 0; color:var(--muted); font-size:13px; }
-    .when { color:var(--muted); font-size:12px; }
+    .when { color:var(--muted); font-size:12px; white-space:nowrap; }
     .pad { padding:16px; }
     .thought { margin-top:12px; padding:12px; color:var(--acc); font-size:13px; }
     .proj { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
@@ -78,7 +71,7 @@
     .ok li:before { content:"✓ "; color:var(--acc); }
     footer { border-top:1px dashed var(--soft); padding:14px 0 26px; color:var(--muted); font-size:12px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
     @media (max-width:960px) {
-      .hero,.g2,.g21,.proj,.phil,.pills { grid-template-columns:1fr; }
+      .hero,.g2,.proj,.phil,.pills { grid-template-columns:1fr; }
       .links { display:none; }
       .pills div { border-right:0; border-bottom:1px solid var(--soft); }
     }
@@ -93,7 +86,7 @@
         <a class="active" href="about.html">[02] About</a>
         <a href="#story">[03] Experience</a>
         <a href="#projects">[04] Projects</a>
-        <a href="#learning">[05] Learning</a>
+        <a href="#learning">[05] Skills</a>
         <a href="#notes">[06] Notes</a>
         <a href="#contact">[07] Contact</a>
       </nav>
@@ -110,11 +103,11 @@
         <p class="hello">Hello, I’m</p>
         <h1><em>Manjunatha</em> Reddy T<em>_</em></h1>
         <p class="role">Site Reliability & Performance Engineer</p>
-        <p class="intro">I work on how systems behave once they are live — testing, reading what they leave behind, and turning that into clearer notes and small tools.</p>
-        <div class="quote mono">> Reliable systems are usually well-observed systems.<br>&nbsp;&nbsp;They are watched, measured, and improved a little at a time.</div>
+        <p class="intro">Thirteen years in performance engineering, non-functional testing, and production diagnosis — workload models, latency and capacity, JVM dumps, and the quiet work of making the next incident shorter.</p>
+        <div class="quote mono">> Evidence first: logs, metrics, traces, and runtime dumps<br>&nbsp;&nbsp;before any change in production.</div>
         <div class="cta">
-          <a class="btn mono" href="#projects">> View my work</a>
-          <a class="btn ghost mono" href="#about">> About me</a>
+          <a class="btn mono" href="#projects">> Public work</a>
+          <a class="btn ghost mono" href="#about">> About</a>
         </div>
       </div>
       <aside class="box art">
@@ -127,8 +120,8 @@
         ||
    ~~~~~~~~~~~~~~
         </pre>
-        <div class="cap mono">Explore → Investigate → Automate → Improve</div>
-        <div class="spark">Curiosity helps when a problem keeps returning.</div>
+        <div class="cap mono">Measure → Diagnose → Automate → Recheck</div>
+        <div class="spark">If the same diagnosis repeats, it becomes a small tool.</div>
       </aside>
       <div class="side">
         <div class="box pane mono">
@@ -137,101 +130,97 @@
             <span class="k">Since</span><span>2012</span>
             <span class="k">Role</span><span>SRE / Performance</span>
             <span class="k">Location</span><span>Bengaluru, India</span>
-            <span class="k">Focus</span><span>Reliability, performance, careful automation</span>
+            <span class="k">Focus</span><span>NFR, JVM, k8s ops, observability</span>
             <span class="k">Status</span><span>Still learning</span>
           </div>
         </div>
         <div class="box pane mono">
           <h2>-- [ current activity ]</h2>
-          <div>> Reading production signals</div>
-          <div>> Writing a helper when a step repeats</div>
-          <div>> Taking notes</div>
-          <div>> Studying diagnostics</div>
+          <div>> Performance and capacity work</div>
+          <div>> JVM and runtime diagnosis</div>
+          <div>> Notes and small public tools</div>
         </div>
       </div>
     </section>
 
     <div class="pills">
-      <div><b>Performance</b><span>Test. Measure. Improve.</span></div>
-      <div><b>Reliability</b><span>Investigate. Resolve. Prevent.</span></div>
-      <div><b>Distributed systems</b><span>Scale. Observe. Operate.</span></div>
-      <div><b>Automation</b><span>Only after it repeats.</span></div>
-      <div><b>Learning</b><span>Slowly, in public.</span></div>
+      <div><b>Performance & NFR</b><span>Workload, latency, capacity</span></div>
+      <div><b>JVM</b><span>JFR, GC, heap, threads</span></div>
+      <div><b>Kubernetes</b><span>Health, probes, limits</span></div>
+      <div><b>Observability</b><span>Logs, metrics, dashboards</span></div>
+      <div><b>Engineering</b><span>Java, Python, SQL, Bash</span></div>
     </div>
 
     <div class="g2" id="story">
       <section class="box pad">
-        <div class="sec mono">01. MY STORY</div>
+        <div class="sec mono">01. EXPERIENCE</div>
         <ul class="tl">
-          <li><span class="dot"></span><div><h3>Started with tests</h3><p>Began with performance testing — watching how systems change under load.</p></div><span class="when mono">~2012</span></li>
-          <li><span class="dot"></span><div><h3>Moved closer to production</h3><p>Spent more time on live issues: dumps, traces, and the slow path between services.</p></div><span class="when mono">~2015</span></li>
-          <li><span class="dot"></span><div><h3>Distributed systems</h3><p>Worked with larger systems. Most problems were ordinary, just well hidden.</p></div><span class="when mono">~2018</span></li>
-          <li><span class="dot"></span><div><h3>Wrote helpers</h3><p>Built small tools for steps I kept repeating, so the same path did not have to be walked twice.</p></div><span class="when mono">~2021</span></li>
-          <li><span class="dot"></span><div><h3>Still studying</h3><p>Diagnostics, and how local models might help summarise logs. That part is early.</p></div><span class="when mono">~2024</span></li>
-          <li><span class="dot"></span><div><h3>Now</h3><p>Same work. A little more careful about what I write down and share.</p></div><span class="when mono">Now</span></li>
+          <li><span class="dot"></span><div><h3>Senior SRE & Performance Engineer</h3><p>End-to-end performance work and production diagnosis across application, JVM, data, and Kubernetes layers. Correlate logs, metrics, traces, and dumps. Capacity and sustained-load analysis.</p></div><span class="when mono">2020 — now</span></li>
+          <li><span class="dot"></span><div><h3>Performance Engineer</h3><p>Test design, JMeter execution, throughput and response-time analysis. Performance checks in CI so regressions show up before release. Capacity forecasts under expected growth.</p></div><span class="when mono">2013 — 2020</span></li>
+          <li><span class="dot"></span><div><h3>Started here</h3><p>BE in Computer Science (2008–2012), then performance testing — watching how a system changes under load.</p></div><span class="when mono">2008 — 2013</span></li>
         </ul>
       </section>
       <div>
         <section class="box pad" id="about">
-          <div class="sec mono">02. ABOUT ME</div>
-          <p>I work in site reliability and performance. Day to day that means measuring a system, reading what it left behind, and leaving a clearer path for the next person.</p>
-          <p>The questions are usually plain. Why is this slow? Why did it restart? Where is it waiting?</p>
-          <p>I try to turn what I find into a note, a script, or a small public tool — not a finished platform, just something reusable.</p>
+          <div class="sec mono">02. ABOUT</div>
+          <p>I work where performance testing meets live systems: model a workload, measure latency and throughput, then follow a slow path into the JVM or the platform when something breaks.</p>
+          <p>Most of the useful work is ordinary. Read the dump. Check the probe. Compare this run with the last one. Write down what actually moved the needle.</p>
+          <p>When the same diagnosis keeps returning, I prefer a small tool or a short guide over another long thread.</p>
         </section>
         <aside class="box thought mono" id="notes">
-          -- [ recent thought ] —<br><br>
-          Fixing an issue is useful. Making the same issue rarer is better.
+          -- [ practice ] —<br><br>
+          Evidence first. Least surprise in production. Shift performance left when a test can catch it.
         </aside>
       </div>
     </div>
 
-    <div class="g21" id="projects">
+    <div class="g2" id="projects">
       <section>
         <div class="sec mono">03. PUBLIC PROJECTS</div>
         <div class="proj">
           <a class="box pad" href="https://devutil.sreroot.com">
             <h3>DevUtil</h3>
-            <p>Browser tools for formats, diffs, tokens and SQL. Work stays on the machine.</p>
+            <p>Browser tools for formats, diffs, tokens and SQL. Nothing is uploaded.</p>
             <span class="mono">Open →</span>
           </a>
           <a class="box pad" href="https://perf.sreroot.com">
             <h3>PerfAnalyzer</h3>
-            <p>Read JMeter reports locally. Compare runs. Look for the slow path.</p>
+            <p>Read JMeter reports on the local machine. Compare runs. Find the wait.</p>
             <span class="mono">Open →</span>
           </a>
           <a class="box pad" href="guides.html">
             <h3>Guides</h3>
-            <p>Field notes on strace, JFR, heap dumps and thread dumps — for when a process misbehaves.</p>
+            <p>Field notes on strace, JFR, heap dumps and thread dumps.</p>
             <span class="mono">Open →</span>
           </a>
         </div>
       </section>
       <section class="box pad learn" id="learning">
-        <div class="sec mono">04. LEARNING</div>
-        <p><b>Java diagnostics</b><span>Runtime behaviour, memory, GC, thread dumps</span></p>
-        <p><b>Performance work</b><span>Workload modelling, test design, capacity</span></p>
-        <p><b>Kubernetes</b><span>Enough operations to keep a cluster readable</span></p>
-        <p><b>Python</b><span>Small scripts for repetitive steps</span></p>
-        <p><b>Local models</b><span>Log summaries — early, not settled</span></p>
+        <div class="sec mono">04. SKILLS I USE</div>
+        <p><b>Performance</b><span>Workload modeling, JMeter, latency, scalability, capacity</span></p>
+        <p><b>JVM</b><span>JFR, GC logs, heap dumps, thread dumps</span></p>
+        <p><b>Kubernetes</b><span>Pod health, probes, limits, deployment issues</span></p>
+        <p><b>Observability</b><span>Prometheus, Grafana, ELK — logs with metrics</span></p>
+        <p><b>Languages</b><span>Java, Python, Bash, SQL</span></p>
       </section>
     </div>
 
     <div class="g2">
       <section class="box pad">
-        <div class="sec mono">05. NOTES I TRY TO KEEP</div>
+        <div class="sec mono">05. HOW I TRY TO WORK</div>
         <div class="phil">
-          <div class="q2">Understand the system.<br>Follow the evidence.<br>Find the cause.<br>Leave the next person a shorter path.</div>
+          <div class="q2">Read the system first.<br>Follow the evidence.<br>Change little.<br>Leave a shorter path.</div>
           <ul class="ok">
-            <li>Prefer evidence over instinct</li>
-            <li>Automate only what has already repeated</li>
-            <li>Write down what helped</li>
-            <li>Share when it is useful, not when it is loud</li>
+            <li>Dumps and traces before a production change</li>
+            <li>Performance tests in CI when they can catch a regression</li>
+            <li>Automate only a diagnosis that has already repeated</li>
+            <li>Share notes when they help someone else start faster</li>
           </ul>
         </div>
       </section>
       <section class="box pad" id="contact">
         <div class="sec mono">06. CONTACT</div>
-        <p>If a problem is interesting, I am glad to talk. LinkedIn is the easiest place to reach me.</p>
+        <p>Happy to talk if the problem is technical. LinkedIn is the best place to reach me.</p>
         <p class="mono">
           <a href="https://www.linkedin.com/in/manjunatha-reddy-t-ab96253a" target="_blank" rel="noopener">LinkedIn</a>
           &nbsp;·&nbsp;
