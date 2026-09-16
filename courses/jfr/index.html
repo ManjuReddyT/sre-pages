@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JFR SRE Academy • Master Java Flight Recorder</title>
+    <title>JFR notes · Java Flight Recorder</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -27,7 +27,7 @@
 <body class="bg-slate-950 text-slate-200">
     <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
         <div class="max-w-screen-2xl mx-auto px-8 py-4 flex items-center justify-between">
-            <a href="../../index.html" class="flex items-center gap-3">
+            <a href="../../guides.html" class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center"><i class="fa-brands fa-java text-white text-2xl"></i></div>
                 <div><span class="font-display text-2xl font-semibold">JFR</span><span class="font-display text-2xl text-amber-500">SRE</span></div>
             </a>
@@ -37,7 +37,7 @@
                 <a href="#quiz" class="nav-link text-slate-300">Quiz</a>
                 <a href="#cheatsheet" class="nav-link text-slate-300">Cheat Sheet</a>
                 <a href="#interview" class="nav-link text-slate-300">Interview</a>
-                <a href="../../index.html" class="text-slate-500 hover:text-white text-xs">← Academy</a>
+                <a href="../../guides.html" class="text-slate-500 hover:text-white text-xs">← Guides</a>
             </div>
             <button class="md:hidden text-slate-400" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars text-xl"></i></button>
         </div>
@@ -49,13 +49,13 @@
                 <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 text-amber-400 rounded-full text-xs font-medium mb-6">
                     <i class="fa-solid fa-shield-halved"></i> FOR SREs &amp; PLATFORM ENGINEERS
                 </div>
-                <h1 class="text-5xl md:text-6xl font-display font-bold tracking-tight mb-4">Master <span class="text-amber-500">Java Flight Recorder</span></h1>
+                <h1 class="text-5xl md:text-6xl font-display font-bold tracking-tight mb-4">Notes on <span class="text-amber-500">Java Flight Recorder</span></h1>
                 <p class="text-xl text-slate-400 mb-8 max-w-lg">Production-grade JVM diagnostics — CPU, memory, GC, locks, JDBC, Kafka, and Kubernetes. The definitive low-overhead profiler built into the JDK.</p>
                 <div class="flex flex-wrap gap-4 mb-8">
                     <button onclick="startCourse()" class="px-8 py-3.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold rounded-3xl flex items-center gap-2">
-                        <i class="fa-solid fa-play"></i> Start Learning
+                        <i class="fa-solid fa-play"></i> Open the guide
                     </button>
-                    <button onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})" class="px-6 py-3.5 border border-slate-700 rounded-3xl">Browse Curriculum</button>
+                    <button onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})" class="px-6 py-3.5 border border-slate-700 rounded-3xl">Browse sections</button>
                 </div>
             </div>
             <div class="md:col-span-5">
@@ -88,7 +88,7 @@
 
     <div id="curriculum" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
         <span class="text-amber-400 text-sm font-semibold">20 MODULES + 3 BONUS</span>
-        <h2 class="section-header mt-2 mb-8">Complete Curriculum</h2>
+        <h2 class="section-header mt-2 mb-8">Guide sections</h2>
         <div class="relative hidden md:block mb-6 w-64">
             <input type="text" id="search-input" placeholder="Search modules..." class="w-full bg-slate-900 border border-slate-700 rounded-2xl py-2.5 pl-10 pr-4 text-sm focus:border-amber-600 focus:outline-none">
             <i class="fa-solid fa-search absolute left-4 top-3 text-slate-500"></i>
@@ -922,7 +922,7 @@ kubectl cp &lt;pod&gt;:/tmp/pod.jfr ./pod-incident.jfr</pre></div><div class="mt
         <div class="p-4 bg-slate-950 rounded-2xl"><strong class="text-amber-400">Memory leak?</strong> → JFR allocations live, heap dump post-mortem</div>
         <div class="p-4 bg-slate-950 rounded-2xl"><strong class="text-amber-400">GC pauses?</strong> → JFR GC events + correlate GC logs</div>
         <div class="p-4 bg-slate-950 rounded-2xl"><strong class="text-amber-400">Threads/locks?</strong> → JFR + jstack snapshot</div>
-        <div class="p-4 bg-slate-950 rounded-2xl"><strong class="text-amber-400">OS/syscall?</strong> → strace at kernel boundary (Course 1)</div>
+        <div class="p-4 bg-slate-950 rounded-2xl"><strong class="text-amber-400">OS/syscall?</strong> → strace at kernel boundary</div>
     </div></div>
             </div>
 
@@ -1267,9 +1267,9 @@ jcmd &lt;PID&gt; JFR.dump filename=/tmp/incident.jfr
 
     <footer class="border-t border-slate-800 bg-slate-900 py-12">
         <div class="max-w-screen-2xl mx-auto px-8 text-sm text-slate-500 flex flex-col md:flex-row justify-between gap-4">
-            <span>© 2026 JFR SRE Academy</span>
+            <span>© 2026 JFR notes</span>
             <div class="flex gap-5">
-                <a href="../../index.html" class="hover:text-slate-300">SRE Academy</a>
+                <a href="../../guides.html" class="hover:text-slate-300">Guides</a>
                 <a href="../strace/index.html" class="hover:text-slate-300">strace</a>
                 <a href="../heapdump/index.html" class="hover:text-slate-300">Heap Dump</a>
                 <a href="../threaddump/index.html" class="hover:text-slate-300">Thread Dump</a>
@@ -1297,7 +1297,7 @@ jcmd &lt;PID&gt; JFR.dump filename=/tmp/incident.jfr
         function toggleMobileMenu() {
             const m = document.createElement('div');
             m.className = 'md:hidden fixed inset-0 bg-slate-950/95 z-[60] p-8';
-            m.innerHTML = '<button onclick="this.parentElement.remove()" class="text-3xl mb-8">×</button><div class="flex flex-col gap-4 text-xl"><a href="#curriculum">Curriculum</a><a href="#labs">Labs</a><a href="#quiz">Quiz</a><a href="#cheatsheet">Cheat Sheet</a><a href="#interview">Interview</a><a href="../../index.html">Academy Home</a></div>';
+            m.innerHTML = '<button onclick="this.parentElement.remove()" class="text-3xl mb-8">×</button><div class="flex flex-col gap-4 text-xl"><a href="#curriculum">Curriculum</a><a href="#labs">Labs</a><a href="#quiz">Quiz</a><a href="#cheatsheet">Cheat Sheet</a><a href="#interview">Interview</a><a href="../../guides.html">Guides</a></div>';
             document.body.appendChild(m);
         }
 

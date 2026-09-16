@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SRE strace Academy • Master Linux System Call Tracing</title>
+    <title>strace notes · Linux system call tracing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -171,7 +171,7 @@
                     </div>
                     <div class="hidden md:block px-3 py-1.5 bg-slate-800 rounded-full text-xs font-medium text-emerald-400 flex items-center gap-x-1.5">
                         <i class="fa-solid fa-graduation-cap"></i>
-                        <span class="font-semibold">Official Training</span>
+                        <span class="font-semibold">Field notes</span>
                     </div>
                 </div>
 
@@ -197,7 +197,7 @@
                     <button onclick="startCourse()"
                             class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 transition-colors text-white text-sm font-semibold rounded-2xl flex items-center gap-x-2 shadow-lg shadow-emerald-900/30">
                         <i class="fa-solid fa-play"></i>
-                        <span>Start Learning</span>
+                        <span>Open the guide</span>
                     </button>
                     
                     <!-- Mobile menu -->
@@ -225,39 +225,30 @@
                 </div>
                 
                 <h1 class="text-6xl md:text-7xl font-display font-bold tracking-tighter leading-none mb-4">
-                    Master <span class="text-emerald-500">strace</span><br>
-                    like a production SRE
+                    Notes on <span class="text-emerald-500">strace</span><br>
+                    for production debugging
                 </h1>
                 
                 <p class="max-w-lg text-xl text-slate-400 mb-8">
-                    The definitive hands-on course for diagnosing Linux applications, 
-                    containers, and performance issues using the most powerful low-level debugging tool.
+                    Field notes for diagnosing Linux applications, containers, and performance issues with system call tracing.
                 </p>
                 
                 <div class="flex items-center gap-x-4">
                     <button onclick="startCourse()" 
                             class="group flex items-center justify-center gap-x-3 bg-white text-slate-950 hover:bg-emerald-50 transition-all px-8 h-14 rounded-3xl text-base font-semibold shadow-xl">
-                        <span>Begin the Course</span>
+                        <span>Open the guide</span>
                         <i class="fa-solid fa-arrow-right group-active:translate-x-1 transition"></i>
                     </button>
                     
                     <button onclick="document.getElementById('curriculum').scrollIntoView({ behavior: 'smooth' })" 
                             class="flex items-center justify-center gap-x-2 border border-slate-700 hover:bg-slate-900 transition-colors px-6 h-14 rounded-3xl text-base font-medium">
                         <i class="fa-solid fa-list-check"></i>
-                        <span>Browse Curriculum</span>
+                        <span>Browse sections</span>
                     </button>
                 </div>
                 
-                <div class="flex items-center gap-x-8 mt-10">
-                    <div class="flex -space-x-2">
-                        <div class="w-8 h-8 bg-slate-700 rounded-full border border-slate-800 overflow-hidden"><img src="https://i.pravatar.cc/32?img=28" class="w-full h-full object-cover"></div>
-                        <div class="w-8 h-8 bg-slate-700 rounded-full border border-slate-800 overflow-hidden"><img src="https://i.pravatar.cc/32?img=47" class="w-full h-full object-cover"></div>
-                        <div class="w-8 h-8 bg-slate-700 rounded-full border border-slate-800 overflow-hidden"><img src="https://i.pravatar.cc/32?img=12" class="w-full h-full object-cover"></div>
-                    </div>
-                    <div class="text-sm">
-                        <span class="font-semibold text-emerald-400">4,872</span> SREs trained<br>
-                        <span class="text-slate-500 text-xs">from FAANG, fintech &amp; startups</span>
-                    </div>
+                <div class="mt-10 text-sm text-slate-500">
+                    A handbook. Not a training programme.
                 </div>
             </div>
             
@@ -303,7 +294,7 @@
                         <div class="flex justify-between items-center">
                             <div class="flex items-center gap-x-2">
                                 <i class="fa-solid fa-check text-emerald-400"></i>
-                                <span>Interview prep + certification</span>
+                                <span>Cheatsheet and quiz</span>
                             </div>
                         </div>
                     </div>
@@ -350,8 +341,8 @@
     <div id="curriculum" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
         <div class="flex items-end justify-between mb-8">
             <div>
-                <span class="text-emerald-400 text-sm font-semibold tracking-wider">19 MODULES • SELF-PACED</span>
-                <h2 class="section-header">Complete Curriculum</h2>
+                <span class="text-emerald-400 text-sm font-semibold tracking-wider">19 SECTIONS</span>
+                <h2 class="section-header">Guide sections</h2>
             </div>
             <a href="#modules-detail" class="hidden md:flex items-center text-sm font-medium text-emerald-400 hover:text-emerald-300">
                 Jump to detailed modules <i class="fa-solid fa-arrow-right ml-2"></i>

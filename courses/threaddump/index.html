@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thread Dump SRE Academy • Master Java Concurrency Diagnostics</title>
+    <title>Thread dump notes · Java concurrency diagnostics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -29,7 +29,7 @@
 <body class="bg-slate-950 text-slate-200">
     <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
         <div class="max-w-screen-2xl mx-auto px-8 py-4 flex items-center justify-between">
-            <a href="../../index.html" class="flex items-center gap-3">
+            <a href="../../guides.html" class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-sky-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-diagram-project text-white text-2xl"></i></div>
                 <span class="font-display text-2xl font-semibold">ThreadDump SRE</span>
             </a>
@@ -39,7 +39,7 @@
                 <a href="#quiz" class="nav-link text-slate-300">Quiz</a>
                 <a href="#cheatsheet" class="nav-link text-slate-300">Cheat Sheet</a>
                 <a href="#interview" class="nav-link text-slate-300">Interview</a>
-                <a href="../../index.html" class="text-slate-500 hover:text-white text-xs">← Academy</a>
+                <a href="../../guides.html" class="text-slate-500 hover:text-white text-xs">← Guides</a>
             </div>
             <button class="md:hidden text-slate-400" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars text-xl"></i></button>
         </div>
@@ -49,13 +49,13 @@
         <div class="grid md:grid-cols-12 gap-12 items-center">
             <div class="md:col-span-7">
                 <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 text-accent rounded-full text-xs font-medium mb-6">
-                    <i class="fa-solid fa-shield-halved"></i> COURSE 4 · JAVA THREAD DUMP ANALYSIS
+                    <i class="fa-solid fa-shield-halved"></i> HANDBOOK · JAVA THREAD DUMP ANALYSIS
                 </div>
-                <h1 class="text-5xl md:text-6xl font-display font-bold tracking-tight mb-4">Master <span class="text-sky-400">Thread Dump</span> Analysis</h1>
+                <h1 class="text-5xl md:text-6xl font-display font-bold tracking-tight mb-4">Notes on <span class="text-sky-400">Thread Dump</span> analysis</h1>
                 <p class="text-xl text-slate-400 mb-8 max-w-lg">Capture and analyze Java thread dumps — detect deadlocks, lock contention, pool starvation, and blocked I/O in production.</p>
                 <div class="flex flex-wrap gap-4">
-                    <button onclick="startCourse()" class="px-8 py-3.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-3xl flex items-center gap-2"><i class="fa-solid fa-play"></i> Start Learning</button>
-                    <button onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})" class="px-6 py-3.5 border border-slate-700 rounded-3xl">Browse Curriculum</button>
+                    <button onclick="startCourse()" class="px-8 py-3.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-3xl flex items-center gap-2"><i class="fa-solid fa-play"></i> Open the guide</button>
+                    <button onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})" class="px-6 py-3.5 border border-slate-700 rounded-3xl">Browse sections</button>
                 </div>
             </div>
             <div class="md:col-span-5">
@@ -80,7 +80,7 @@
 
     <div id="curriculum" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
         <span class="text-accent text-sm font-semibold">17 MODULES</span>
-        <h2 class="section-header mt-2 mb-8">Complete Curriculum</h2>
+        <h2 class="section-header mt-2 mb-8">Guide sections</h2>
         <div class="relative hidden md:block mb-6 w-64">
             <input type="text" id="search-input" placeholder="Search modules..." class="w-full bg-slate-900 border border-slate-700 rounded-2xl py-2.5 pl-10 pr-4 text-sm focus:outline-none">
             <i class="fa-solid fa-search absolute left-4 top-3 text-slate-500"></i>
@@ -559,9 +559,9 @@ jstack &lt;PID&gt; &gt; /tmp/td.txt</pre>
 
     <footer class="border-t border-slate-800 bg-slate-900 py-12">
         <div class="max-w-screen-2xl mx-auto px-8 text-sm text-slate-500 flex flex-col md:flex-row justify-between gap-4">
-            <span>© 2026 Thread Dump SRE Academy</span>
+            <span>© 2026 Thread dump notes</span>
             <div class="flex flex-wrap gap-5">
-                <a href="../../index.html" class="hover:text-slate-300">SRE Academy</a>
+                <a href="../../guides.html" class="hover:text-slate-300">Guides</a>
                 <a href="../strace/index.html" class="hover:text-slate-300">strace</a>
                 <a href="../jfr/index.html" class="hover:text-slate-300">JFR</a>
                 <a href="../heapdump/index.html" class="hover:text-slate-300">Heap Dump</a>
@@ -581,7 +581,7 @@ jstack &lt;PID&gt; &gt; /tmp/td.txt</pre>
         function toggleMobileMenu() {
             const m = document.createElement('div');
             m.className = 'md:hidden fixed inset-0 bg-slate-950/95 z-[60] p-8';
-            m.innerHTML = '<button onclick="this.parentElement.remove()" class="text-3xl mb-8">×</button><div class="flex flex-col gap-4 text-xl"><a href="#curriculum">Curriculum</a><a href="#labs">Labs</a><a href="#quiz">Quiz</a><a href="#cheatsheet">Cheat Sheet</a><a href="../../index.html">Academy</a></div>';
+            m.innerHTML = '<button onclick="this.parentElement.remove()" class="text-3xl mb-8">×</button><div class="flex flex-col gap-4 text-xl"><a href="#curriculum">Curriculum</a><a href="#labs">Labs</a><a href="#quiz">Quiz</a><a href="#cheatsheet">Cheat Sheet</a><a href="../../guides.html">Guides</a></div>';
             document.body.appendChild(m);
         }
         function simulateLab(n) {
