@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sreroot · tools and guides for production reliability</title>
-  <meta name="description" content="Handbooks and browser tools for SRE and performance work." />
+  <title>sreroot · tools, field notes, and a small field kit</title>
+  <meta name="description" content="Practical guides and browser utilities for SRE and performance work." />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,28 +24,38 @@
     header, footer { background: var(--card); border-color: var(--line); }
     header { border-bottom: 1px solid var(--line); }
     footer { border-top: 1px solid var(--line); margin-top: auto; }
-    .bar { max-width: 1040px; margin: 0 auto; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .bar { max-width: 1040px; margin: 0 auto; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
     .brand img { width: 28px; height: 28px; }
     .word i { color: var(--accent); font-style: normal; }
     nav { display: flex; gap: 20px; font-size: 14px; color: var(--muted); }
     nav a:hover { color: var(--accent); }
     .icon-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
-    main { max-width: 1040px; margin: 0 auto; padding: 64px 24px 56px; width: 100%; }
-    .kicker { color: var(--accent); font-size: 13px; font-weight: 600; margin: 0 0 12px; }
-    h1 { margin: 0 0 14px; font-size: clamp(30px, 4vw, 44px); letter-spacing: -.03em; line-height: 1.15; }
-    .lead { max-width: 560px; color: var(--muted); font-size: 17px; line-height: 1.65; margin: 0 0 36px; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; min-height: 188px; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+    main { max-width: 1040px; margin: 0 auto; padding: 48px 24px 40px; width: 100%; }
+    .kicker { color: var(--accent); font-size: 13px; font-weight: 600; margin: 0 0 10px; }
+    h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 42px); letter-spacing: -.03em; line-height: 1.15; color: var(--navy); }
+    .byline { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+    .byline a { color: var(--accent); font-weight: 600; }
+    .lead { max-width: 560px; color: var(--muted); font-size: 16px; line-height: 1.6; margin: 0 0 24px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-height: 164px; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
     .card:hover { border-color: #c7c9f6; box-shadow: 0 8px 24px rgba(91,92,230,.08); }
-    .card .n { color: var(--accent); font-size: 12px; font-weight: 600; margin-bottom: 10px; }
-    .card h2 { margin: 0 0 8px; font-size: 20px; }
-    .card p { margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.55; flex: 1; }
+    .card .n { color: var(--accent); font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+    .card h2 { margin: 0 0 6px; font-size: 19px; }
+    .card p { margin: 0 0 12px; color: var(--muted); font-size: 14px; line-height: 1.5; flex: 1; }
     .card span { color: var(--accent); font-size: 13px; font-weight: 600; }
-    .who { margin-top: 36px; color: var(--muted); font-size: 14px; }
+    .who { margin-top: 22px; color: var(--muted); font-size: 14px; }
     .who a { color: var(--accent); font-weight: 600; }
     footer { color: var(--muted); font-size: 13px; }
-    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } nav { display: none; } }
+    @media (max-width: 800px) {
+      main { padding: 28px 16px 28px; }
+      .bar { padding: 0 16px; height: 52px; }
+      .grid { grid-template-columns: 1fr; gap: 10px; }
+      .card { min-height: 0; padding: 16px; }
+      nav { display: none; }
+      .lead { margin-bottom: 18px; }
+      .who { margin-top: 16px; }
+    }
   </style>
 </head>
 <body>
@@ -64,13 +74,14 @@
   </header>
   <main>
     <p class="kicker">sreroot.com</p>
-    <h1>Tools and field guides<br>for production reliability.</h1>
-    <p class="lead">Handbooks you can use on-call. Utilities that stay in the browser. Written from work that kept repeating.</p>
+    <h1>Engineering tools, field notes,<br>and a small field kit.</h1>
+    <p class="byline">Built by <a href="about.html">Manjunatha Reddy T</a> — SRE & Performance Engineer.</p>
+    <p class="lead">Practical guides and browser utilities from work that kept repeating.</p>
     <div class="grid">
       <a class="card" href="guides.html">
         <div class="n">01 · Guides</div>
         <h2>Handbooks</h2>
-        <p>strace, JFR, heap dumps and thread dumps — practical notes for production debugging.</p>
+        <p>strace, JFR, heap dumps and thread dumps — notes for production debugging.</p>
         <span>Open guides →</span>
       </a>
       <a class="card" href="https://devutil.sreroot.com">
@@ -86,7 +97,7 @@
         <span>Open PerfAnalyzer →</span>
       </a>
     </div>
-    <p class="who">Built by <a href="about.html">Manjunatha Reddy T</a> · Site Reliability &amp; Performance Engineer, Bengaluru.</p>
+    <p class="who"><a href="about.html#field-kit">More in the field kit →</a></p>
   </main>
   <footer><div class="bar"><span class="word">sre<i>root</i></span><a href="about.html">About</a></div></footer>
   <script>
