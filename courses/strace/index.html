@@ -1,1 +1,401 @@
-PLACEHOLDER_USE_FILE
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRE strace Academy • Master Linux System Call Tracing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --primary: #10b981;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .section-header {
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .nav-active {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .module-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .syscall {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            background-color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .strace-output {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            background-color: #020617;
+            color: #e0e7ff;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            border: 1px solid #334155;
+        }
+
+        .nav-link {
+            transition: color 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: #10b981;
+        }
+
+        .toc-link {
+            transition: all 0.2s ease;
+        }
+        
+        .toc-link:hover, .toc-link.active {
+            color: #10b981;
+            padding-left: 0.5rem;
+            border-left: 3px solid #10b981;
+        }
+
+        .metric-card {
+            background: linear-gradient(145deg, #0f172a, #020617);
+        }
+
+        .code-header {
+            background-color: #1e2937;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .lesson-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #f1e7d2;
+        }
+
+        .lesson-content p {
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        .lesson-content ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        .lesson-content li {
+            margin-bottom: 0.35rem;
+        }
+
+        .strace-badge {
+            background-color: #166534;
+            color: #86efac;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+
+        .terminal {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+        }
+
+        .course-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+        }
+        
+        .accent-green {
+            color: #10b981;
+        }
+
+        .module-section {
+            scroll-margin-top: 80px;
+        }
+
+        .sre-badge {
+            background-color: #1e2937;
+            color: #64748b;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: -.5px;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+    <!-- Navbar -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-screen-2xl mx-auto">
+            <div class="px-8 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-x-3">
+                    <!-- Logo -->
+                    <div class="flex items-center gap-x-2">
+                        <div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-terminal text-white text-3xl"></i>
+                        </div>
+                        <div>
+                            <span class="font-display text-2xl font-semibold tracking-tighter">strace</span>
+                            <span class="font-display text-2xl font-semibold tracking-tighter text-emerald-500">SRE</span>
+                        </div>
+                    </div>
+                    <div class="hidden md:block px-3 py-1.5 bg-slate-800 rounded-full text-xs font-medium text-emerald-400 flex items-center gap-x-1.5">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span class="font-semibold">Official Training</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex items-center gap-x-8 text-sm">
+                    <a href="#curriculum" class="nav-link text-slate-300 hover:text-white font-medium">Curriculum</a>
+                    <a href="#labs" class="nav-link text-slate-300 hover:text-white font-medium">Labs</a>
+                    <a href="#quiz" class="nav-link text-slate-300 hover:text-white font-medium">Quiz</a>
+                    <a href="#cheatsheet" class="nav-link text-slate-300 hover:text-white font-medium">Cheat Sheet</a>
+                </div>
+
+                <div class="flex items-center gap-x-3">
+                    <!-- Search -->
+                    <div class="relative hidden md:block w-64">
+                        <input 
+                            type="text" 
+                            id="search-input"
+                            placeholder="Search modules or commands..." 
+                            class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-600 text-sm rounded-2xl py-2.5 pl-10 pr-4 placeholder:text-slate-500 focus:outline-none">
+                        <i class="fa-solid fa-search absolute left-4 top-3 text-slate-500"></i>
+                    </div>
+                    
+                    <button onclick="startCourse()"
+                            class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 transition-colors text-white text-sm font-semibold rounded-2xl flex items-center gap-x-2 shadow-lg shadow-emerald-900/30">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Start Learning</span>
+                    </button>
+                    
+                    <!-- Mobile menu -->
+                    <button class="md:hidden w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white" onclick="toggleMobileMenu()">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="max-w-screen-2xl mx-auto pt-16 pb-20 px-8">
+        <div class="grid md:grid-cols-12 gap-12 items-center">
+            <div class="md:col-span-7">
+                <div class="flex items-center gap-x-3 mb-6">
+                    <div class="sre-badge flex items-center gap-x-2">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>FOR SREs &amp; PLATFORM ENGINEERS</span>
+                    </div>
+                    <div class="text-xs px-3 py-1 bg-slate-800 text-emerald-400 rounded-full font-medium flex items-center gap-x-1">
+                        <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                        <span>Updated 2026</span>
+                    </div>
+                </div>
+                
+                <h1 class="text-6xl md:text-7xl font-display font-bold tracking-tighter leading-none mb-4">
+                    Master <span class="text-emerald-500">strace</span><br>
+                    like a production SRE
+                </h1>
+                
+                <p class="max-w-lg text-xl text-slate-400 mb-8">
+                    The definitive hands-on course for diagnosing Linux applications, 
+                    containers, and performance issues using the most powerful low-level debugging tool.
+                </p>
+                
+                <div class="flex items-center gap-x-4">
+                    <button onclick="startCourse()" 
+                            class="group flex items-center justify-center gap-x-3 bg-white text-slate-950 hover:bg-emerald-50 transition-all px-8 h-14 rounded-3xl text-base font-semibold shadow-xl">
+                        <span>Begin the Course</span>
+                        <i class="fa-solid fa-arrow-right group-active:translate-x-1 transition"></i>
+                    </button>
+                    
+                    <button onclick="document.getElementById('curriculum').scrollIntoView({ behavior: 'smooth' })" 
+                            class="flex items-center justify-center gap-x-2 border border-slate-700 hover:bg-slate-900 transition-colors px-6 h-14 rounded-3xl text-base font-medium">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>Browse Curriculum</span>
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-x-8 mt-10">
+                    <div class="flex -space-x-2">
+                        <div class="w-8 h-8 bg-slate-700 rounded-full border border-slate-800 overflow-hidden"><img src="https://i.pravatar.cc/32?img=28" class="w-full h-full object-cover"></div>
+                        <div class="w-8 h-8 bg-slate-700 rounded-full border border-slate-800 overflow-hidden"><img src="https://i.pravatar.cc/32?img=47" class="w-full h-full object-cover"></div>
+                        <div class="w-8 h-8 bg-slate-700 rounded-full border border-slate-800 overflow-hidden"><img src="https://i.pravatar.cc/32?img=12" class="w-full h-full object-cover"></div>
+                    </div>
+                    <div class="text-sm">
+                        <span class="font-semibold text-emerald-400">4,872</span> SREs trained<br>
+                        <span class="text-slate-500 text-xs">from FAANG, fintech &amp; startups</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hero visual / stats -->
+            <div class="md:col-span-5">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-emerald-400">19</div>
+                            <div class="text-xs uppercase tracking-widest text-slate-500 mt-1">Modules</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-emerald-400">15</div>
+                            <div class="text-xs uppercase tracking-widest text-slate-500 mt-1">Hands-on Labs</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-emerald-400">26</div>
+                            <div class="text-xs uppercase tracking-widest text-slate-500 mt-1">War Stories</div>
+                        </div>
+                    </div>
+                    
+                    <div class="my-6 border-t border-slate-800"></div>
+                    
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-x-2">
+                                <i class="fa-solid fa-check text-emerald-400"></i>
+                                <span>Production-ready playbooks</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-x-2">
+                                <i class="fa-solid fa-check text-emerald-400"></i>
+                                <span>Java, Python, Go, Node.js examples</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-x-2">
+                                <i class="fa-solid fa-check text-emerald-400"></i>
+                                <span>Kubernetes &amp; container debugging</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-x-2">
+                                <i class="fa-solid fa-check text-emerald-400"></i>
+                                <span>Interview prep + certification</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Why strace Section -->
+    <div class="max-w-screen-2xl mx-auto px-8 pb-16">
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center gap-x-2 px-4 py-1 bg-slate-900 border border-slate-800 rounded-2xl text-sm mb-3">
+                <span class="text-emerald-400">WHY SREs NEED STRACE</span>
+            </div>
+            <h2 class="section-header">When logs and metrics<br>are not enough</h2>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-7">
+                <div class="w-12 h-12 flex items-center justify-center bg-red-900/30 text-red-400 rounded-2xl mb-5">
+                    <i class="fa-solid fa-exclamation-triangle text-3xl"></i>
+                </div>
+                <h3 class="font-semibold text-xl mb-3">Application Hangs &amp; Deadlocks</h3>
+                <p class="text-slate-400 text-[15px]">strace reveals exactly which futex or recvfrom call your process is blocked on — something no APM or log aggregator can show.</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-7">
+                <div class="w-12 h-12 flex items-center justify-center bg-amber-900/30 text-amber-400 rounded-2xl mb-5">
+                    <i class="fa-solid fa-tachometer-alt text-3xl"></i>
+                </div>
+                <h3 class="font-semibold text-xl mb-3">Mysterious CPU Spikes</h3>
+                <p class="text-slate-400 text-[15px]">Identify tight loops of failing stat() calls or excessive polling that monitoring dashboards only show as "high CPU".</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-7">
+                <div class="w-12 h-12 flex items-center justify-center bg-sky-900/30 text-sky-400 rounded-2xl mb-5">
+                    <i class="fa-solid fa-plug text-3xl"></i>
+                </div>
+                <h3 class="font-semibold text-xl mb-3">Container &amp; Startup Failures</h3>
+                <p class="text-slate-400 text-[15px]">Quickly diagnose ENOENT, EACCES, missing libraries, and port conflicts in Kubernetes pods where logs are empty.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Curriculum Section -->
+    <div id="curriculum" class="max-w-screen-2xl mx-auto px-8 py-16 border-t border-slate-800">
+        <div class="flex items-end justify-between mb-8">
+            <div>
+                <span class="text-emerald-400 text-sm font-semibold tracking-wider">19 MODULES • SELF-PACED</span>
+                <h2 class="section-header">Complete Curriculum</h2>
+            </div>
+            <a href="#modules-detail" class="hidden md:flex items-center text-sm font-medium text-emerald-400 hover:text-emerald-300">
+                Jump to detailed modules <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        
+        <!-- Module Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <!-- Module cards populated by JS or static -->
+            <div onclick="document.getElementById('module-1').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="strace-badge">Module 1</span>
+                        <h4 class="font-semibold mt-3 text-lg group-hover:text-emerald-400 transition">Introduction to strace</h4>
+                    </div>
+                    <i class="fa-solid fa-book text-xl text-slate-600 group-hover:text-emerald-500 transition"></i>
+                </div>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">What is strace, ptrace internals, syscall lifecycle, blocking vs non-blocking.</p>
+            </div>
+            
+            <div onclick="document.getElementById('module-2').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="strace-badge">Module 2</span>
+                        <h4 class="font-semibold mt-3 text-lg group-hover:text-emerald-400 transition">Why Every SRE Should Know strace</h4>
+                    </div>
+                    <i class="fa-solid fa-shield-halved text-xl text-slate-600 group-hover:text-emerald-500 transition"></i>
+                </div>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Production incidents where logs/metrics fail. Comparison tables and real scenarios.</p>
+            </div>
+            
+            <div onclick="document.getElementById('module-3').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="strace-badge">Module 3</span>
+                        <h4 class="font-semibold mt-3 text-lg group-hover:text-emerald-400 transition">strace Fundamentals</h4>
+                    </div>
+                    <i class="fa-solid fa-terminal text-xl text-slate-600 group-hover:text-emerald-500 transition"></i>
+                </div>
+                <p class="text-xs text-slate-500 mt-2 line-clamp-2">Attaching to processes, tracing children &amp; threads, timestamps, durations, output files.</p>
+            </div>
+            
+            <div onclick="document.getElementById('module-4').scrollIntoView({behavior:'smooth'})" class="module-card cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-3xl p-5 group">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="strace-badge">Module 4</span>
+                        <h4 class="font-semibold mt-3 text-lg group-hover:text-emerald-400 transition">Understanding Common Syste
