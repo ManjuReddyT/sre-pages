@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>High latency runbook · sreroot</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#f4f6fb; --card:#fff; --line:#e2e8f0; --text:#0f172a; --muted:#64748b; --accent:#5b5ce6; --navy:#1e1b4b; }
+    [data-theme="dark"] { --bg:#0f1220; --card:#171a2b; --line:#2a3048; --text:#e8eaf4; --muted:#94a3b8; --accent:#818cf8; --navy:#e8eaf4; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:"IBM Plex Sans",system-ui,sans-serif; }
+    a { color:inherit; text-decoration:none; }
+    header { background:var(--card); border-bottom:1px solid var(--line); }
+    .bar { max-width:1040px; margin:0 auto; padding:0 24px; height:60px; display:flex; align-items:center; justify-content:space-between; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:700; }
+    .brand img { width:28px; height:28px; }
+    .word i { color:var(--accent); font-style:normal; }
+    nav { display:flex; gap:20px; font-size:14px; color:var(--muted); }
+    nav a:hover, nav a.active { color:var(--accent); }
+    .icon-btn { width:36px; height:36px; border-radius:10px; border:1px solid var(--line); background:var(--card); cursor:pointer; color:var(--text); }
+    main { max-width:760px; margin:0 auto; padding:48px 24px 80px; }
+    .crumb { color:var(--muted); font-size:13px; margin:0 0 16px; }
+    .crumb a { color:var(--accent); }
+    h1 { margin:0 0 6px; font-size:clamp(28px,4vw,40px); letter-spacing:-.03em; color:var(--navy); }
+    .meta { color:var(--muted); margin:0 0 28px; }
+    article h2 { margin:28px 0 10px; font-size:20px; }
+    article h3 { margin:18px 0 8px; font-size:16px; }
+    article p, article li { line-height:1.65; }
+    article ul, article ol { margin:0 0 14px; padding-left:20px; color:var(--muted); }
+    article li { margin:0 0 6px; }
+    article p { margin:0 0 12px; color:var(--muted); }
+    code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9em; background:color-mix(in srgb,var(--accent) 8%, transparent); padding:1px 5px; border-radius:4px; }
+    pre { background:#0f172a; color:#e2e8f0; padding:14px 16px; border-radius:12px; overflow-x:auto; font-size:13px; line-height:1.5; }
+    pre code { background:none; color:inherit; padding:0; }
+    [data-theme="dark"] pre { background:#0b0e18; border:1px solid var(--line); }
+    @media (max-width:800px) { nav { display:none; } main { padding:28px 16px 56px; } }
+</style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <a class="brand" href="/"><img src="../assets/favicon.svg" alt="" /><span class="word">sre<i>root</i></span></a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="../guides.html">Guides</a>
+        <a class="active" href="../runbooks.html">Runbooks</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <button class="icon-btn" id="theme" aria-label="Toggle theme">☼</button>
+    </div>
+  </header>
+  <main>
+    <p class="crumb"><a href="../runbooks.html">Runbooks</a> / High latency</p>
+    <h1>High latency</h1>
+    <p class="meta">Kubernetes · Java · incident notes</p>
+    <article>
+<h2>Purpose</h2>
+<p>Diagnose elevated response times, slow endpoints, timeouts, and latency regressions in Java services.</p>
+<h2>Symptoms</h2>
+<ul>
+<li>Increased p95, p99, or maximum latency.</li>
+<li>Request timeouts.</li>
+<li>Thread-pool saturation.</li>
+<li>Increased downstream dependency time.</li>
+<li>High GC pauses or CPU throttling.</li>
+<li>Queue growth in ingress, application, database, or messaging layers.</li>
+</ul>
+<h2>Initial Triage</h2>
+<pre><code>kubectl top pods -n &lt;namespace&gt;
+kubectl get pods -n &lt;namespace&gt; -o wide
+kubectl get hpa -n &lt;namespace&gt;
+kubectl get events -n &lt;namespace&gt; --sort-by=.lastTimestamp</code></pre>
+<p>Review latency by:</p>
+<ul>
+<li>Endpoint.</li>
+<li>HTTP method.</li>
+<li>Status code.</li>
+<li>Pod.</li>
+<li>Availability zone or node.</li>
+<li>Request size.</li>
+<li>Downstream dependency.</li>
+</ul>
+<h2>Determine Where Time Is Spent</h2>
+<p>Break request latency into:</p>
+<ol>
+<li>Ingress or network time.</li>
+<li>Application queue time.</li>
+<li>Controller/service execution.</li>
+<li>Database or cache calls.</li>
+<li>External API calls.</li>
+<li>Serialization and response transfer.</li>
+</ol>
+<p>Check:</p>
+<ul>
+<li>Connection-pool wait time.</li>
+<li>Thread-pool queue length.</li>
+<li>Database query latency.</li>
+<li>Redis latency.</li>
+<li>Kafka or messaging lag.</li>
+<li>DNS and connection-establishment time.</li>
+</ul>
+<h2>JVM Diagnostics</h2>
+<p>Capture a thread dump during the incident:</p>
+<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; Thread.print</code></pre>
+<p>Use JFR for a bounded recording:</p>
+<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; --   jcmd &lt;java-pid&gt; JFR.start name=latency-investigation duration=120s filename=/tmp/latency.jfr settings=profile</code></pre>
+<p>Review:</p>
+<ul>
+<li>Blocked and waiting threads.</li>
+<li>Lock contention.</li>
+<li>Socket read/write durations.</li>
+<li>File I/O.</li>
+<li>GC pauses.</li>
+<li>Allocation hotspots.</li>
+<li>Thread-pool saturation.</li>
+</ul>
+<h2>Common Causes</h2>
+<ul>
+<li>Slow database queries or missing indexes.</li>
+<li>Connection-pool exhaustion.</li>
+<li>Downstream service degradation.</li>
+<li>Lock contention.</li>
+<li>CPU throttling.</li>
+<li>Long GC pauses.</li>
+<li>Synchronous calls to slow dependencies.</li>
+<li>Retry amplification.</li>
+<li>Insufficient replicas.</li>
+<li>Uneven pod load.</li>
+<li>Large payloads or expensive serialization.</li>
+</ul>
+<h2>Mitigation</h2>
+<ul>
+<li>Reduce or stop retry storms.</li>
+<li>Increase replicas if the bottleneck is stateless capacity.</li>
+<li>Tune connection and thread pools based on measurements.</li>
+<li>Enable timeouts and circuit breakers.</li>
+<li>Route around an unhealthy dependency where possible.</li>
+<li>Roll back a confirmed latency-causing release.</li>
+<li>Optimize slow queries and add validated indexes.</li>
+<li>Reduce payload size or paginate large responses.</li>
+</ul>
+<h2>Validation</h2>
+<p>Confirm recovery using:</p>
+<ul>
+<li>p50, p95, and p99 latency.</li>
+<li>Timeout rate.</li>
+<li>Dependency latency.</li>
+<li>Pool wait time.</li>
+<li>CPU and GC metrics.</li>
+<li>Request throughput.</li>
+<li>Error rate.</li>
+</ul>
+<p>Do not close the incident based on average latency alone.</p>
+    </article>
+  </main>
+  <script>
+    const root = document.documentElement;
+    if (localStorage.getItem('theme') === 'dark') root.setAttribute('data-theme','dark');
+    document.getElementById('theme').onclick = () => {
+      const dark = root.getAttribute('data-theme') === 'dark';
+      if (dark) { root.removeAttribute('data-theme'); localStorage.setItem('theme','light'); }
+      else { root.setAttribute('data-theme','dark'); localStorage.setItem('theme','dark'); }
+    };
+</script>
+</body>
+</html>

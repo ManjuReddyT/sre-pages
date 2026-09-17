@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>High error rate runbook · sreroot</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#f4f6fb; --card:#fff; --line:#e2e8f0; --text:#0f172a; --muted:#64748b; --accent:#5b5ce6; --navy:#1e1b4b; }
+    [data-theme="dark"] { --bg:#0f1220; --card:#171a2b; --line:#2a3048; --text:#e8eaf4; --muted:#94a3b8; --accent:#818cf8; --navy:#e8eaf4; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:"IBM Plex Sans",system-ui,sans-serif; }
+    a { color:inherit; text-decoration:none; }
+    header { background:var(--card); border-bottom:1px solid var(--line); }
+    .bar { max-width:1040px; margin:0 auto; padding:0 24px; height:60px; display:flex; align-items:center; justify-content:space-between; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:700; }
+    .brand img { width:28px; height:28px; }
+    .word i { color:var(--accent); font-style:normal; }
+    nav { display:flex; gap:20px; font-size:14px; color:var(--muted); }
+    nav a:hover, nav a.active { color:var(--accent); }
+    .icon-btn { width:36px; height:36px; border-radius:10px; border:1px solid var(--line); background:var(--card); cursor:pointer; color:var(--text); }
+    main { max-width:760px; margin:0 auto; padding:48px 24px 80px; }
+    .crumb { color:var(--muted); font-size:13px; margin:0 0 16px; }
+    .crumb a { color:var(--accent); }
+    h1 { margin:0 0 6px; font-size:clamp(28px,4vw,40px); letter-spacing:-.03em; color:var(--navy); }
+    .meta { color:var(--muted); margin:0 0 28px; }
+    article h2 { margin:28px 0 10px; font-size:20px; }
+    article h3 { margin:18px 0 8px; font-size:16px; }
+    article p, article li { line-height:1.65; }
+    article ul, article ol { margin:0 0 14px; padding-left:20px; color:var(--muted); }
+    article li { margin:0 0 6px; }
+    article p { margin:0 0 12px; color:var(--muted); }
+    code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9em; background:color-mix(in srgb,var(--accent) 8%, transparent); padding:1px 5px; border-radius:4px; }
+    pre { background:#0f172a; color:#e2e8f0; padding:14px 16px; border-radius:12px; overflow-x:auto; font-size:13px; line-height:1.5; }
+    pre code { background:none; color:inherit; padding:0; }
+    [data-theme="dark"] pre { background:#0b0e18; border:1px solid var(--line); }
+    @media (max-width:800px) { nav { display:none; } main { padding:28px 16px 56px; } }
+</style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <a class="brand" href="/"><img src="../assets/favicon.svg" alt="" /><span class="word">sre<i>root</i></span></a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="../guides.html">Guides</a>
+        <a class="active" href="../runbooks.html">Runbooks</a>
+        <a href="../about.html">About</a>
+      </nav>
+      <button class="icon-btn" id="theme" aria-label="Toggle theme">☼</button>
+    </div>
+  </header>
+  <main>
+    <p class="crumb"><a href="../runbooks.html">Runbooks</a> / High error rate</p>
+    <h1>High error rate</h1>
+    <p class="meta">Kubernetes · Java · incident notes</p>
+    <article>
+<h2>Purpose</h2>
+<p>Investigate elevated HTTP 4xx/5xx responses, application exceptions, failed dependencies, and rollout-related errors.</p>
+<h2>Symptoms</h2>
+<ul>
+<li>Increased 5xx rate.</li>
+<li>Unexpected 4xx spike.</li>
+<li>Failed health checks.</li>
+<li>CrashLoopBackOff or frequent restarts.</li>
+<li>Increased timeout, reset, or connection-refused errors.</li>
+<li>Error concentration in one pod, node, version, or endpoint.</li>
+</ul>
+<h2>Initial Triage</h2>
+<pre><code>kubectl get pods -n &lt;namespace&gt; -o wide
+kubectl get deploy &lt;deployment&gt; -n &lt;namespace&gt;
+kubectl rollout history deploy/&lt;deployment&gt; -n &lt;namespace&gt;
+kubectl get events -n &lt;namespace&gt; --sort-by=.lastTimestamp</code></pre>
+<p>Inspect logs:</p>
+<pre><code>kubectl logs -n &lt;namespace&gt; &lt;pod&gt; --since=30m
+kubectl logs -n &lt;namespace&gt; &lt;pod&gt; --previous</code></pre>
+<p>Check status-code distribution by:</p>
+<ul>
+<li>Endpoint.</li>
+<li>HTTP method.</li>
+<li>Pod.</li>
+<li>Application version.</li>
+<li>Dependency.</li>
+<li>Tenant or request type.</li>
+<li>Region or availability zone.</li>
+</ul>
+<h2>Classify the Errors</h2>
+<h3>4xx Errors</h3>
+<p>Investigate:</p>
+<ul>
+<li>Authentication or authorization failures.</li>
+<li>Invalid request payloads.</li>
+<li>Missing headers or cookies.</li>
+<li>API contract changes.</li>
+<li>Routing or ingress rules.</li>
+<li>Rate limiting.</li>
+<li>Client version incompatibility.</li>
+</ul>
+<h3>5xx Errors</h3>
+<p>Investigate:</p>
+<ul>
+<li>Application exceptions.</li>
+<li>Database or cache failures.</li>
+<li>Downstream timeouts.</li>
+<li>Connection-pool exhaustion.</li>
+<li>Out-of-memory events.</li>
+<li>Failed readiness or liveness probes.</li>
+<li>Bad configuration or secret changes.</li>
+<li>Deployment regressions.</li>
+</ul>
+<h2>Kubernetes Checks</h2>
+<pre><code>kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;
+kubectl describe svc &lt;service&gt; -n &lt;namespace&gt;
+kubectl describe ingress &lt;ingress&gt; -n &lt;namespace&gt;
+kubectl get endpoints &lt;service&gt; -n &lt;namespace&gt;
+kubectl get endpointslices -n &lt;namespace&gt;</code></pre>
+<p>Verify:</p>
+<ul>
+<li>Ready endpoints exist.</li>
+<li>Service selectors match pod labels.</li>
+<li>Readiness probes are correct.</li>
+<li>Ingress routes to the expected service.</li>
+<li>Pods are not repeatedly removed from service.</li>
+<li>Network policies permit required traffic.</li>
+</ul>
+<h2>Java Diagnostics</h2>
+<p>Capture relevant exceptions and a thread dump:</p>
+<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; Thread.print</code></pre>
+<p>Use JFR when errors appear related to:</p>
+<ul>
+<li>Lock contention.</li>
+<li>Slow I/O.</li>
+<li>GC pauses.</li>
+<li>Thread starvation.</li>
+<li>Excessive allocation.</li>
+</ul>
+<h2>Mitigation</h2>
+<ul>
+<li>Roll back a confirmed bad deployment.</li>
+<li>Remove unhealthy pods only when replacement capacity is available.</li>
+<li>Correct configuration, secret, or routing errors.</li>
+<li>Restore failed dependencies or activate a fallback.</li>
+<li>Adjust probe settings only after validating application startup and health behavior.</li>
+<li>Rate-limit abusive or runaway clients.</li>
+<li>Disable a faulty feature flag if an approved control exists.</li>
+</ul>
+<h2>Validation</h2>
+<p>Confirm:</p>
+<ul>
+<li>4xx/5xx rates return to baseline.</li>
+<li>Error signatures disappear or reduce materially.</li>
+<li>All intended endpoints have healthy backends.</li>
+<li>No new restart or probe-failure pattern appears.</li>
+<li>Recovery is consistent across pods and versions.</li>
+</ul>
+<h2>Evidence to Capture</h2>
+<ul>
+<li>Error-rate graph and exact incident window.</li>
+<li>Representative request IDs.</li>
+<li>Application stack traces.</li>
+<li>Pod events and termination reasons.</li>
+<li>Deployment version and recent changes.</li>
+<li>Dependency health and latency.</li>
+<li>Before/after validation metrics.</li>
+</ul>
+    </article>
+  </main>
+  <script>
+    const root = document.documentElement;
+    if (localStorage.getItem('theme') === 'dark') root.setAttribute('data-theme','dark');
+    document.getElementById('theme').onclick = () => {
+      const dark = root.getAttribute('data-theme') === 'dark';
+      if (dark) { root.removeAttribute('data-theme'); localStorage.setItem('theme','light'); }
+      else { root.setAttribute('data-theme','dark'); localStorage.setItem('theme','dark'); }
+    };
+</script>
+</body>
+</html>
