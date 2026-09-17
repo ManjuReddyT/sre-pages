@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     :root { --bg:#f4f6fb; --card:#fff; --line:#e2e8f0; --text:#0f172a; --muted:#64748b; --accent:#5b5ce6; }
     [data-theme="dark"] { --bg:#0f1220; --card:#171a2b; --line:#2a3048; --text:#e8eaf4; --muted:#94a3b8; --accent:#818cf8; }
@@ -26,8 +25,9 @@
     main { max-width:1040px; margin:0 auto; padding:56px 24px 72px; }
     h1 { margin:0 0 10px; font-size:clamp(28px,4vw,40px); letter-spacing:-.03em; }
     .lead { color:var(--muted); max-width:640px; font-size:17px; line-height:1.6; margin:0 0 36px; }
+    h2.sec { margin:36px 0 14px; font-size:18px; }
     .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-    .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px; min-height:180px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px; min-height:160px; }
     .card:hover { border-color:#c7c9f6; }
     .pill { display:inline-block; font-size:11px; font-weight:600; color:var(--accent); background:#eef0ff; padding:3px 8px; border-radius:999px; margin-bottom:12px; }
     [data-theme="dark"] .pill { background:#23264a; }
@@ -44,8 +44,7 @@
       <nav>
         <a href="/">Home</a>
         <a class="active" href="guides.html">Guides</a>
-        <a href="https://devutil.sreroot.com">DevUtil</a>
-        <a href="https://perf.sreroot.com">PerfAnalyzer</a>
+        <a href="runbooks.html">Runbooks</a>
         <a href="about.html">About</a>
       </nav>
       <button class="icon-btn" id="theme" aria-label="Toggle theme">☼</button>
@@ -78,6 +77,15 @@
         <h2>Thread dump analysis</h2>
         <p>Deadlocks, lock contention, pool starvation, and hung JVM workflows.</p>
         <span class="go">Open handbook →</span>
+      </a>
+    </div>
+    <h2 class="sec">Incident runbooks</h2>
+    <div class="grid">
+      <a class="card" href="runbooks.html">
+        <div class="pill">Runbooks</div>
+        <h2>Kubernetes · Java</h2>
+        <p>High CPU, high memory, high error rate, and high latency — first checks during an incident.</p>
+        <span class="go">Open runbooks →</span>
       </a>
     </div>
   </main>
