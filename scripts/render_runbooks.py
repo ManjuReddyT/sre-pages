@@ -4,17 +4,17 @@ import html, re
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = [
-    ("high-cpu", "High CPU", "Kubernetes · Java", "Sustained or sudden CPU, HPA thrash, throttling, and hot threads."),
-    ("high-memory", "High memory", "Kubernetes · Java", "OOMKills, heap vs native pressure, and what to capture before a dump."),
-    ("high-error-rate", "High error rate", "Kubernetes · Java", "4xx/5xx spikes, bad rollouts, missing endpoints, and failed dependencies."),
-    ("latency", "High latency", "Kubernetes · Java", "p95/p99 regressions, pool waits, GC pauses, and slow dependencies."),
+    ("high-cpu", "High CPU runbook for Kubernetes Java services", "Kubernetes · Java", "Sustained or sudden CPU, HPA thrash, throttling, and hot threads in Java pods."),
+    ("high-memory", "High memory runbook for Kubernetes Java services", "Kubernetes · Java", "OOMKills, heap versus native pressure, and what to capture before a dump."),
+    ("high-error-rate", "High error rate runbook for Kubernetes Java services", "Kubernetes · Java", "4xx and 5xx spikes, bad rollouts, missing endpoints, and failed dependencies."),
+    ("latency", "High latency runbook for Kubernetes Java services", "Kubernetes · Java", "p95 and p99 regressions, pool waits, GC pauses, and slow dependencies."),
 ]
 
 CSS = """
     :root { --bg:#f4f6fb; --card:#fff; --line:#e2e8f0; --text:#0f172a; --muted:#64748b; --accent:#5b5ce6; --navy:#1e1b4b; }
-    [data-theme="dark"] { --bg:#0f1220; --card:#171a2b; --line:#2a3048; --text:#e8eaf4; --muted:#94a3b8; --accent:#818cf8; --navy:#e8eaf4; }
+    [data-theme=\"dark\"] { --bg:#0f1220; --card:#171a2b; --line:#2a3048; --text:#e8eaf4; --muted:#94a3b8; --accent:#818cf8; --navy:#e8eaf4; }
     * { box-sizing:border-box; }
-    body { margin:0; background:var(--bg); color:var(--text); font-family:"IBM Plex Sans",system-ui,sans-serif; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:\"IBM Plex Sans\",system-ui,sans-serif; }
     a { color:inherit; text-decoration:none; }
     header { background:var(--card); border-bottom:1px solid var(--line); }
     .bar { max-width:1040px; margin:0 auto; padding:0 24px; height:60px; display:flex; align-items:center; justify-content:space-between; }
@@ -38,7 +38,7 @@ CSS = """
     code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9em; background:color-mix(in srgb,var(--accent) 8%, transparent); padding:1px 5px; border-radius:4px; }
     pre { background:#0f172a; color:#e2e8f0; padding:14px 16px; border-radius:12px; overflow-x:auto; font-size:13px; line-height:1.5; }
     pre code { background:none; color:inherit; padding:0; }
-    [data-theme="dark"] pre { background:#0b0e18; border:1px solid var(--line); }
+    [data-theme=\"dark\"] pre { background:#0b0e18; border:1px solid var(--line); }
     @media (max-width:800px) { nav { display:none; } main { padding:28px 16px 56px; } }
 """
 
@@ -55,7 +55,7 @@ SCRIPT = """
 
 def inline(text):
     text = html.escape(text)
-    text = re.sub(r'`([^`]+)`', r'<code>\1</code>', text)
+    text = re.sub(r'`([^`]+)`', r'<code>\\1</code>', text)
     return text
 
 
@@ -76,7 +76,7 @@ def md_to_html(text):
             if not in_code:
                 close(); in_code = True; buf = []
             else:
-                parts.append('<pre><code>' + html.escape('\n'.join(buf)) + '</code></pre>')
+                parts.append('<pre><code>' + html.escape('\\n'.join(buf)) + '</code></pre>')
                 in_code = False
             i += 1; continue
         if in_code:
@@ -87,12 +87,12 @@ def md_to_html(text):
             close(); parts.append('<h3>' + html.escape(line[4:]) + '</h3>')
         elif line.startswith('## '):
             close(); parts.append('<h2>' + html.escape(line[3:]) + '</h2>')
-        elif re.match(r'^\d+\. ', line):
+        elif re.match(r'^\\d+\\. ', line):
             if in_ul:
                 parts.append('</ul>'); in_ul = False
             if not in_ol:
                 parts.append('<ol>'); in_ol = True
-            parts.append('<li>' + inline(re.sub(r'^\d+\. ', '', line)) + '</li>')
+            parts.append('<li>' + inline(re.sub(r'^\\d+\\. ', '', line)) + '</li>')
         elif line.startswith('- '):
             if in_ol:
                 parts.append('</ol>'); in_ol = False
@@ -103,33 +103,39 @@ def md_to_html(text):
             close(); parts.append('<p>' + inline(line) + '</p>')
         i += 1
     close()
-    return '\n'.join(parts)
+    return '\\n'.join(parts)
 
 
-def page(title, inner):
+def page(title, description, url, inner):
     return f"""<!DOCTYPE html>
-<html lang="en">
+<html lang=\"en\">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset=\"UTF-8\" />
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />
   <title>{html.escape(title)} · sreroot</title>
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <meta name=\"description\" content=\"{html.escape(description)}\" />
+  <link rel=\"canonical\" href=\"{url}\" />
+  <meta property=\"og:title\" content=\"{html.escape(title)}\" />
+  <meta property=\"og:description\" content=\"{html.escape(description)}\" />
+  <meta property=\"og:url\" content=\"{url}\" />
+  <meta property=\"og:type\" content=\"article\" />
+  <link rel=\"icon\" href=\"../favicon.svg\" type=\"image/svg+xml\" />
+  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\" />
+  <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin />
+  <link href=\"https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap\" rel=\"stylesheet\" />
   <style>{CSS}</style>
 </head>
 <body>
   <header>
-    <div class="bar">
-      <a class="brand" href="/"><img src="../assets/favicon.svg" alt="" /><span class="word">sre<i>root</i></span></a>
+    <div class=\"bar\">
+      <a class=\"brand\" href=\"/\"><img src=\"../assets/favicon.svg\" alt=\"\" /><span class=\"word\">sre<i>root</i></span></a>
       <nav>
-        <a href="/">Home</a>
-        <a href="../guides.html">Guides</a>
-        <a class="active" href="../runbooks.html">Runbooks</a>
-        <a href="../about.html">About</a>
+        <a href=\"/\">Home</a>
+        <a href=\"../guides.html\">Guides</a>
+        <a class=\"active\" href=\"../runbooks.html\">Runbooks</a>
+        <a href=\"../about.html\">About</a>
       </nav>
-      <button class="icon-btn" id="theme" aria-label="Toggle theme">☼</button>
+      <button class=\"icon-btn\" id=\"theme\" aria-label=\"Toggle theme\">☼</button>
     </div>
   </header>
   <main>
@@ -142,11 +148,18 @@ def page(title, inner):
 
 
 def main():
-    for slug, title, subtitle, _blurb in DOCS:
+    for slug, title, subtitle, blurb in DOCS:
         md = (ROOT / 'runbooks' / f'{slug}.md').read_text(encoding='utf-8')
-        inner = f'    <p class="crumb"><a href="../runbooks.html">Runbooks</a> / {html.escape(title)}</p>\n    <h1>{html.escape(title)}</h1>\n    <p class="meta">{html.escape(subtitle)} · incident notes</p>\n    <article>\n{md_to_html(md)}\n    </article>'
+        url = f'https://sreroot.com/runbooks/{slug}.html'
+        heading = title.replace(' runbook for Kubernetes Java services', '')
+        inner = (
+            f'    <p class=\"crumb\"><a href=\"../runbooks.html\">Runbooks</a> / {html.escape(heading)}</p>\\n'
+            f'    <h1>{html.escape(heading)}</h1>\\n'
+            f'    <p class=\"meta\">{html.escape(subtitle)} · incident notes</p>\\n'
+            f'    <article>\\n{md_to_html(md)}\\n    </article>'
+        )
         dest = ROOT / 'runbooks' / f'{slug}.html'
-        dest.write_text(page(title + ' runbook', inner), encoding='utf-8')
+        dest.write_text(page(title, blurb, url, inner), encoding='utf-8')
         print('wrote', dest.relative_to(ROOT))
 
 
