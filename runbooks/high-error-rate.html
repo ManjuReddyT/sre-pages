@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>High error rate runbook · sreroot</title>
+  <title>High error rate runbook for Kubernetes Java services · sreroot</title>
+  <meta name="description" content="4xx and 5xx spikes, bad rollouts, missing endpoints, and failed dependencies." />
+  <link rel="canonical" href="https://sreroot.com/runbooks/high-error-rate.html" />
+  <meta property="og:title" content="High error rate runbook for Kubernetes Java services" />
+  <meta property="og:description" content="4xx and 5xx spikes, bad rollouts, missing endpoints, and failed dependencies." />
+  <meta property="og:url" content="https://sreroot.com/runbooks/high-error-rate.html" />
+  <meta property="og:type" content="article" />
   <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -54,119 +60,7 @@
     </div>
   </header>
   <main>
-    <p class="crumb"><a href="../runbooks.html">Runbooks</a> / High error rate</p>
-    <h1>High error rate</h1>
-    <p class="meta">Kubernetes · Java · incident notes</p>
-    <article>
-<h2>Purpose</h2>
-<p>Investigate elevated HTTP 4xx/5xx responses, application exceptions, failed dependencies, and rollout-related errors.</p>
-<h2>Symptoms</h2>
-<ul>
-<li>Increased 5xx rate.</li>
-<li>Unexpected 4xx spike.</li>
-<li>Failed health checks.</li>
-<li>CrashLoopBackOff or frequent restarts.</li>
-<li>Increased timeout, reset, or connection-refused errors.</li>
-<li>Error concentration in one pod, node, version, or endpoint.</li>
-</ul>
-<h2>Initial Triage</h2>
-<pre><code>kubectl get pods -n &lt;namespace&gt; -o wide
-kubectl get deploy &lt;deployment&gt; -n &lt;namespace&gt;
-kubectl rollout history deploy/&lt;deployment&gt; -n &lt;namespace&gt;
-kubectl get events -n &lt;namespace&gt; --sort-by=.lastTimestamp</code></pre>
-<p>Inspect logs:</p>
-<pre><code>kubectl logs -n &lt;namespace&gt; &lt;pod&gt; --since=30m
-kubectl logs -n &lt;namespace&gt; &lt;pod&gt; --previous</code></pre>
-<p>Check status-code distribution by:</p>
-<ul>
-<li>Endpoint.</li>
-<li>HTTP method.</li>
-<li>Pod.</li>
-<li>Application version.</li>
-<li>Dependency.</li>
-<li>Tenant or request type.</li>
-<li>Region or availability zone.</li>
-</ul>
-<h2>Classify the Errors</h2>
-<h3>4xx Errors</h3>
-<p>Investigate:</p>
-<ul>
-<li>Authentication or authorization failures.</li>
-<li>Invalid request payloads.</li>
-<li>Missing headers or cookies.</li>
-<li>API contract changes.</li>
-<li>Routing or ingress rules.</li>
-<li>Rate limiting.</li>
-<li>Client version incompatibility.</li>
-</ul>
-<h3>5xx Errors</h3>
-<p>Investigate:</p>
-<ul>
-<li>Application exceptions.</li>
-<li>Database or cache failures.</li>
-<li>Downstream timeouts.</li>
-<li>Connection-pool exhaustion.</li>
-<li>Out-of-memory events.</li>
-<li>Failed readiness or liveness probes.</li>
-<li>Bad configuration or secret changes.</li>
-<li>Deployment regressions.</li>
-</ul>
-<h2>Kubernetes Checks</h2>
-<pre><code>kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;
-kubectl describe svc &lt;service&gt; -n &lt;namespace&gt;
-kubectl describe ingress &lt;ingress&gt; -n &lt;namespace&gt;
-kubectl get endpoints &lt;service&gt; -n &lt;namespace&gt;
-kubectl get endpointslices -n &lt;namespace&gt;</code></pre>
-<p>Verify:</p>
-<ul>
-<li>Ready endpoints exist.</li>
-<li>Service selectors match pod labels.</li>
-<li>Readiness probes are correct.</li>
-<li>Ingress routes to the expected service.</li>
-<li>Pods are not repeatedly removed from service.</li>
-<li>Network policies permit required traffic.</li>
-</ul>
-<h2>Java Diagnostics</h2>
-<p>Capture relevant exceptions and a thread dump:</p>
-<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; Thread.print</code></pre>
-<p>Use JFR when errors appear related to:</p>
-<ul>
-<li>Lock contention.</li>
-<li>Slow I/O.</li>
-<li>GC pauses.</li>
-<li>Thread starvation.</li>
-<li>Excessive allocation.</li>
-</ul>
-<h2>Mitigation</h2>
-<ul>
-<li>Roll back a confirmed bad deployment.</li>
-<li>Remove unhealthy pods only when replacement capacity is available.</li>
-<li>Correct configuration, secret, or routing errors.</li>
-<li>Restore failed dependencies or activate a fallback.</li>
-<li>Adjust probe settings only after validating application startup and health behavior.</li>
-<li>Rate-limit abusive or runaway clients.</li>
-<li>Disable a faulty feature flag if an approved control exists.</li>
-</ul>
-<h2>Validation</h2>
-<p>Confirm:</p>
-<ul>
-<li>4xx/5xx rates return to baseline.</li>
-<li>Error signatures disappear or reduce materially.</li>
-<li>All intended endpoints have healthy backends.</li>
-<li>No new restart or probe-failure pattern appears.</li>
-<li>Recovery is consistent across pods and versions.</li>
-</ul>
-<h2>Evidence to Capture</h2>
-<ul>
-<li>Error-rate graph and exact incident window.</li>
-<li>Representative request IDs.</li>
-<li>Application stack traces.</li>
-<li>Pod events and termination reasons.</li>
-<li>Deployment version and recent changes.</li>
-<li>Dependency health and latency.</li>
-<li>Before/after validation metrics.</li>
-</ul>
-    </article>
+    <p class="crumb"><a href="../runbooks.html">Runbooks</a> / High error rate</p>\n    <h1>High error rate</h1>\n    <p class="meta">Kubernetes · Java · incident notes</p>\n    <article>\n<h2>Purpose</h2>\n<p>Investigate elevated HTTP 4xx/5xx responses, application exceptions, failed dependencies, and rollout-related errors.</p>\n<h2>Symptoms</h2>\n<ul>\n<li>Increased 5xx rate.</li>\n<li>Unexpected 4xx spike.</li>\n<li>Failed health checks.</li>\n<li>CrashLoopBackOff or frequent restarts.</li>\n<li>Increased timeout, reset, or connection-refused errors.</li>\n<li>Error concentration in one pod, node, version, or endpoint.</li>\n</ul>\n<h2>Initial Triage</h2>\n<pre><code>kubectl get pods -n &lt;namespace&gt; -o wide\nkubectl get deploy &lt;deployment&gt; -n &lt;namespace&gt;\nkubectl rollout history deploy/&lt;deployment&gt; -n &lt;namespace&gt;\nkubectl get events -n &lt;namespace&gt; --sort-by=.lastTimestamp</code></pre>\n<p>Inspect logs:</p>\n<pre><code>kubectl logs -n &lt;namespace&gt; &lt;pod&gt; --since=30m\nkubectl logs -n &lt;namespace&gt; &lt;pod&gt; --previous</code></pre>\n<p>Check status-code distribution by:</p>\n<ul>\n<li>Endpoint.</li>\n<li>HTTP method.</li>\n<li>Pod.</li>\n<li>Application version.</li>\n<li>Dependency.</li>\n<li>Tenant or request type.</li>\n<li>Region or availability zone.</li>\n</ul>\n<h2>Classify the Errors</h2>\n<h3>4xx Errors</h3>\n<p>Investigate:</p>\n<ul>\n<li>Authentication or authorization failures.</li>\n<li>Invalid request payloads.</li>\n<li>Missing headers or cookies.</li>\n<li>API contract changes.</li>\n<li>Routing or ingress rules.</li>\n<li>Rate limiting.</li>\n<li>Client version incompatibility.</li>\n</ul>\n<h3>5xx Errors</h3>\n<p>Investigate:</p>\n<ul>\n<li>Application exceptions.</li>\n<li>Database or cache failures.</li>\n<li>Downstream timeouts.</li>\n<li>Connection-pool exhaustion.</li>\n<li>Out-of-memory events.</li>\n<li>Failed readiness or liveness probes.</li>\n<li>Bad configuration or secret changes.</li>\n<li>Deployment regressions.</li>\n</ul>\n<h2>Kubernetes Checks</h2>\n<pre><code>kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;\nkubectl describe svc &lt;service&gt; -n &lt;namespace&gt;\nkubectl describe ingress &lt;ingress&gt; -n &lt;namespace&gt;\nkubectl get endpoints &lt;service&gt; -n &lt;namespace&gt;\nkubectl get endpointslices -n &lt;namespace&gt;</code></pre>\n<p>Verify:</p>\n<ul>\n<li>Ready endpoints exist.</li>\n<li>Service selectors match pod labels.</li>\n<li>Readiness probes are correct.</li>\n<li>Ingress routes to the expected service.</li>\n<li>Pods are not repeatedly removed from service.</li>\n<li>Network policies permit required traffic.</li>\n</ul>\n<h2>Java Diagnostics</h2>\n<p>Capture relevant exceptions and a thread dump:</p>\n<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; Thread.print</code></pre>\n<p>Use JFR when errors appear related to:</p>\n<ul>\n<li>Lock contention.</li>\n<li>Slow I/O.</li>\n<li>GC pauses.</li>\n<li>Thread starvation.</li>\n<li>Excessive allocation.</li>\n</ul>\n<h2>Mitigation</h2>\n<ul>\n<li>Roll back a confirmed bad deployment.</li>\n<li>Remove unhealthy pods only when replacement capacity is available.</li>\n<li>Correct configuration, secret, or routing errors.</li>\n<li>Restore failed dependencies or activate a fallback.</li>\n<li>Adjust probe settings only after validating application startup and health behavior.</li>\n<li>Rate-limit abusive or runaway clients.</li>\n<li>Disable a faulty feature flag if an approved control exists.</li>\n</ul>\n<h2>Validation</h2>\n<p>Confirm:</p>\n<ul>\n<li>4xx/5xx rates return to baseline.</li>\n<li>Error signatures disappear or reduce materially.</li>\n<li>All intended endpoints have healthy backends.</li>\n<li>No new restart or probe-failure pattern appears.</li>\n<li>Recovery is consistent across pods and versions.</li>\n</ul>\n<h2>Evidence to Capture</h2>\n<ul>\n<li>Error-rate graph and exact incident window.</li>\n<li>Representative request IDs.</li>\n<li>Application stack traces.</li>\n<li>Pod events and termination reasons.</li>\n<li>Deployment version and recent changes.</li>\n<li>Dependency health and latency.</li>\n<li>Before/after validation metrics.</li>\n</ul>\n    </article>
   </main>
   <script>
     const root = document.documentElement;

@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>High memory runbook · sreroot</title>
+  <title>High memory runbook for Kubernetes Java services · sreroot</title>
+  <meta name="description" content="OOMKills, heap versus native pressure, and what to capture before a dump." />
+  <link rel="canonical" href="https://sreroot.com/runbooks/high-memory.html" />
+  <meta property="og:title" content="High memory runbook for Kubernetes Java services" />
+  <meta property="og:description" content="OOMKills, heap versus native pressure, and what to capture before a dump." />
+  <meta property="og:url" content="https://sreroot.com/runbooks/high-memory.html" />
+  <meta property="og:type" content="article" />
   <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -54,100 +60,7 @@
     </div>
   </header>
   <main>
-    <p class="crumb"><a href="../runbooks.html">Runbooks</a> / High memory</p>
-    <h1>High memory</h1>
-    <p class="meta">Kubernetes · Java · incident notes</p>
-    <article>
-<h2>Purpose</h2>
-<p>Investigate high memory usage, OOMKills, container restarts, and possible Java heap or native-memory leaks.</p>
-<h2>Symptoms</h2>
-<ul>
-<li>Container memory near its limit.</li>
-<li><code>OOMKilled</code> termination reason.</li>
-<li>Frequent pod restarts.</li>
-<li>Increasing old-generation occupancy.</li>
-<li>Long or frequent garbage-collection pauses.</li>
-<li><code>OutOfMemoryError</code> in application logs.</li>
-</ul>
-<h2>Initial Triage</h2>
-<pre><code>kubectl top pods -n &lt;namespace&gt; --sort-by=memory
-kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;
-kubectl get events -n &lt;namespace&gt; --sort-by=.lastTimestamp
-kubectl get pod &lt;pod&gt; -n &lt;namespace&gt; -o jsonpath=&#x27;{.status.containerStatuses[*].lastState.terminated.reason}&#x27;</code></pre>
-<p>Check configured resources:</p>
-<pre><code>kubectl get deploy &lt;deployment&gt; -n &lt;namespace&gt; -o yaml</code></pre>
-<p>Compare:</p>
-<ul>
-<li>Container memory limit.</li>
-<li>JVM heap settings.</li>
-<li>Non-heap and native-memory requirements.</li>
-<li>Number of threads.</li>
-<li>Direct-buffer usage.</li>
-<li>Metaspace usage.</li>
-</ul>
-<h2>JVM Memory Checks</h2>
-<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; VM.flags
-kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; GC.heap_info
-kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; VM.native_memory summary</code></pre>
-<p>Native Memory Tracking must be enabled at JVM startup for detailed output:</p>
-<pre><code>-XX:NativeMemoryTracking=summary</code></pre>
-<p>Check GC logs for:</p>
-<ul>
-<li>Increasing post-GC heap occupancy.</li>
-<li>Full GC frequency.</li>
-<li>Promotion failures.</li>
-<li>Humongous allocations.</li>
-<li>Long pause times.</li>
-</ul>
-<h2>Heap Dump</h2>
-<p>Only capture a heap dump after assessing disk capacity and operational impact:</p>
-<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; GC.heap_dump /tmp/heap.hprof
-kubectl cp &lt;namespace&gt;/&lt;pod&gt;:/tmp/heap.hprof ./heap.hprof</code></pre>
-<p>Analyze with Eclipse MAT or another approved heap-analysis tool.</p>
-<p>Look for:</p>
-<ul>
-<li>Dominator tree leaders.</li>
-<li>Large collections and maps.</li>
-<li>Retained objects.</li>
-<li>Class-loader leaks.</li>
-<li>Unbounded caches.</li>
-<li>Request/session objects retained too long.</li>
-</ul>
-<h2>Common Causes</h2>
-<ul>
-<li>Unbounded in-memory caches.</li>
-<li>Static collections retaining objects.</li>
-<li>ThreadLocal leaks.</li>
-<li>Excessive direct buffers.</li>
-<li>Too many threads.</li>
-<li>Large response/request payloads.</li>
-<li>Class-loader leaks after redeployments.</li>
-<li>Heap sizing too close to the container limit.</li>
-<li>Native memory or off-heap allocations.</li>
-</ul>
-<h2>Mitigation</h2>
-<ul>
-<li>Scale out if memory pressure is traffic-related.</li>
-<li>Reduce cache size or add expiry.</li>
-<li>Fix object-retention or listener leaks.</li>
-<li>Reduce payload sizes and buffering.</li>
-<li>Review thread-pool sizes.</li>
-<li>Increase container memory only after identifying the memory category.</li>
-<li>Keep headroom between JVM heap and container limit.</li>
-<li>Enable heap-dump-on-OOM only with sufficient disk capacity.</li>
-</ul>
-<h2>Validation</h2>
-<pre><code>kubectl top pod &lt;pod&gt; -n &lt;namespace&gt;
-kubectl get pod &lt;pod&gt; -n &lt;namespace&gt; -w</code></pre>
-<p>Confirm:</p>
-<ul>
-<li>Memory remains below the limit.</li>
-<li>No repeated OOMKills.</li>
-<li>Post-GC heap occupancy is stable.</li>
-<li>Restart rate returns to normal.</li>
-<li>Latency and error rates remain healthy.</li>
-</ul>
-    </article>
+    <p class="crumb"><a href="../runbooks.html">Runbooks</a> / High memory</p>\n    <h1>High memory</h1>\n    <p class="meta">Kubernetes · Java · incident notes</p>\n    <article>\n<h2>Purpose</h2>\n<p>Investigate high memory usage, OOMKills, container restarts, and possible Java heap or native-memory leaks.</p>\n<h2>Symptoms</h2>\n<ul>\n<li>Container memory near its limit.</li>\n<li><code>\1</code> termination reason.</li>\n<li>Frequent pod restarts.</li>\n<li>Increasing old-generation occupancy.</li>\n<li>Long or frequent garbage-collection pauses.</li>\n<li><code>\1</code> in application logs.</li>\n</ul>\n<h2>Initial Triage</h2>\n<pre><code>kubectl top pods -n &lt;namespace&gt; --sort-by=memory\nkubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;\nkubectl get events -n &lt;namespace&gt; --sort-by=.lastTimestamp\nkubectl get pod &lt;pod&gt; -n &lt;namespace&gt; -o jsonpath=&#x27;{.status.containerStatuses[*].lastState.terminated.reason}&#x27;</code></pre>\n<p>Check configured resources:</p>\n<pre><code>kubectl get deploy &lt;deployment&gt; -n &lt;namespace&gt; -o yaml</code></pre>\n<p>Compare:</p>\n<ul>\n<li>Container memory limit.</li>\n<li>JVM heap settings.</li>\n<li>Non-heap and native-memory requirements.</li>\n<li>Number of threads.</li>\n<li>Direct-buffer usage.</li>\n<li>Metaspace usage.</li>\n</ul>\n<h2>JVM Memory Checks</h2>\n<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; VM.flags\nkubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; GC.heap_info\nkubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; VM.native_memory summary</code></pre>\n<p>Native Memory Tracking must be enabled at JVM startup for detailed output:</p>\n<pre><code>-XX:NativeMemoryTracking=summary</code></pre>\n<p>Check GC logs for:</p>\n<ul>\n<li>Increasing post-GC heap occupancy.</li>\n<li>Full GC frequency.</li>\n<li>Promotion failures.</li>\n<li>Humongous allocations.</li>\n<li>Long pause times.</li>\n</ul>\n<h2>Heap Dump</h2>\n<p>Only capture a heap dump after assessing disk capacity and operational impact:</p>\n<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; GC.heap_dump /tmp/heap.hprof\nkubectl cp &lt;namespace&gt;/&lt;pod&gt;:/tmp/heap.hprof ./heap.hprof</code></pre>\n<p>Analyze with Eclipse MAT or another approved heap-analysis tool.</p>\n<p>Look for:</p>\n<ul>\n<li>Dominator tree leaders.</li>\n<li>Large collections and maps.</li>\n<li>Retained objects.</li>\n<li>Class-loader leaks.</li>\n<li>Unbounded caches.</li>\n<li>Request/session objects retained too long.</li>\n</ul>\n<h2>Common Causes</h2>\n<ul>\n<li>Unbounded in-memory caches.</li>\n<li>Static collections retaining objects.</li>\n<li>ThreadLocal leaks.</li>\n<li>Excessive direct buffers.</li>\n<li>Too many threads.</li>\n<li>Large response/request payloads.</li>\n<li>Class-loader leaks after redeployments.</li>\n<li>Heap sizing too close to the container limit.</li>\n<li>Native memory or off-heap allocations.</li>\n</ul>\n<h2>Mitigation</h2>\n<ul>\n<li>Scale out if memory pressure is traffic-related.</li>\n<li>Reduce cache size or add expiry.</li>\n<li>Fix object-retention or listener leaks.</li>\n<li>Reduce payload sizes and buffering.</li>\n<li>Review thread-pool sizes.</li>\n<li>Increase container memory only after identifying the memory category.</li>\n<li>Keep headroom between JVM heap and container limit.</li>\n<li>Enable heap-dump-on-OOM only with sufficient disk capacity.</li>\n</ul>\n<h2>Validation</h2>\n<pre><code>kubectl top pod &lt;pod&gt; -n &lt;namespace&gt;\nkubectl get pod &lt;pod&gt; -n &lt;namespace&gt; -w</code></pre>\n<p>Confirm:</p>\n<ul>\n<li>Memory remains below the limit.</li>\n<li>No repeated OOMKills.</li>\n<li>Post-GC heap occupancy is stable.</li>\n<li>Restart rate returns to normal.</li>\n<li>Latency and error rates remain healthy.</li>\n</ul>\n    </article>
   </main>
   <script>
     const root = document.documentElement;

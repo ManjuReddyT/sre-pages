@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>High CPU runbook · sreroot</title>
+  <title>High CPU runbook for Kubernetes Java services · sreroot</title>
+  <meta name="description" content="Sustained or sudden CPU, HPA thrash, throttling, and hot threads in Java pods." />
+  <link rel="canonical" href="https://sreroot.com/runbooks/high-cpu.html" />
+  <meta property="og:title" content="High CPU runbook for Kubernetes Java services" />
+  <meta property="og:description" content="Sustained or sudden CPU, HPA thrash, throttling, and hot threads in Java pods." />
+  <meta property="og:url" content="https://sreroot.com/runbooks/high-cpu.html" />
+  <meta property="og:type" content="article" />
   <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -54,101 +60,7 @@
     </div>
   </header>
   <main>
-    <p class="crumb"><a href="../runbooks.html">Runbooks</a> / High CPU</p>
-    <h1>High CPU</h1>
-    <p class="meta">Kubernetes · Java · incident notes</p>
-    <article>
-<h2>Purpose</h2>
-<p>Investigate and mitigate sustained or sudden CPU utilization in Java services running on Kubernetes.</p>
-<h2>Symptoms</h2>
-<ul>
-<li>CPU utilization above the service or node threshold.</li>
-<li>HPA scaling rapidly or reaching <code>maxReplicas</code>.</li>
-<li>Increased request latency or timeout rates.</li>
-<li>High thread activity, excessive retries, or busy loops.</li>
-<li>CPU throttling despite apparently low application CPU usage.</li>
-</ul>
-<h2>Initial Triage</h2>
-<pre><code>kubectl top pods -n &lt;namespace&gt; --sort-by=cpu
-kubectl top nodes
-kubectl get hpa -n &lt;namespace&gt;
-kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;
-kubectl get events -n &lt;namespace&gt; --sort-by=.lastTimestamp</code></pre>
-<p>Check the configured requests and limits:</p>
-<pre><code>kubectl get deploy &lt;deployment&gt; -n &lt;namespace&gt; -o yaml</code></pre>
-<p>Look for:</p>
-<ul>
-<li>Missing or undersized CPU requests.</li>
-<li>Very low CPU limits causing throttling.</li>
-<li>HPA targets that do not match actual workload behavior.</li>
-<li>Uneven traffic distribution across pods.</li>
-</ul>
-<h2>JVM and Thread Investigation</h2>
-<p>Identify the Java process:</p>
-<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- sh -c &#x27;ps -ef | grep java&#x27;</code></pre>
-<p>Capture thread CPU usage:</p>
-<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- top -H -p &lt;java-pid&gt;</code></pre>
-<p>Convert a hot Linux thread ID to hexadecimal:</p>
-<pre><code>printf &#x27;%x\n&#x27; &lt;thread-id&gt;</code></pre>
-<p>Capture a thread dump:</p>
-<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; Thread.print</code></pre>
-<p>Correlate the hexadecimal thread ID with the <code>nid</code> value in the thread dump.</p>
-<h2>Java Flight Recorder</h2>
-<p>Start a short diagnostic recording where permitted:</p>
-<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; --   jcmd &lt;java-pid&gt; JFR.start name=cpu-investigation duration=120s filename=/tmp/cpu.jfr settings=profile</code></pre>
-<p>Copy the recording:</p>
-<pre><code>kubectl cp &lt;namespace&gt;/&lt;pod&gt;:/tmp/cpu.jfr ./cpu.jfr</code></pre>
-<p>Review:</p>
-<ul>
-<li>Hot methods and execution samples.</li>
-<li>Thread states and blocked time.</li>
-<li>Lock contention.</li>
-<li>Allocation pressure.</li>
-<li>Garbage-collection activity.</li>
-<li>Socket and file I/O.</li>
-</ul>
-<h2>Common Causes</h2>
-<ul>
-<li>Inefficient loops or expensive algorithms.</li>
-<li>Excessive JSON serialization/deserialization.</li>
-<li>High-cardinality logging or debug logging.</li>
-<li>Retry storms.</li>
-<li>Synchronous blocking work on request threads.</li>
-<li>Excessive garbage creation.</li>
-<li>CPU throttling from container limits.</li>
-<li>Traffic imbalance or a single hot partition.</li>
-</ul>
-<h2>Mitigation</h2>
-<ul>
-<li>Scale out temporarily if capacity is available.</li>
-<li>Reduce excessive logging and disable debug logging where safe.</li>
-<li>Correct CPU requests and limits.</li>
-<li>Tune HPA targets and stabilization windows.</li>
-<li>Stop runaway traffic or retry loops.</li>
-<li>Roll back a recent change if evidence points to a deployment.</li>
-<li>Apply a code fix for the identified hot path.</li>
-</ul>
-<h2>Validation</h2>
-<pre><code>kubectl top pods -n &lt;namespace&gt;
-kubectl get hpa -n &lt;namespace&gt;</code></pre>
-<p>Confirm:</p>
-<ul>
-<li>CPU returns to the expected range.</li>
-<li>Latency and error rates recover.</li>
-<li>HPA stabilizes.</li>
-<li>No new throttling or restart pattern appears.</li>
-</ul>
-<h2>Evidence to Capture</h2>
-<ul>
-<li>Time window and affected namespace/deployment.</li>
-<li>Pod and node CPU metrics.</li>
-<li>HPA status.</li>
-<li>Deployment version and recent changes.</li>
-<li>Thread dump or JFR recording.</li>
-<li>Relevant application and access logs.</li>
-<li>Before/after graphs.</li>
-</ul>
-    </article>
+    <p class="crumb"><a href="../runbooks.html">Runbooks</a> / High CPU</p>\n    <h1>High CPU</h1>\n    <p class="meta">Kubernetes · Java · incident notes</p>\n    <article>\n<h2>Purpose</h2>\n<p>Investigate and mitigate sustained or sudden CPU utilization in Java services running on Kubernetes.</p>\n<h2>Symptoms</h2>\n<ul>\n<li>CPU utilization above the service or node threshold.</li>\n<li>HPA scaling rapidly or reaching <code>\1</code>.</li>\n<li>Increased request latency or timeout rates.</li>\n<li>High thread activity, excessive retries, or busy loops.</li>\n<li>CPU throttling despite apparently low application CPU usage.</li>\n</ul>\n<h2>Initial Triage</h2>\n<pre><code>kubectl top pods -n &lt;namespace&gt; --sort-by=cpu\nkubectl top nodes\nkubectl get hpa -n &lt;namespace&gt;\nkubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;\nkubectl get events -n &lt;namespace&gt; --sort-by=.lastTimestamp</code></pre>\n<p>Check the configured requests and limits:</p>\n<pre><code>kubectl get deploy &lt;deployment&gt; -n &lt;namespace&gt; -o yaml</code></pre>\n<p>Look for:</p>\n<ul>\n<li>Missing or undersized CPU requests.</li>\n<li>Very low CPU limits causing throttling.</li>\n<li>HPA targets that do not match actual workload behavior.</li>\n<li>Uneven traffic distribution across pods.</li>\n</ul>\n<h2>JVM and Thread Investigation</h2>\n<p>Identify the Java process:</p>\n<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- sh -c &#x27;ps -ef | grep java&#x27;</code></pre>\n<p>Capture thread CPU usage:</p>\n<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- top -H -p &lt;java-pid&gt;</code></pre>\n<p>Convert a hot Linux thread ID to hexadecimal:</p>\n<pre><code>printf &#x27;%x\n&#x27; &lt;thread-id&gt;</code></pre>\n<p>Capture a thread dump:</p>\n<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; Thread.print</code></pre>\n<p>Correlate the hexadecimal thread ID with the <code>\1</code> value in the thread dump.</p>\n<h2>Java Flight Recorder</h2>\n<p>Start a short diagnostic recording where permitted:</p>\n<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; --   jcmd &lt;java-pid&gt; JFR.start name=cpu-investigation duration=120s filename=/tmp/cpu.jfr settings=profile</code></pre>\n<p>Copy the recording:</p>\n<pre><code>kubectl cp &lt;namespace&gt;/&lt;pod&gt;:/tmp/cpu.jfr ./cpu.jfr</code></pre>\n<p>Review:</p>\n<ul>\n<li>Hot methods and execution samples.</li>\n<li>Thread states and blocked time.</li>\n<li>Lock contention.</li>\n<li>Allocation pressure.</li>\n<li>Garbage-collection activity.</li>\n<li>Socket and file I/O.</li>\n</ul>\n<h2>Common Causes</h2>\n<ul>\n<li>Inefficient loops or expensive algorithms.</li>\n<li>Excessive JSON serialization/deserialization.</li>\n<li>High-cardinality logging or debug logging.</li>\n<li>Retry storms.</li>\n<li>Synchronous blocking work on request threads.</li>\n<li>Excessive garbage creation.</li>\n<li>CPU throttling from container limits.</li>\n<li>Traffic imbalance or a single hot partition.</li>\n</ul>\n<h2>Mitigation</h2>\n<ul>\n<li>Scale out temporarily if capacity is available.</li>\n<li>Reduce excessive logging and disable debug logging where safe.</li>\n<li>Correct CPU requests and limits.</li>\n<li>Tune HPA targets and stabilization windows.</li>\n<li>Stop runaway traffic or retry loops.</li>\n<li>Roll back a recent change if evidence points to a deployment.</li>\n<li>Apply a code fix for the identified hot path.</li>\n</ul>\n<h2>Validation</h2>\n<pre><code>kubectl top pods -n &lt;namespace&gt;\nkubectl get hpa -n &lt;namespace&gt;</code></pre>\n<p>Confirm:</p>\n<ul>\n<li>CPU returns to the expected range.</li>\n<li>Latency and error rates recover.</li>\n<li>HPA stabilizes.</li>\n<li>No new throttling or restart pattern appears.</li>\n</ul>\n<h2>Evidence to Capture</h2>\n<ul>\n<li>Time window and affected namespace/deployment.</li>\n<li>Pod and node CPU metrics.</li>\n<li>HPA status.</li>\n<li>Deployment version and recent changes.</li>\n<li>Thread dump or JFR recording.</li>\n<li>Relevant application and access logs.</li>\n<li>Before/after graphs.</li>\n</ul>\n    </article>
   </main>
   <script>
     const root = document.documentElement;

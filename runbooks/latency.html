@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>High latency runbook · sreroot</title>
+  <title>High latency runbook for Kubernetes Java services · sreroot</title>
+  <meta name="description" content="p95 and p99 regressions, pool waits, GC pauses, and slow dependencies." />
+  <link rel="canonical" href="https://sreroot.com/runbooks/latency.html" />
+  <meta property="og:title" content="High latency runbook for Kubernetes Java services" />
+  <meta property="og:description" content="p95 and p99 regressions, pool waits, GC pauses, and slow dependencies." />
+  <meta property="og:url" content="https://sreroot.com/runbooks/latency.html" />
+  <meta property="og:type" content="article" />
   <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -54,108 +60,7 @@
     </div>
   </header>
   <main>
-    <p class="crumb"><a href="../runbooks.html">Runbooks</a> / High latency</p>
-    <h1>High latency</h1>
-    <p class="meta">Kubernetes · Java · incident notes</p>
-    <article>
-<h2>Purpose</h2>
-<p>Diagnose elevated response times, slow endpoints, timeouts, and latency regressions in Java services.</p>
-<h2>Symptoms</h2>
-<ul>
-<li>Increased p95, p99, or maximum latency.</li>
-<li>Request timeouts.</li>
-<li>Thread-pool saturation.</li>
-<li>Increased downstream dependency time.</li>
-<li>High GC pauses or CPU throttling.</li>
-<li>Queue growth in ingress, application, database, or messaging layers.</li>
-</ul>
-<h2>Initial Triage</h2>
-<pre><code>kubectl top pods -n &lt;namespace&gt;
-kubectl get pods -n &lt;namespace&gt; -o wide
-kubectl get hpa -n &lt;namespace&gt;
-kubectl get events -n &lt;namespace&gt; --sort-by=.lastTimestamp</code></pre>
-<p>Review latency by:</p>
-<ul>
-<li>Endpoint.</li>
-<li>HTTP method.</li>
-<li>Status code.</li>
-<li>Pod.</li>
-<li>Availability zone or node.</li>
-<li>Request size.</li>
-<li>Downstream dependency.</li>
-</ul>
-<h2>Determine Where Time Is Spent</h2>
-<p>Break request latency into:</p>
-<ol>
-<li>Ingress or network time.</li>
-<li>Application queue time.</li>
-<li>Controller/service execution.</li>
-<li>Database or cache calls.</li>
-<li>External API calls.</li>
-<li>Serialization and response transfer.</li>
-</ol>
-<p>Check:</p>
-<ul>
-<li>Connection-pool wait time.</li>
-<li>Thread-pool queue length.</li>
-<li>Database query latency.</li>
-<li>Redis latency.</li>
-<li>Kafka or messaging lag.</li>
-<li>DNS and connection-establishment time.</li>
-</ul>
-<h2>JVM Diagnostics</h2>
-<p>Capture a thread dump during the incident:</p>
-<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; Thread.print</code></pre>
-<p>Use JFR for a bounded recording:</p>
-<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; --   jcmd &lt;java-pid&gt; JFR.start name=latency-investigation duration=120s filename=/tmp/latency.jfr settings=profile</code></pre>
-<p>Review:</p>
-<ul>
-<li>Blocked and waiting threads.</li>
-<li>Lock contention.</li>
-<li>Socket read/write durations.</li>
-<li>File I/O.</li>
-<li>GC pauses.</li>
-<li>Allocation hotspots.</li>
-<li>Thread-pool saturation.</li>
-</ul>
-<h2>Common Causes</h2>
-<ul>
-<li>Slow database queries or missing indexes.</li>
-<li>Connection-pool exhaustion.</li>
-<li>Downstream service degradation.</li>
-<li>Lock contention.</li>
-<li>CPU throttling.</li>
-<li>Long GC pauses.</li>
-<li>Synchronous calls to slow dependencies.</li>
-<li>Retry amplification.</li>
-<li>Insufficient replicas.</li>
-<li>Uneven pod load.</li>
-<li>Large payloads or expensive serialization.</li>
-</ul>
-<h2>Mitigation</h2>
-<ul>
-<li>Reduce or stop retry storms.</li>
-<li>Increase replicas if the bottleneck is stateless capacity.</li>
-<li>Tune connection and thread pools based on measurements.</li>
-<li>Enable timeouts and circuit breakers.</li>
-<li>Route around an unhealthy dependency where possible.</li>
-<li>Roll back a confirmed latency-causing release.</li>
-<li>Optimize slow queries and add validated indexes.</li>
-<li>Reduce payload size or paginate large responses.</li>
-</ul>
-<h2>Validation</h2>
-<p>Confirm recovery using:</p>
-<ul>
-<li>p50, p95, and p99 latency.</li>
-<li>Timeout rate.</li>
-<li>Dependency latency.</li>
-<li>Pool wait time.</li>
-<li>CPU and GC metrics.</li>
-<li>Request throughput.</li>
-<li>Error rate.</li>
-</ul>
-<p>Do not close the incident based on average latency alone.</p>
-    </article>
+    <p class="crumb"><a href="../runbooks.html">Runbooks</a> / High latency</p>\n    <h1>High latency</h1>\n    <p class="meta">Kubernetes · Java · incident notes</p>\n    <article>\n<h2>Purpose</h2>\n<p>Diagnose elevated response times, slow endpoints, timeouts, and latency regressions in Java services.</p>\n<h2>Symptoms</h2>\n<ul>\n<li>Increased p95, p99, or maximum latency.</li>\n<li>Request timeouts.</li>\n<li>Thread-pool saturation.</li>\n<li>Increased downstream dependency time.</li>\n<li>High GC pauses or CPU throttling.</li>\n<li>Queue growth in ingress, application, database, or messaging layers.</li>\n</ul>\n<h2>Initial Triage</h2>\n<pre><code>kubectl top pods -n &lt;namespace&gt;\nkubectl get pods -n &lt;namespace&gt; -o wide\nkubectl get hpa -n &lt;namespace&gt;\nkubectl get events -n &lt;namespace&gt; --sort-by=.lastTimestamp</code></pre>\n<p>Review latency by:</p>\n<ul>\n<li>Endpoint.</li>\n<li>HTTP method.</li>\n<li>Status code.</li>\n<li>Pod.</li>\n<li>Availability zone or node.</li>\n<li>Request size.</li>\n<li>Downstream dependency.</li>\n</ul>\n<h2>Determine Where Time Is Spent</h2>\n<p>Break request latency into:</p>\n<p>1. Ingress or network time.</p>\n<p>2. Application queue time.</p>\n<p>3. Controller/service execution.</p>\n<p>4. Database or cache calls.</p>\n<p>5. External API calls.</p>\n<p>6. Serialization and response transfer.</p>\n<p>Check:</p>\n<ul>\n<li>Connection-pool wait time.</li>\n<li>Thread-pool queue length.</li>\n<li>Database query latency.</li>\n<li>Redis latency.</li>\n<li>Kafka or messaging lag.</li>\n<li>DNS and connection-establishment time.</li>\n</ul>\n<h2>JVM Diagnostics</h2>\n<p>Capture a thread dump during the incident:</p>\n<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; -- jcmd &lt;java-pid&gt; Thread.print</code></pre>\n<p>Use JFR for a bounded recording:</p>\n<pre><code>kubectl exec -n &lt;namespace&gt; &lt;pod&gt; --   jcmd &lt;java-pid&gt; JFR.start name=latency-investigation duration=120s filename=/tmp/latency.jfr settings=profile</code></pre>\n<p>Review:</p>\n<ul>\n<li>Blocked and waiting threads.</li>\n<li>Lock contention.</li>\n<li>Socket read/write durations.</li>\n<li>File I/O.</li>\n<li>GC pauses.</li>\n<li>Allocation hotspots.</li>\n<li>Thread-pool saturation.</li>\n</ul>\n<h2>Common Causes</h2>\n<ul>\n<li>Slow database queries or missing indexes.</li>\n<li>Connection-pool exhaustion.</li>\n<li>Downstream service degradation.</li>\n<li>Lock contention.</li>\n<li>CPU throttling.</li>\n<li>Long GC pauses.</li>\n<li>Synchronous calls to slow dependencies.</li>\n<li>Retry amplification.</li>\n<li>Insufficient replicas.</li>\n<li>Uneven pod load.</li>\n<li>Large payloads or expensive serialization.</li>\n</ul>\n<h2>Mitigation</h2>\n<ul>\n<li>Reduce or stop retry storms.</li>\n<li>Increase replicas if the bottleneck is stateless capacity.</li>\n<li>Tune connection and thread pools based on measurements.</li>\n<li>Enable timeouts and circuit breakers.</li>\n<li>Route around an unhealthy dependency where possible.</li>\n<li>Roll back a confirmed latency-causing release.</li>\n<li>Optimize slow queries and add validated indexes.</li>\n<li>Reduce payload size or paginate large responses.</li>\n</ul>\n<h2>Validation</h2>\n<p>Confirm recovery using:</p>\n<ul>\n<li>p50, p95, and p99 latency.</li>\n<li>Timeout rate.</li>\n<li>Dependency latency.</li>\n<li>Pool wait time.</li>\n<li>CPU and GC metrics.</li>\n<li>Request throughput.</li>\n<li>Error rate.</li>\n</ul>\n<p>Do not close the incident based on average latency alone.</p>\n    </article>
   </main>
   <script>
     const root = document.documentElement;
