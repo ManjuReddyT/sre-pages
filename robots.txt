@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sreroot.com/sitemap.xml
